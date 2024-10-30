@@ -1,24 +1,17 @@
-import '../../domain/entities/user_entities.dart';
+import './token_model.dart';
+import '../../domain/entities/user_entity.dart';
 
 class UserModel extends User {
-  final String accessToken;
-  final String refreshToken;
+  final TokenModel tokenModel;
 
   UserModel({
-    required int id,
-    required String username,
-    required String email,
-    required String profilePic,
-    required String authType,
-    required this.accessToken,
-    required this.refreshToken,
-  }) : super(
-          id: id,
-          username: username,
-          email: email,
-          profilePic: profilePic,
-          authType: authType
-        );
+    required super.id,
+    required super.username,
+    required super.email,
+    required super.profilePic,
+    required super.authType,
+    required this.tokenModel
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -27,8 +20,7 @@ class UserModel extends User {
       email: json['user']['email'],
       profilePic: json['user']['profilePic'],
       authType: json['user']['authType'],
-      accessToken: json['accessToken'],
-      refreshToken: json['refreshToken'],
+      tokenModel: TokenModel.fromJson(json)
     );
   }
 
@@ -41,8 +33,7 @@ class UserModel extends User {
         'profilePic': profilePic,
         'authType': authType,
       },
-      'accessToken': accessToken,
-      'refreshToken': refreshToken,
+      ...tokenModel.toJson()
     };
   }
 }
