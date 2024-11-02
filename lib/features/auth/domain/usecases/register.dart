@@ -5,14 +5,15 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecases.dart';
 import '../repositories/user_repositories.dart';
 
-class Register implements UseCase<void, RegisterParams>{
+class RegisterUseCase implements UseCase<void, RegisterParams> {
   final UserRepositories userRepositories;
 
-  Register(this.userRepositories);  
+  RegisterUseCase(this.userRepositories);
 
   @override
   Future<Either<Failure, void>> call(RegisterParams params) async {
-    return await userRepositories.registerWithEmailPassword(params.email, params.password, params.username);
+    return await userRepositories.registerWithEmailPassword(
+        params.email, params.password, params.username);
   }
 }
 

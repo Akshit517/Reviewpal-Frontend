@@ -5,11 +5,13 @@ import '../entities/token_entity.dart';
 import '../entities/user_entity.dart';
 
 abstract class UserRepositories {
-  Future<Either<Failure, User>> loginWithEmailPassword(String email, String password);
+  Future<Either<Failure, User>> loginWithEmailPassword(
+      String email, String password);
 
   Future<Either<Failure, User>> loginWithOAuth(String provider);
 
-  Future<Either<Failure, User>> registerWithEmailPassword(String email, String password, String username);
+  Future<Either<Failure, User>> registerWithEmailPassword(
+      String email, String password, String username);
 
   Future<Either<Failure, void>> logout();
 

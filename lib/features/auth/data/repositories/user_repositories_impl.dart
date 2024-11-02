@@ -1,6 +1,6 @@
-import 'package:ReviewPal/core/error/exceptions.dart';
 import 'package:dartz/dartz.dart';
 
+import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
 import '../../domain/entities/token_entity.dart';
@@ -21,9 +21,10 @@ class UserRepositoriesImpl implements UserRepositories {
     required this.networkInfo,
   });
 
-  Future<Either<Failure, T>> _checkNetwork<T>(Future<Either<Failure, T>> Function() action) async {
+  Future<Either<Failure, T>> _checkNetwork<T>(
+      Future<Either<Failure, T>> Function() action) async {
     if (!(await networkInfo.isConnected)) {
-      return Left(NetworkFailure()); 
+      return Left(NetworkFailure());
     }
     return await action();
   }
@@ -47,8 +48,8 @@ class UserRepositoriesImpl implements UserRepositories {
 
   @override
   Future<Either<Failure, User>> loginWithEmailPassword(
-      String email, 
-      String password,
+    String email,
+    String password,
   ) async {
     return await _checkNetwork(() async {
       return await _getUser(
@@ -68,13 +69,14 @@ class UserRepositoriesImpl implements UserRepositories {
 
   @override
   Future<Either<Failure, User>> registerWithEmailPassword(
-      String email,
-      String password,
-      String username,
+    String email,
+    String password,
+    String username,
   ) async {
     return await _checkNetwork(() async {
       return await _getUser(
-        () => remoteDataSource.registerWithEmailPassword(email, password, username),
+        () => remoteDataSource.registerWithEmailPassword(
+            email, password, username),
       );
     });
   }
@@ -83,7 +85,7 @@ class UserRepositoriesImpl implements UserRepositories {
   Future<Either<Failure, void>> logout() async {
     return await _checkNetwork(() async {
       try {
-        final token = await localDataSource.getCachedToken(); 
+        final token = await localDataSource.getCachedToken();
         await remoteDataSource.logout(token);
         await localDataSource.deleteCachedUser();
         await localDataSource.deleteToken();
@@ -134,6 +136,6 @@ class UserRepositoriesImpl implements UserRepositories {
       } on CacheException {
         return Left(CacheFailure());
       }
-    }); 
+    });
   }
 }

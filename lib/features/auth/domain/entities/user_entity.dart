@@ -4,12 +4,11 @@ class User {
   final String email;
   final String profilePic;
   final String authType;
-  
-    User({
-      required this.id,
+
+  User(
+      {required this.id,
       required this.username,
       required this.email,
       required this.profilePic,
-      required this.authType
-    });
+      required this.authType});
 }
