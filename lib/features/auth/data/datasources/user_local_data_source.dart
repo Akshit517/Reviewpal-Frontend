@@ -29,6 +29,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<UserModel> getCachedUser() async {
     final user = await secureStorage.read(key: CACHED_USER);
+    print(user);
     if (user == null) {
       throw CacheException();
     }
@@ -39,7 +40,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   Future<void> cacheUser(UserModel userToCache) async {
     try {
       await secureStorage.write(
-          key: CACHED_USER, value: jsonEncode(userToCache.toJson()));
+          key: CACHED_USER, value: jsonEncode(userToCache.toJson()));    
     } on Exception {
       throw CacheException();
     }

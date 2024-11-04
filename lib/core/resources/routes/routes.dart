@@ -1,6 +1,8 @@
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../features/auth/presentation/pages/callback_screen.dart';
 import '../../../features/auth/presentation/pages/login_screen.dart';
 import '../../../features/auth/presentation/pages/signup_screen.dart';
 
@@ -12,6 +14,7 @@ class CustomNavigationHelper {
 
   static const String loginPath = '/login';
   static const String signUpPath = '/signUp';
+  static const String callbackPath = '/callback';
 
   static final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -20,7 +23,8 @@ class CustomNavigationHelper {
 
   CustomNavigationHelper._internal();
 
-  static void initialize() {
+  static Future<void> initialize() async {
+    final AppLinks _applinks = AppLinks();
     final routes = [
       GoRoute(
         path: loginPath,
@@ -36,12 +40,38 @@ class CustomNavigationHelper {
           child: const SignUpScreen(),
         ),
       ),
+      GoRoute(
+          path: callbackPath,
+          pageBuilder: (context, state) {
+            final uri = state.extra as Uri;
+            final String queryCode = uri.queryParameters['code']!;
+            final String queryState = uri.queryParameters['state']!;
+            return MaterialPage(
+              key: state.pageKey,
+              child: const CallbackScreen(),
+            );
+          }),
     ];
-
     router = GoRouter(
       navigatorKey: parentNavigatorKey,
-      initialLocation: loginPath,
+      initialLocation: signUpPath,
       routes: routes,
     );
+    _applinks.uriLinkStream.listen((Uri? uri) {
+      if (uri != null) {
+        final path = uri.path;
+        if (path == callbackPath) {
+          router.go(callbackPath, extra: uri);
+        }
+      }
+    });
+
+    final initialUri = await _applinks.getInitialLink();
+    if (initialUri != null) {
+      final path = initialUri.path;
+      if (path == callbackPath) {
+        router.go(callbackPath, extra: initialUri);
+      }
+    }
   }
 }

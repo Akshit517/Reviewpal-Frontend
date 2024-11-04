@@ -1,16 +1,18 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../../core/error/exceptions.dart';
 import '../models/token_model.dart';
 import '../models/user_model.dart';
 
-String _baseUrl = 'http://127.0.0.1:8000/';
+String _baseUrl = 'https://escargot-sacred-likely.ngrok-free.app/';
 
 abstract class UserRemoteDataSource {
   Future<UserModel> loginWithEmailPassword(String email, String password);
 
-  Future<UserModel> loginWithOAuth(String provider);
+  Future<UserModel> loginWithOAuth(
+      String provider, String code, String state, String redirectUri);
 
   Future<UserModel> registerWithEmailPassword(
       String email, String password, String username);
@@ -34,7 +36,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
     );
-
     if (response.statusCode == 200) {
       return UserModel.fromJson(jsonDecode(response.body));
     } else {
@@ -43,9 +44,17 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   }
 
   @override
-  Future<UserModel> loginWithOAuth(String provider) async {
-    final response = await client.get(
-      Uri.parse('${_baseUrl}signin/$provider/'),
+  Future<UserModel> loginWithOAuth(
+      String provider, String code, String state, String redirectUri) async {
+    final uri = Uri.parse('${_baseUrl}signin/$provider/');
+
+    final response = await client.post(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(
+          {'code': code, 'state': state, 'redirect_uri': redirectUri}),
     );
 
     if (response.statusCode == 200) {
@@ -64,7 +73,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       body: jsonEncode(
           {'username': username, 'password': password, 'email': email}),
     );
-
+    print(response.body);
+    print(response.statusCode);
     if (response.statusCode == 201) {
       return UserModel.fromJson(jsonDecode(response.body));
     } else {

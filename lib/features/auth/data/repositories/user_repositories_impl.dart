@@ -24,7 +24,7 @@ class UserRepositoriesImpl implements UserRepositories {
   Future<Either<Failure, T>> _checkNetwork<T>(
       Future<Either<Failure, T>> Function() action) async {
     if (!(await networkInfo.isConnected)) {
-      return Left(NetworkFailure());
+      return const Left(NetworkFailure());
     }
     return await action();
   }
@@ -39,9 +39,9 @@ class UserRepositoriesImpl implements UserRepositories {
         await localDataSource.cacheToken(user.tokenModel);
         return Right(user);
       } on ServerException {
-        return Left(ServerFailure());
+        return const Left(ServerFailure());
       } on CacheException {
-        return Left(CacheFailure());
+        return const Left(CacheFailure());
       }
     });
   }
@@ -59,10 +59,12 @@ class UserRepositoriesImpl implements UserRepositories {
   }
 
   @override
-  Future<Either<Failure, User>> loginWithOAuth(String provider) async {
+  Future<Either<Failure, User>> loginWithOAuth(
+      String provider, String code, String state, String redirectUri) async {
     return await _checkNetwork(() async {
       return await _getUser(
-        () => remoteDataSource.loginWithOAuth(provider),
+        () =>
+            remoteDataSource.loginWithOAuth(provider, code, state, redirectUri),
       );
     });
   }
@@ -91,9 +93,9 @@ class UserRepositoriesImpl implements UserRepositories {
         await localDataSource.deleteToken();
         return const Right(null);
       } on ServerException {
-        return Left(ServerFailure());
+        return const Left(ServerFailure());
       } on CacheException {
-        return Left(CacheFailure());
+        return const Left(CacheFailure());
       }
     });
   }
@@ -107,9 +109,9 @@ class UserRepositoriesImpl implements UserRepositories {
         await localDataSource.cacheToken(newToken);
         return Right(newToken);
       } on ServerException {
-        return Left(ServerFailure());
+        return const Left(ServerFailure());
       } on CacheException {
-        return Left(CacheFailure());
+        return const Left(CacheFailure());
       }
     });
   }
@@ -120,7 +122,7 @@ class UserRepositoriesImpl implements UserRepositories {
       try {
         return Right(await remoteDataSource.checkTokenValidation(token));
       } on ServerException {
-        return Left(ServerFailure());
+        return const Left(ServerFailure());
       }
     });
   }
@@ -132,9 +134,9 @@ class UserRepositoriesImpl implements UserRepositories {
         final tokens = await localDataSource.getCachedToken();
         return Right(tokens);
       } on ServerException {
-        return Left(ServerFailure());
+        return const Left(ServerFailure());
       } on CacheException {
-        return Left(CacheFailure());
+        return const Left(CacheFailure());
       }
     });
   }

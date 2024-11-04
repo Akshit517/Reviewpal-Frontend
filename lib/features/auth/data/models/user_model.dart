@@ -17,8 +17,8 @@ class UserModel extends User {
         id: json['user']['id'],
         username: json['user']['username'],
         email: json['user']['email'],
-        profilePic: json['user']['profilePic'],
-        authType: json['user']['authType'],
+        profilePic: json['user']['profile_pic'],
+        authType: json['user']['auth_type'],
         tokenModel: TokenModel.fromJson(json));
   }
 
@@ -28,8 +28,8 @@ class UserModel extends User {
         'id': id,
         'username': username,
         'email': email,
-        'profilePic': profilePic,
-        'authType': authType,
+        'profile_pic': profilePic,
+        'auth_type': authType,
       },
       ...tokenModel.toJson()
     };

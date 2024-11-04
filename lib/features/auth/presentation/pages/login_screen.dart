@@ -1,4 +1,6 @@
+import 'package:ReviewPal/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../../../core/widgets/divider/middle_text_divider.dart';
@@ -18,25 +20,33 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   @override
+  void dispose() {
+    _emailController.dispose(); 
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar('Login'),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isTablet = constraints.maxWidth >= 640;
-          final contentWidth = isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth;
-          
+          final contentWidth =
+              isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth;
+
           return SingleChildScrollView(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (isTablet) const Spacer(flex: 1), 
+                if (isTablet) const Spacer(flex: 1),
                 Container(
                   width: contentWidth,
                   padding: const EdgeInsets.all(15.0),
                   child: _buildLoginContent(constraints),
                 ),
-                if (isTablet) const Spacer(flex: 1), 
+                if (isTablet) const Spacer(flex: 1),
               ],
             ),
           );
@@ -45,64 +55,86 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
   Widget _buildLoginContent(BoxConstraints constraints) {
     final isTablet = constraints.maxWidth >= 600;
-    final buttonWidth = isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth * 0.9;
-    
+    final buttonWidth =
+        isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth * 0.9;
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const TextFieldHeader(text: 'Email'),
-            TextFormFieldWidget(
-              controller: _emailController,
-              hintText: 'Your Email...',
-              haveObscureText: false,
-              haveSuffixIconObscure: false,
-            ),
-            const SizedBox(height: 16.0),
-            const TextFieldHeader(text: 'Password'),
-            TextFormFieldWidget(
-              controller: _passwordController,
-              hintText: 'Minimum 8 characters long...',
-              haveObscureText: true,
-              haveSuffixIconObscure: true,
-            ),
-            const SizedBox(height: 26.0),
-            SizedBox(
-              width: buttonWidth,
-              height: 50.0,
-              child: TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Login',
-                  style: TextStyle(fontSize: 16),
+        child: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.error),
+                )
+              );
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const TextFieldHeader(text: 'Email'),
+                TextFormFieldWidget(
+                  controller: _emailController,
+                  hintText: 'Your Email...',
+                  haveObscureText: false,
+                  haveSuffixIconObscure: false,
                 ),
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            const MiddleTextDivider(text: 'OR'),
-            const SizedBox(height: 20.0),
-            SocialTextButton(
-              constraints: constraints,
-              text: 'Continue with Google',
-              iconPath: 'assets/icons/g_logo.svg',
-              redirectTo: dotenv.env['GOOGLE_REDIRECT_URI']!,
-            ),
-            const SizedBox(height: 20.0),
-            const MiddleTextDivider(text: 'OR'),
-            const SizedBox(height: 20.0),
-            SocialTextButton(
-              constraints: constraints,
-              text: 'Continue with Channel-I',
-              iconPath: 'assets/icons/chi_logo.svg',
-              redirectTo: dotenv.env['CHANNELI_REDIRECT_URI']!,
-            ),
-          ],
+                const SizedBox(height: 16.0),
+                const TextFieldHeader(text: 'Password'),
+                TextFormFieldWidget(
+                  controller: _passwordController,
+                  hintText: 'Minimum 8 characters long...',
+                  haveObscureText: true,
+                  haveSuffixIconObscure: true,
+                ),
+                const SizedBox(height: 26.0),
+                SizedBox(
+                  width: buttonWidth,
+                  height: 50.0,
+                  child: TextButton(
+                    onPressed: () {
+                      context.read<AuthBloc>().add(
+                        AuthLogin(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        ),
+                      );
+                      _emailController.clear();
+                      _passwordController.clear();
+                    },
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                const MiddleTextDivider(text: 'OR'),
+                const SizedBox(height: 20.0),
+                SocialTextButton(
+                  constraints: constraints,
+                  text: 'Continue with Google',
+                  iconPath: 'assets/icons/g_logo.svg',
+                  redirectTo: dotenv.env['GOOGLE_REDIRECT_URI']!,
+                ),
+                const SizedBox(height: 20.0),
+                const MiddleTextDivider(text: 'OR'),
+                const SizedBox(height: 20.0),
+                SocialTextButton(
+                  constraints: constraints,
+                  text: 'Continue with Channel-I',
+                  iconPath: 'assets/icons/chi_logo.svg',
+                  redirectTo: dotenv.env['CHANNELI_REDIRECT_URI']!,
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
