@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecases.dart';
 import '../../domain/usecases/login.dart';
 import '../../domain/usecases/get_token.dart';
@@ -21,6 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }) : super(AuthInitial()) {
     on<AuthSignUp>(_onSignUp);
     on<AuthLogin>(_onLogin);
+    on<AuthLoginOAuth>(_onLoginOAuth);
     on<GetTokens>(_onGetTokens);
   }
 
@@ -32,9 +32,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       password: event.password,
     ));
     result.fold(
-      (failure) => emit(AuthFailure(_mapFailureToMessage(failure))),
+      (failure) => emit(AuthFailure(failure.message)),
       (user) =>
-          emit(AuthSuccess("Sign-up successful", username: user.username)),
+          emit(AuthSuccess("Sign-up successful", email: user.email)),
     );
   }
 
@@ -45,8 +45,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       password: event.password,
     ));
     result.fold(
-      (failure) => emit(AuthFailure(_mapFailureToMessage(failure))),
-      (user) => emit(AuthSuccess("Login successful", username: user.username)),
+      (failure) => emit(AuthFailure(failure.message)),
+      (user) => emit(AuthSuccess("Login successful", email: user.email)),
+    );
+  }
+
+  Future<void> _onLoginOAuth(AuthLoginOAuth event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    final result = await loginUseCase(LoginParams.oauth(
+      code: event.code,
+      provider: event.provider,
+      redirectUri: event.redirectUri,
+    ));
+    result.fold(
+      (failure) => emit(AuthFailure(failure.message)),
+      (user) => emit(AuthSuccess("Login successful", email: user.email)),
     );
   }
 
@@ -54,17 +67,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     final result = await getTokenUseCase(NoParams());
     result.fold(
-      (failure) => emit(AuthFailure(_mapFailureToMessage(failure))),
+      (failure) => emit(AuthFailure(failure.message)),
       (token) => emit(AuthSuccess("Token retrieved successfully",
           accessToken: token.accessToken, refreshToken: token.refreshToken)),
     );
   }
 
-  String _mapFailureToMessage(Failure failure) {
-    if (failure is ServerFailure) return 'Server failure.';
-    if (failure is CacheFailure) return 'Cache failure.';
-    if (failure is NetworkFailure) return 'Network failure.';
-    if (failure is RefreshTokenInvalidFailure) return 'Invalid refresh token.';
-    return 'Unexpected error.';
-  }
 }

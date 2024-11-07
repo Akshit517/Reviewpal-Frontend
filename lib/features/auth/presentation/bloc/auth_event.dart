@@ -20,4 +20,16 @@ class AuthLogin extends AuthEvent {
   const AuthLogin({required this.email, required this.password});
 }
 
+class AuthLoginOAuth extends AuthEvent {
+  final String provider;
+  final String code;
+  final String redirectUri;
+
+  const AuthLoginOAuth({
+    required this.provider,
+    required this.code,
+    required this.redirectUri,
+  });
+}
+
 class GetTokens extends AuthEvent {}

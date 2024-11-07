@@ -70,6 +70,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   content: Text(state.error),
                 )
               );
+            } else if (state is AuthSuccess) {
+              print(state.message);
+              print(state.email);
             }
           },
           builder: (context, state) {

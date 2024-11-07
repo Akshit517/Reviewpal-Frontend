@@ -9,7 +9,7 @@ abstract class UserRepositories {
       String email, String password);
 
   Future<Either<Failure, User>> loginWithOAuth(
-      String provider, String code, String state, String redirectUri);
+      String provider, String code, String redirectUri);
 
   Future<Either<Failure, User>> registerWithEmailPassword(
       String email, String password, String username);

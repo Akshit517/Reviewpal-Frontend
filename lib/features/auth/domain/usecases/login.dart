@@ -15,7 +15,7 @@ class LoginUseCase implements UseCase<User, LoginParams> {
   Future<Either<Failure, User>> call(LoginParams params) async {
     if (params.isOAuth) {
       return await userRepositories.loginWithOAuth(
-          params.provider!, params.code!, params.state!, params.redirectUri!);
+          params.provider!, params.code!, params.redirectUri!);
     }
     return await userRepositories.loginWithEmailPassword(
         params.email!, params.password!);
@@ -28,7 +28,6 @@ class LoginParams extends Equatable {
   final String? provider;
   final bool isOAuth;
   final String? code;
-  final String? state;
   final String? redirectUri;
 
   const LoginParams(
@@ -37,11 +36,10 @@ class LoginParams extends Equatable {
       this.provider,
       this.isOAuth = false,
       this.code,
-      this.state,
       this.redirectUri});
 
   @override
-  List<Object?> get props => [email, password, provider, isOAuth, code, state];
+  List<Object?> get props => [email, password, provider, isOAuth, code];
 
   factory LoginParams.emailPassword({
     required String email,
@@ -53,13 +51,11 @@ class LoginParams extends Equatable {
   factory LoginParams.oauth(
       {required String provider,
       required String code,
-      required String state,
-      required String redirect_uri}) {
+      required String redirectUri}) {
     return LoginParams(
         provider: provider,
         isOAuth: true,
         code: code,
-        state: state,
-        redirectUri: redirect_uri);
+        redirectUri: redirectUri);
   }
 }

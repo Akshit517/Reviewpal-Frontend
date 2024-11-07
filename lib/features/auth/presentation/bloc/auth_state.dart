@@ -10,12 +10,12 @@ final class AuthLoading extends AuthState {}
 
 class AuthSuccess extends AuthState {
   final String message;
-  final String? username;
+  final String? email;
   final String? accessToken;
   final String? refreshToken;
 
   const AuthSuccess(this.message,
-      {this.username, this.accessToken, this.refreshToken});
+      {this.email, this.accessToken, this.refreshToken});
 }
 
 class AuthFailure extends AuthState {

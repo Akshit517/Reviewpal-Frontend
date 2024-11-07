@@ -2,7 +2,9 @@ import 'package:ReviewPal/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/resources/routes/routes.dart';
 import '../../../../core/widgets/divider/middle_text_divider.dart';
 import '../../../../core/widgets/text_button/social_text_button.dart';
 import '../../../../core/widgets/text_field/text_form_field.dart';
@@ -71,6 +73,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   content: Text(state.error),
                 )
               );
+            } else if (state is AuthSuccess) {
+              print(state.message);
+              print(state.accessToken);
+              print(state.email);
+              context.go(CustomNavigationHelper.homePath);
             }
           },
           builder: (context, state) {
@@ -105,8 +112,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           password: _passwordController.text,
                         ),
                       );
-                      _emailController.clear();
-                      _passwordController.clear();
                     },
                     child: const Text(
                       'Login',

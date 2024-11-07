@@ -8,7 +8,7 @@ import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/user_repositories.dart';
 import '../datasources/user_local_data_source.dart';
 import '../datasources/user_remote_data_source.dart';
-import '../models/user_model.dart';
+import 'user_model.dart';
 
 class UserRepositoriesImpl implements UserRepositories {
   final UserLocalDataSource localDataSource;
@@ -42,6 +42,8 @@ class UserRepositoriesImpl implements UserRepositories {
         return const Left(ServerFailure());
       } on CacheException {
         return const Left(CacheFailure());
+      } on AlreadyExistsException {
+        return const Left(AlreadyExistsFailure());
       }
     });
   }
@@ -60,11 +62,11 @@ class UserRepositoriesImpl implements UserRepositories {
 
   @override
   Future<Either<Failure, User>> loginWithOAuth(
-      String provider, String code, String state, String redirectUri) async {
+      String provider, String code, String redirectUri) async {
     return await _checkNetwork(() async {
       return await _getUser(
         () =>
-            remoteDataSource.loginWithOAuth(provider, code, state, redirectUri),
+            remoteDataSource.loginWithOAuth(provider, code, redirectUri),
       );
     });
   }

@@ -1,4 +1,4 @@
-import './token_model.dart';
+import '../models/token_model.dart';
 import '../../domain/entities/user_entity.dart';
 
 class UserModel extends User {

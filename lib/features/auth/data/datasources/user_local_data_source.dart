@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../models/token_model.dart';
-import '../models/user_model.dart';
+import '../repositories/user_model.dart';
 
 abstract class UserLocalDataSource {
   Future<UserModel> getCachedUser();
@@ -29,7 +29,6 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<UserModel> getCachedUser() async {
     final user = await secureStorage.read(key: CACHED_USER);
-    print(user);
     if (user == null) {
       throw CacheException();
     }

@@ -24,3 +24,7 @@ class NetworkFailure extends Failure {
 class RefreshTokenInvalidFailure extends Failure {
   const RefreshTokenInvalidFailure({super.message = 'Refresh token is invalid.'});
 }
+
+class AlreadyExistsFailure extends Failure {
+  const AlreadyExistsFailure({super.message = 'User already exists.'});
+}

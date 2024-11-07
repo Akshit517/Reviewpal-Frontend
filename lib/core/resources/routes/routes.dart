@@ -15,6 +15,8 @@ class CustomNavigationHelper {
   static const String loginPath = '/login';
   static const String signUpPath = '/signUp';
   static const String callbackPath = '/callback';
+  static const String errorPath = '/error';
+  static const String homePath = '/home';
 
   static final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -24,7 +26,7 @@ class CustomNavigationHelper {
   CustomNavigationHelper._internal();
 
   static Future<void> initialize() async {
-    final AppLinks _applinks = AppLinks();
+    final AppLinks applinks = AppLinks();
     final routes = [
       GoRoute(
         path: loginPath,
@@ -41,23 +43,49 @@ class CustomNavigationHelper {
         ),
       ),
       GoRoute(
-          path: callbackPath,
-          pageBuilder: (context, state) {
-            final uri = state.extra as Uri;
-            final String queryCode = uri.queryParameters['code']!;
-            final String queryState = uri.queryParameters['state']!;
-            return MaterialPage(
-              key: state.pageKey,
-              child: const CallbackScreen(),
-            );
-          }),
+        path: callbackPath,
+        pageBuilder: (context, state) {
+          final uri = state.extra as Uri?;
+          if (uri != null) {
+            final String? code = uri.queryParameters['code'];
+            final String? stateParam = uri.queryParameters['state'];
+            final String redirectUri = Uri(
+              scheme: uri.scheme,
+              host: uri.host,
+              port: uri.port,
+              path: uri.path,
+            ).toString();
+
+            if (code != null && stateParam != null) {
+              return _callbackPage(state, code, stateParam, redirectUri);
+            }
+          }
+          return _errorPage(state.pageKey);
+        },
+      ),
     ];
     router = GoRouter(
       navigatorKey: parentNavigatorKey,
-      initialLocation: signUpPath,
+      initialLocation: loginPath,
       routes: routes,
     );
-    _applinks.uriLinkStream.listen((Uri? uri) {
+    //handle app links
+    _handleDeepLinks(applinks);
+    await _handleInitialLinks(applinks);
+  }
+
+  static Future<void> _handleInitialLinks(AppLinks applinks) async {
+    final initialUri = await applinks.getInitialLink();
+    if (initialUri != null) {
+      final path = initialUri.path;
+      if (path == callbackPath) {
+        router.go(callbackPath, extra: initialUri);
+      }
+    }
+  }
+
+  static void _handleDeepLinks(AppLinks applinks) {
+    applinks.uriLinkStream.listen((Uri? uri) {
       if (uri != null) {
         final path = uri.path;
         if (path == callbackPath) {
@@ -65,13 +93,29 @@ class CustomNavigationHelper {
         }
       }
     });
+  }
 
-    final initialUri = await _applinks.getInitialLink();
-    if (initialUri != null) {
-      final path = initialUri.path;
-      if (path == callbackPath) {
-        router.go(callbackPath, extra: initialUri);
-      }
-    }
+  static MaterialPage<dynamic> _callbackPage(
+      GoRouterState state, String code, String stateParam, String redirectUri) {
+    return MaterialPage(
+      key: state.pageKey,
+      child: CallbackScreen(
+        code: code,
+        provider: stateParam,
+        redirectUri: redirectUri,
+      ),
+    );
+  }
+
+  static MaterialPage<dynamic> _errorPage(LocalKey key) {
+    return MaterialPage(
+      key: key,
+      child: const Scaffold(
+        body: Center(
+          child: Text('Error: Missing or invalid parameters',
+              style: TextStyle(color: Colors.red)),
+        ),
+      ),
+    );
   }
 }
