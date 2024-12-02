@@ -153,7 +153,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       centerTitle: true,
       leading: IconButton(
-        onPressed: () {},
+        onPressed: () {
+          context.pop();
+        },
         icon: const Icon(
           Icons.arrow_back,
           color: Colors.white,

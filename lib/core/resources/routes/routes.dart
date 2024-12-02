@@ -2,6 +2,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../features/auth/presentation/pages/auth_choice_screen.dart';
 import '../../../features/auth/presentation/pages/callback_screen.dart';
 import '../../../features/auth/presentation/pages/login_screen.dart';
 import '../../../features/auth/presentation/pages/signup_screen.dart';
@@ -12,6 +13,7 @@ class CustomNavigationHelper {
 
   static late final GoRouter router;
 
+  static const String rootAuthPath = '/auth';
   static const String loginPath = '/login';
   static const String signUpPath = '/signUp';
   static const String callbackPath = '/callback';
@@ -28,6 +30,12 @@ class CustomNavigationHelper {
   static Future<void> initialize() async {
     final AppLinks applinks = AppLinks();
     final routes = [
+      GoRoute(
+          path: rootAuthPath,
+          pageBuilder: (context, state) => MaterialPage(
+                key: state.pageKey,
+                child: const AuthChoiceScreen(),
+              )),
       GoRoute(
         path: loginPath,
         pageBuilder: (context, state) => MaterialPage(
@@ -64,9 +72,10 @@ class CustomNavigationHelper {
         },
       ),
     ];
+    //main router
     router = GoRouter(
       navigatorKey: parentNavigatorKey,
-      initialLocation: loginPath,
+      initialLocation: rootAuthPath,
       routes: routes,
     );
     //handle app links

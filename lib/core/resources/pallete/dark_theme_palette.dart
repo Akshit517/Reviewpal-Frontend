@@ -20,4 +20,6 @@ class DarkThemePalette {
 
   // Error Colors
   static const Color errorRed = Colors.redAccent;
+
+  DarkThemePalette._();
 }

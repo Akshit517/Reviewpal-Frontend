@@ -1,6 +1,7 @@
 import 'package:ReviewPal/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/text_field/text_form_field.dart';
 import '../../../../core/widgets/text_field/text_field_header.dart';
@@ -139,7 +140,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
       centerTitle: true,
       leading: IconButton(
-        onPressed: () {},
+        onPressed: () {
+          context.pop();
+        },
         icon: const Icon(
           Icons.arrow_back,
           color: Colors.white,
