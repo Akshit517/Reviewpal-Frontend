@@ -2,13 +2,14 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
-import '../../../../core/network/network_info.dart';
+import '../../../../core/network/internet/network_info.dart';
 import '../../domain/entities/token_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/user_repositories.dart';
 import '../datasources/user_local_data_source.dart';
 import '../datasources/user_remote_data_source.dart';
-import 'user_model.dart';
+import '../models/token_model.dart';
+import '../models/user_model.dart';
 
 class UserRepositoriesImpl implements UserRepositories {
   final UserLocalDataSource localDataSource;
@@ -139,6 +140,18 @@ class UserRepositoriesImpl implements UserRepositories {
         return const Left(ServerFailure());
       } on CacheException {
         return const Left(CacheFailure());
+      }
+    });
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkLoginStatus() async {
+    return await _checkNetwork(() async {
+      try {
+        final TokenModel token = await localDataSource.getCachedToken();
+        return Right(await remoteDataSource.checkTokenValidation(token.refreshToken));
+      } on ServerException {
+        return const Left(ServerFailure());
       }
     });
   }

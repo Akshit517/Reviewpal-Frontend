@@ -1,5 +1,5 @@
-import 'package:ReviewPal/core/network/network_info.dart';
-import 'package:ReviewPal/core/resources/routes/routes.dart';
+import 'package:ReviewPal/core/network/internet/network_info.dart';
+import 'package:ReviewPal/core/network/token/token_manager.dart';
 import 'package:ReviewPal/features/auth/domain/repositories/user_repositories.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/login.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/get_token.dart';
@@ -13,17 +13,20 @@ import 'package:http/http.dart' as http;
 import 'auth/data/datasources/user_local_data_source.dart';
 import 'auth/data/datasources/user_remote_data_source.dart';
 import 'auth/data/repositories/user_repositories_impl.dart';
+import 'auth/domain/usecases/login_status_usecase.dart';
 import 'auth/presentation/bloc/auth_bloc.dart';
+import 'auth/presentation/cubit/login_status_cubit.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
   await dotenv.load(fileName: ".env");
-  await CustomNavigationHelper.initialize();
-
   //bloc
   sl.registerFactory(() => AuthBloc(
       registerUseCase: sl(), loginUseCase: sl(), getTokenUseCase: sl()));
+  sl.registerFactory(() => LoginStatusCubit(
+        loginStatusUseCase: sl(),
+  ));
 
   //feature [auth]
   _init_auth();
@@ -31,6 +34,7 @@ Future<void> init() async {
   //core
   sl.registerLazySingleton<NetworkInfo>(
       () => NetworkInfoImpl(internetConnectionChecker: sl()));
+  sl.registerLazySingleton(() => TokenManager(secureStorage: sl()));  
 
   // External
   sl.registerLazySingleton(() => http.Client());
@@ -47,6 +51,9 @@ void _init_auth() {
       () => RegisterUseCase(userRepositories: sl()));
   sl.registerLazySingleton<GetTokenUseCase>(
       () => GetTokenUseCase(userRepositories: sl()));
+  sl.registerLazySingleton<LoginStatusUseCase>(
+    () => LoginStatusUseCase(userRepositories: sl()),
+  );
 
   //Repositories
   sl.registerLazySingleton<UserRepositories>(() => UserRepositoriesImpl(
@@ -56,5 +63,5 @@ void _init_auth() {
   sl.registerLazySingleton<UserRemoteDataSource>(
       () => UserRemoteDataSourceImpl(client: sl()));
   sl.registerLazySingleton<UserLocalDataSource>(
-      () => UserLocalDataSourceImpl(secureStorage: sl()));
+      () => UserLocalDataSourceImpl(secureStorage: sl(), tokenManager: sl()));
 }

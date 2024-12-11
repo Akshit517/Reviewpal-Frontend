@@ -6,8 +6,19 @@ import 'core/resources/routes/routes.dart';
 import 'core/resources/app_themes/themes.dart';
 import 'features/injection.dart';
 
-class AsgRevApp extends StatelessWidget {
+class AsgRevApp extends StatefulWidget {
   const AsgRevApp({super.key});
+
+  @override
+  State<AsgRevApp> createState() => _AsgRevAppState();
+}
+
+class _AsgRevAppState extends State<AsgRevApp> {
+  @override
+  void initState() {
+    super.initState();
+        
+  }
 
   @override
   Widget build(BuildContext context) {

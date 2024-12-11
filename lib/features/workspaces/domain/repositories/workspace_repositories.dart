@@ -5,30 +5,29 @@ import '../../../../core/error/failures.dart';
 import '../entities/workspace_entity.dart';
 
 abstract class WorkspaceRepositories {
-  Either<Failure, Workspace> createWorkspace(String name, String icon);
+  Future<Either<Failure, Workspace>> createWorkspace(String name, String icon);
 
-  Either<Failure, void> deleteWorkspace(String worksapceId);
+  Future<Either<Failure, void>> deleteWorkspace(String workspaceId);
 
-  Either<Failure, Workspace> updateWorkspace(
-      String worksapceId, String name, String icon);
+  Future<Either<Failure, Workspace>> updateWorkspace(
+      String workspaceId, String name, String icon);
 
-  Either<Failure, void> leaveWorkspace(String worksapceId, String accessToken);
+  Future<Either<Failure, void>> leaveWorkspace(String workspaceId);
 
-  Either<Failure, Workspace> joinWorkspace(String worksapceId, String accessToken);
+  Future<Either<Failure, Workspace>> joinWorkspace(String workspaceId);
 
-  Either<Failure, List<Workspace>> getJoinedWorkspaces(
-      String accessToken, String userId);
+  Future<Either<Failure, List<Workspace>>> getJoinedWorkspaces(
+      String userId);
 
-  Either<Failure, Workspace> getWorkspace(
-      String worksapceId, String accessToken);
+  Future<Either<Failure, Workspace>> getWorkspace(
+      String workspaceId);
 
-  Either<Failure, void> addMember(
-      String worksapceId, String userEmail, String accessToken);
+  Future<Either<Failure, void>> addMember(
+      String workspaceId, String userEmail);
 
-  Either<Failure, void> removeMember(
-      String worksapceId, String userEmail, String accessToken);
+  Future<Either<Failure, void>> removeMember(
+      String workspaceId, String userEmail);
 
-  Either<Failure, Map<User, String>> getMembers(
-      String worksapceId, String accessToken);
+  Future<Either<Failure, Map<User, String>>> getMembers(
+      String workspaceId);
 }
-

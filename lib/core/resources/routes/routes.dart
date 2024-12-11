@@ -27,15 +27,28 @@ class CustomNavigationHelper {
 
   CustomNavigationHelper._internal();
 
-  static Future<void> initialize() async {
+  static Future<void> initialize({required bool isLoggedIn}) async {
     final AppLinks applinks = AppLinks();
-    final routes = [
+    final routes = _getRoutes();
+    //main router
+    router = GoRouter(
+      navigatorKey: parentNavigatorKey,
+      initialLocation: isLoggedIn ? homePath : rootAuthPath,
+      routes: routes,
+    );
+    _handleDeepLinks(applinks);
+    await _handleInitialLinks(applinks);
+  }
+
+  static List<GoRoute> _getRoutes() {
+    return [
       GoRoute(
-          path: rootAuthPath,
-          pageBuilder: (context, state) => MaterialPage(
-                key: state.pageKey,
-                child: const AuthChoiceScreen(),
-              )),
+        path: rootAuthPath,
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const AuthChoiceScreen(),
+        ),
+      ),
       GoRoute(
         path: loginPath,
         pageBuilder: (context, state) => MaterialPage(
@@ -71,16 +84,16 @@ class CustomNavigationHelper {
           return _errorPage(state.pageKey);
         },
       ),
+      GoRoute(
+        path: homePath,
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const Scaffold(
+            body: Center(child: Text('Welcome Home')),
+          ),
+        ),
+      ),
     ];
-    //main router
-    router = GoRouter(
-      navigatorKey: parentNavigatorKey,
-      initialLocation: rootAuthPath,
-      routes: routes,
-    );
-    //handle app links
-    _handleDeepLinks(applinks);
-    await _handleInitialLinks(applinks);
   }
 
   static Future<void> _handleInitialLinks(AppLinks applinks) async {

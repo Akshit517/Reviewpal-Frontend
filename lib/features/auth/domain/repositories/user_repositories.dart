@@ -19,4 +19,5 @@ abstract class UserRepositories {
   Future<Either<Failure, Token>> getToken();
   Future<Either<Failure, bool>> checkTokenValidation(String token);
   Future<Either<Failure, Token>> getNewToken();
+  Future<Either<Failure, bool>> checkLoginStatus(); 
 }

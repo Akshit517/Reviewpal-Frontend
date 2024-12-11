@@ -33,7 +33,7 @@ class GetTokenUseCase extends UseCase<Token, NoParams> {
                 (failure) => Left(failure),
                 (isRefreshTokenValid) async {
                   if (!isRefreshTokenValid) {
-                    return Left(RefreshTokenInvalidFailure());
+                    return const Left(RefreshTokenInvalidFailure());
                   }
 
                   final newTokensOrFailure =
