@@ -152,6 +152,8 @@ class UserRepositoriesImpl implements UserRepositories {
         return Right(await remoteDataSource.checkTokenValidation(token.refreshToken));
       } on ServerException {
         return const Left(ServerFailure());
+      } on CacheException {
+        return const Left(CacheFailure());
       }
     });
   }
