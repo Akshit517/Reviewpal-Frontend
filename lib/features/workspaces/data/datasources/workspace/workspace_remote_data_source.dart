@@ -14,6 +14,16 @@ abstract class WorkspaceRemoteDataSource {
     required String icon,
   });
 
+  Future<WorkspaceModel> getWorkspace({required String workspaceId});
+
+  Future<WorkspaceModel> updateWorkspace({
+    required String workspaceId,
+    required String name,
+    required String icon,
+  });
+
+  Future<void> deleteWorkspace(String workspaceId);
+  
   Future<List<Map<String, dynamic>>> fetchWorkspaceMembers(String workspaceId);
 
   Future<void> addWorkspaceMember({
@@ -36,7 +46,6 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
   @override
   Future<List<WorkspaceModel>> fetchWorkspaces() async {
     final response = await client.get('${AppConstants.baseUrl}/api/workspaces/');
-
     if (response.statusCode == 200) {
       final List<dynamic> decodedJson = jsonDecode(response.body);  
       final workspaces = decodedJson
@@ -47,6 +56,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
       throw ServerException();
     }
   }
+
 
   @override
   Future<WorkspaceModel> createWorkspace({
@@ -65,6 +75,50 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
       final Map<String, dynamic> decodedJson = jsonDecode(response.body);
       return WorkspaceModel.fromJson(decodedJson);
     } else {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<WorkspaceModel> getWorkspace({required String workspaceId}) async {
+    final response = await client.get(
+      '${AppConstants.baseUrl}/api/workspaces/$workspaceId/',
+    );
+    if(response.statusCode == 200){
+      final Map<String, dynamic> decodedJson = jsonDecode(response.body);
+      return WorkspaceModel.fromJson(decodedJson);
+    }else{
+      throw ServerException();
+    }
+  }
+
+  Future<WorkspaceModel> updateWorkspace({
+    required String workspaceId,
+    required String name,
+    required String icon,
+  }) async {
+    final response = await client.put(
+      '${AppConstants.baseUrl}/api/workspaces/$workspaceId/',
+      {
+        'name': name,
+        'icon': icon,
+      },
+    );
+    if(response.statusCode == 200){
+      final Map<String, dynamic> decodedJson = jsonDecode(response.body);
+      return WorkspaceModel.fromJson(decodedJson);
+    }else{
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<void> deleteWorkspace(String workspaceId) async {
+    final response = await client.delete(
+      '${AppConstants.baseUrl}/api/workspaces/$workspaceId/',
+    );
+
+    if (response.statusCode != 204 && response.statusCode != 200) {
       throw ServerException();
     }
   }

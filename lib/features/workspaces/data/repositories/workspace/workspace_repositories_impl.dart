@@ -1,19 +1,21 @@
+import 'package:ReviewPal/features/auth/data/datasources/user_local_data_source.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/exceptions.dart';
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/network/internet/network_info.dart';
-import '../../../../auth/domain/entities/user_entity.dart';
 import '../../../domain/entities/workspace_entity.dart';
 import '../../../domain/repositories/workspace_repositories.dart';
 import '../../datasources/workspace/workspace_remote_data_source.dart';
 
 class WorkspaceRepositoriesImpl implements WorkspaceRepositories {
   final WorkspaceRemoteDataSource workspaceRemoteDataSource;
+  final UserLocalDataSource userLocalDataSource;
   final NetworkInfo networkInfo;
 
   WorkspaceRepositoriesImpl({
     required this.workspaceRemoteDataSource,
+    required this.userLocalDataSource,
     required this.networkInfo,
   });
 
@@ -44,8 +46,10 @@ class WorkspaceRepositoriesImpl implements WorkspaceRepositories {
       String workspaceId) async {
     return await _checkNetwork(() async {
       try {
-        await workspaceRemoteDataSource.leaveWorkspace(
-            workspaceId: workspaceId);
+        final user = await userLocalDataSource.getCachedUser();
+        final userEmail = user.email;
+        await workspaceRemoteDataSource.removeWorkspaceMember(
+            workspaceId: workspaceId, userEmail: userEmail);
         return const Right(null);
       } on ServerException {
         return const Left(ServerFailure());
@@ -102,8 +106,7 @@ class WorkspaceRepositoriesImpl implements WorkspaceRepositories {
       String userId) async {
     return await _checkNetwork(() async {
       try {
-        final workspaces = await workspaceRemoteDataSource.getJoinedWorkspaces(
-            userId: userId);
+        final workspaces = await workspaceRemoteDataSource.fetchWorkspaces();
         return Right(workspaces);
       } on ServerException {
         return const Left(ServerFailure());
@@ -113,11 +116,19 @@ class WorkspaceRepositoriesImpl implements WorkspaceRepositories {
 
   @override
   Future<Either<Failure, Workspace>> joinWorkspace(
-      String workspaceId, String accessToken) async {
+      String workspaceId) async {
     return await _checkNetwork(() async {
       try {
-        final workspace =
-            await workspaceRemoteDataSource.joinWorkspace(workspaceId: workspaceId, accessToken: accessToken);
+        final user = await userLocalDataSource.getCachedUser();
+        final userEmail = user.email;
+        await workspaceRemoteDataSource.addWorkspaceMember(
+              workspaceId: workspaceId, 
+              userEmail: userEmail, 
+              role: 'member'
+            );
+        final workspace = await workspaceRemoteDataSource.getWorkspace(
+          workspaceId: workspaceId,
+        );
         return Right(workspace);
       } on ServerException {
         return const Left(ServerFailure());
@@ -126,12 +137,12 @@ class WorkspaceRepositoriesImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, Map<User, String>>> getMembers(
-      String workspaceId, String accessToken) async {
+  Future<Either<Failure, List<Map<String, dynamic>>> > getMembers(
+      String workspaceId) async {
     return await _checkNetwork(() async {
       try {
         final members =
-            await workspaceRemoteDataSource.getMembers(workspaceId, accessToken);
+            await workspaceRemoteDataSource.fetchWorkspaceMembers(workspaceId);
         return Right(members);
       } on ServerException {
         return const Left(ServerFailure());
@@ -141,11 +152,11 @@ class WorkspaceRepositoriesImpl implements WorkspaceRepositories {
 
   @override
   Future<Either<Failure, void>> addMember(
-      String workspaceId, String userEmail, String accessToken) async {
+      String workspaceId, String userEmail, String role) async {
     return await _checkNetwork(() async {
       try {
-        await workspaceRemoteDataSource.addMember(
-            workspaceId: workspaceId, userEmail: userEmail);
+        await workspaceRemoteDataSource.addWorkspaceMember(
+            workspaceId: workspaceId, userEmail: userEmail, role: role);
         return const Right(null);
       } on ServerException {
         return const Left(ServerFailure());
@@ -155,10 +166,10 @@ class WorkspaceRepositoriesImpl implements WorkspaceRepositories {
 
   @override
   Future<Either<Failure, void>> removeMember(
-      String workspaceId, String userEmail, String accessToken) async {
+      String workspaceId, String userEmail) async {
     return await _checkNetwork(() async {
       try {
-        await workspaceRemoteDataSource.removeMember(
+        await workspaceRemoteDataSource.removeWorkspaceMember(
             workspaceId: workspaceId, userEmail: userEmail);
         return const Right(null);
       } on ServerException {

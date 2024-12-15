@@ -1,4 +1,3 @@
-import 'package:ReviewPal/features/auth/domain/entities/user_entity.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failures.dart';
@@ -23,11 +22,11 @@ abstract class WorkspaceRepositories {
       String workspaceId);
 
   Future<Either<Failure, void>> addMember(
-      String workspaceId, String userEmail);
+      String workspaceId, String userEmail, String role);
 
   Future<Either<Failure, void>> removeMember(
       String workspaceId, String userEmail);
 
-  Future<Either<Failure, Map<User, String>>> getMembers(
+  Future<Either<Failure, List<Map<String, dynamic>>> > getMembers(
       String workspaceId);
 }

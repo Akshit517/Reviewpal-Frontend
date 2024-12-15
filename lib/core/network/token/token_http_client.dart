@@ -28,6 +28,18 @@ class TokenHttpClient {
         ));
   }
 
+  Future<http.Response> put(String url, Map<String, dynamic> body, {Map<String, String>? headers}) async {
+    return _performRequest(() => client.put(
+          Uri.parse(url),
+          headers: headers,
+          body: jsonEncode(body),
+        ));
+  }
+
+  Future<http.Response> delete(String url, {Map<String, String>? headers}) async {
+    return _performRequest(() => client.delete(Uri.parse(url), headers: headers));
+  }
+
   Future<http.Response> _performRequest(Future<http.Response> Function() request) async {
     String? token = await tokenManager.accessToken;
 

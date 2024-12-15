@@ -6,6 +6,8 @@ import '../../../features/auth/presentation/pages/auth_choice_screen.dart';
 import '../../../features/auth/presentation/pages/callback_screen.dart';
 import '../../../features/auth/presentation/pages/login_screen.dart';
 import '../../../features/auth/presentation/pages/signup_screen.dart';
+import '../../../features/workspaces/presentation/pages/screens/home_screen.dart';
+import '../../widgets/bottom_navigation_bar/scaffold_with_nested_navigation.dart';
 
 class CustomNavigationHelper {
   static final CustomNavigationHelper _instance =
@@ -19,7 +21,9 @@ class CustomNavigationHelper {
   static const String callbackPath = '/callback';
   static const String errorPath = '/error';
   static const String homePath = '/home';
-
+  static const String notificationPath = '/notification';
+  static const String profilePath = '/profile';
+  
   static final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
 
@@ -33,14 +37,14 @@ class CustomNavigationHelper {
     //main router
     router = GoRouter(
       navigatorKey: parentNavigatorKey,
-      initialLocation: isLoggedIn ? homePath : rootAuthPath,
+      initialLocation: isLoggedIn ? homePath : homePath,// change the second one to rootAuthPath
       routes: routes,
     );
     _handleDeepLinks(applinks);
     await _handleInitialLinks(applinks);
   }
 
-  static List<GoRoute> _getRoutes() {
+  static List<RouteBase> _getRoutes() {
     return [
       GoRoute(
         path: rootAuthPath,
@@ -84,15 +88,49 @@ class CustomNavigationHelper {
           return _errorPage(state.pageKey);
         },
       ),
-      GoRoute(
-        path: homePath,
-        pageBuilder: (context, state) => MaterialPage(
-          key: state.pageKey,
-          child: const Scaffold(
-            body: Center(child: Text('Welcome Home')),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return ScaffoldWithNestedNavigation(
+            navigationShell: navigationShell,
+          );
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: homePath,
+                pageBuilder: (context, state) => MaterialPage(
+                  key: state.pageKey,
+                  child: HomeScreen()
+                ),
+              ),
+            ],
           ),
-        ),
-      ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: notificationPath,
+                pageBuilder: (context, state) => MaterialPage(
+                  key: state.pageKey,
+                  child: const Scaffold(
+                    body: Center(child: Text('Notifications'),),),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: profilePath,
+                pageBuilder: (context, state) => MaterialPage(
+                  key: state.pageKey,
+                  child: const Scaffold(
+                    body: Center(child: Text('Profile'),),),
+                ),
+              ),
+            ],
+          ),
+        ])
     ];
   }
 
