@@ -138,6 +138,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
         title,
         style: Theme.of(context).textTheme.titleLarge,
       ),
+      bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Divider(
+            height: 1.0,
+            thickness: 3.0,
+            color: Colors.grey,
+          ),
+      ),
       centerTitle: true,
       leading: IconButton(
         onPressed: () {

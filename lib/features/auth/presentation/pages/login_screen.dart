@@ -74,9 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               );
             } else if (state is AuthSuccess) {
-              print(state.message);
-              print(state.accessToken);
-              print(state.email);
               context.go(CustomNavigationHelper.homePath);
             }
           },
@@ -151,6 +148,14 @@ class _LoginScreenState extends State<LoginScreen> {
         title,
         style: Theme.of(context).textTheme.titleLarge,
       ),
+      bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Divider(
+            height: 1.0,
+            thickness: 3.0,
+            color: Colors.grey,
+          ),
+        ),
       centerTitle: true,
       leading: IconButton(
         onPressed: () {
