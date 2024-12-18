@@ -37,7 +37,7 @@ class CustomNavigationHelper {
     //main router
     router = GoRouter(
       navigatorKey: parentNavigatorKey,
-      initialLocation: isLoggedIn ? homePath : rootAuthPath,
+      initialLocation: isLoggedIn ? homePath : homePath,//change this later
       routes: routes,
     );
     _handleDeepLinks(applinks);

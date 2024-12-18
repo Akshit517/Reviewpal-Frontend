@@ -28,3 +28,11 @@ class RefreshTokenInvalidFailure extends Failure {
 class AlreadyExistsFailure extends Failure {
   const AlreadyExistsFailure({super.message = 'User already exists.'});
 }
+
+class GeneralFailure extends Failure {
+  const GeneralFailure({super.message = 'General failure occurred.'});
+}
+
+class UnauthorizedFailure extends Failure {
+  const UnauthorizedFailure({super.message = 'Unauthorized failure occurred.'});
+}

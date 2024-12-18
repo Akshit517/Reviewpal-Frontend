@@ -4,11 +4,12 @@ class Workspace {
   final String id;
   final String name;
   final String icon;
-  final Map<User, String> memberStatus;
+  final User owner;
 
-  Workspace(
-      {required this.id,
-      required this.name,
-      required this.icon,
-      required this.memberStatus});
+  const Workspace({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.owner,
+  });
 }

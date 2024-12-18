@@ -4,6 +4,7 @@ import 'package:ReviewPal/features/auth/domain/repositories/user_repositories.da
 import 'package:ReviewPal/features/auth/domain/usecases/login.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/get_token.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/register.dart';
+import 'package:ReviewPal/features/workspaces/data/datasources/remote_data_source.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -16,6 +17,14 @@ import 'auth/data/repositories/user_repositories_impl.dart';
 import 'auth/domain/usecases/login_status_usecase.dart';
 import 'auth/presentation/bloc/auth_bloc.dart';
 import 'auth/presentation/cubit/login_status_cubit.dart';
+import 'workspaces/data/repositories/repositories_impl.dart';
+import 'workspaces/domain/repositories/workspace_repositories.dart';
+import 'workspaces/domain/usecases/category/get_categories.dart';
+import 'workspaces/domain/usecases/workspaces/create_worksapce.dart';
+import 'workspaces/domain/usecases/workspaces/delete_workspace.dart';
+import 'workspaces/domain/usecases/workspaces/get_joined_workspaces.dart';
+import 'workspaces/domain/usecases/workspaces/get_workspace.dart';
+import 'workspaces/domain/usecases/workspaces/update_workspace.dart';
 
 final sl = GetIt.instance;
 
@@ -64,4 +73,31 @@ void _init_auth() {
       () => UserRemoteDataSourceImpl(client: sl()));
   sl.registerLazySingleton<UserLocalDataSource>(
       () => UserLocalDataSourceImpl(secureStorage: sl(), tokenManager: sl()));
+}
+
+// Feature [workspaces]
+void _workspace_init() {
+  // Use Cases
+  sl.registerLazySingleton<CreateWorkspace>(
+      () => CreateWorkspace(sl()));
+  sl.registerLazySingleton<DeleteWorkspace>(
+      () => DeleteWorkspace(sl()));
+  sl.registerLazySingleton<UpdateWorkspace>(
+      () => UpdateWorkspace(sl()));
+  sl.registerLazySingleton<GetWorkspace>(
+      () => GetWorkspace(sl()));
+  sl.registerLazySingleton<GetJoinedWorkspaces>(
+      () => GetJoinedWorkspaces(sl()));
+  sl.registerLazySingleton<GetCategories>(
+      () => GetCategories(sl()));
+
+  // Repositories
+  sl.registerLazySingleton<WorkspaceRepositories>(() => WorkspaceRepositoryImpl(
+        remoteDataSource: sl(),
+        userLocalDataSource: sl()
+      ));
+
+  // DataSources
+  sl.registerLazySingleton<WorkspaceRemoteDataSource>(
+      () => WorkspaceRemoteDataSourceImpl(client: sl()));
 }

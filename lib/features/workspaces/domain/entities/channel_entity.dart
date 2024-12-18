@@ -1,9 +1,11 @@
-import 'package:ReviewPal/features/auth/domain/entities/user_entity.dart';
+import 'assignment_entity.dart';
 
 class Channel {
-  final String id;
   final String name;
-  final Map<User, String> members = {};
+  final Assignment? assignment;
 
-  Channel({required this.id, required this.name});
+  const Channel({
+    required this.name,
+    this.assignment,
+  });
 }

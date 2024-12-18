@@ -1,12 +1,15 @@
-import 'package:ReviewPal/features/auth/domain/entities/user_entity.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/workspace_entity.dart';
+import 'channel_entity.dart';
 
 class Category {
   final int id;
   final String name;
-  final Workspace workspace;
-  final List<User> members;
+  final String workspace;
+  final List<Channel> channels;
 
-  Category(this.members,
-      {required this.id, required this.name, required this.workspace});
+  const Category({
+    required this.id,
+    required this.name,
+    required this.workspace,
+    required this.channels,
+  });
 }
