@@ -81,7 +81,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   // }
 
   @override
-  Future<Either<Failure, List<Workspace>>> getJoinedWorkspaces(String userId) async {
+  Future<Either<Failure, List<Workspace>>> getJoinedWorkspaces() async {
     try {
       final workspaces = await remoteDataSource.fetchWorkspaces();
       return Right(workspaces.map((e) => e).toList());

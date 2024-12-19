@@ -55,7 +55,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'redirect_uri': redirectUri,
       }),
     );
-    print("this is the body: ${response.body}");
     if (response.statusCode == 200) {
       return UserModel.fromJson(jsonDecode(response.body));
     } else {
@@ -121,7 +120,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         },
         body: jsonEncode({'token': token}),
       );
-      
       return response.statusCode == 200 ? true : false;
     } on Exception {
       throw ServerException();

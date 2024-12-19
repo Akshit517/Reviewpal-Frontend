@@ -47,12 +47,10 @@ class GetWorkspaceEvent extends WorkspaceEvent {
 }
 
 class GetJoinedWorkspacesEvent extends WorkspaceEvent {
-  final String userId;
-
-  const GetJoinedWorkspacesEvent(this.userId);
+  const GetJoinedWorkspacesEvent();
 
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => [];
 }
 
 class GetCategoriesEvent extends WorkspaceEvent {

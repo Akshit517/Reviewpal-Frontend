@@ -37,7 +37,7 @@ class CustomNavigationHelper {
     //main router
     router = GoRouter(
       navigatorKey: parentNavigatorKey,
-      initialLocation: isLoggedIn ? homePath : homePath,//change this later
+      initialLocation: isLoggedIn ? homePath : rootAuthPath,//change this later
       routes: routes,
     );
     _handleDeepLinks(applinks);
@@ -101,7 +101,7 @@ class CustomNavigationHelper {
                 path: homePath,
                 pageBuilder: (context, state) => MaterialPage(
                   key: state.pageKey,
-                  child: HomeScreen()
+                  child: const HomeScreen()
                 ),
               ),
             ],

@@ -9,7 +9,7 @@ class GetJoinedWorkspaces {
 
   GetJoinedWorkspaces(this.repository);
 
-  Future<Either<Failure, List<Workspace>>> call(String userId) async {
-    return await repository.getJoinedWorkspaces(userId);
+  Future<Either<Failure, List<Workspace>>> call() async {
+    return await repository.getJoinedWorkspaces();
   }
 }

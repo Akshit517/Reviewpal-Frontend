@@ -1,5 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/error/failures.dart';
 import '../../../domain/entities/category_entity.dart';
@@ -82,7 +82,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
   Future<void> _onGetJoinedWorkspaces(
       GetJoinedWorkspacesEvent event, Emitter<WorkspaceState> emit) async {
     emit(WorkspaceLoading());
-    final result = await getJoinedWorkspaces(event.userId);
+    final result = await getJoinedWorkspaces();
     result.fold(
       (failure) => emit(WorkspaceError(message: _mapFailureToMessage(failure))),
       (workspaces) => emit(WorkspacesLoaded(workspaces)),

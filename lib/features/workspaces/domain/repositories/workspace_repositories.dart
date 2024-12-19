@@ -1,9 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/category_member.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/channel_member.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/assignment_entity.dart';
 import 'package:ReviewPal/features/workspaces/domain/entities/category_entity.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/channel_entity.dart';
 import 'package:ReviewPal/features/workspaces/domain/entities/workspace_entity.dart';
 import '../../../../core/error/failures.dart';
 import '../entities/workspace_member.dart';
@@ -13,7 +9,7 @@ abstract class WorkspaceRepositories {
   Future<Either<Failure, Workspace>> createWorkspace(String name, String icon);
   Future<Either<Failure, void>> deleteWorkspace(String workspaceId);
   Future<Either<Failure, Workspace>> updateWorkspace(String workspaceId, String name, String icon);
-  Future<Either<Failure, List<Workspace>>> getJoinedWorkspaces(String userId);
+  Future<Either<Failure, List<Workspace>>> getJoinedWorkspaces();
   Future<Either<Failure, Workspace>> getWorkspace(String workspaceId);
   Future<Either<Failure, void>> addWorkspaceMember(String workspaceId, String userEmail, String role);
   Future<Either<Failure, void>> removeWorkspaceMember(String workspaceId, String userEmail);

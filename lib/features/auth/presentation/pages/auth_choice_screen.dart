@@ -10,19 +10,19 @@ class AuthChoiceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     double buttonHeight = 60.0;
     double imageSize = 120.0;
-    double buttonWidth = _size.width * 0.85;
+    double buttonWidth = size.width * 0.85;
     double textScaleFactor = MediaQuery.textScalerOf(context).scale(16);
 
-    if (_size.width > 1200) {
+    if (size.width > 1200) {
       buttonHeight = 80.0;
       imageSize = 240.0;
-    } else if (_size.width > 800) {
+    } else if (size.width > 800) {
       buttonHeight = 70.0;
       imageSize = 210.0;
-    } else if (_size.width > 600) {
+    } else if (size.width > 600) {
       buttonHeight = 60.0;
       imageSize = 180.0;
     } else {
@@ -41,7 +41,7 @@ class AuthChoiceScreen extends StatelessWidget {
             return _landscapeView(imageSize, context, buttonHeight);
           }
 
-          final containerWidth = _size.width * 0.6;
+          final containerWidth = size.width * 0.6;
 
           return _portraitView(containerWidth, imageSize, buttonWidth,
               buttonHeight, context, textScaleFactor);

@@ -1,4 +1,5 @@
 import 'package:ReviewPal/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/workspace_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -23,7 +24,9 @@ class _AsgRevAppState extends State<AsgRevApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>())],
+      providers: [
+        BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
+        BlocProvider<WorkspaceBloc>(create: (context) => sl<WorkspaceBloc>()),],
       child: MaterialApp.router(
         theme: appThemeData.values.toList()[1],
         routerConfig: CustomNavigationHelper.router,

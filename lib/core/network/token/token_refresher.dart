@@ -8,17 +8,16 @@ class TokenRefresher {
   final TokenManager tokenManager;
   final http.Client client;
 
-  TokenRefresher(this.tokenManager, this.client);
+  TokenRefresher({ required this.tokenManager, required this.client});
 
   Future<void> refreshToken() async {
     final refreshToken = await tokenManager.refreshToken;
-
     if (refreshToken == null) {
       throw Exception("No refresh token available");
     }
 
     final response = await client.post(
-      Uri.parse('${AppConstants.baseUrl}/api/token/refresh'),
+      Uri.parse('${AppConstants.baseUrl}api/token/refresh/'),
       headers: {
         'Content-Type': 'application/json',
       },

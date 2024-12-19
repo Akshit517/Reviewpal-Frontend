@@ -72,8 +72,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 )
               );
             } else if (state is AuthSuccess) {
-              print(state.message);
-              print(state.email);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Successfully Signed Up!!!"),
+                )
+              );
             }
           },
           builder: (context, state) {

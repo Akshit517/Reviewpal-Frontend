@@ -1,16 +1,19 @@
 import 'package:ReviewPal/core/network/internet/network_info.dart';
 import 'package:ReviewPal/core/network/token/token_manager.dart';
+import 'package:ReviewPal/core/network/token/token_refresher.dart';
 import 'package:ReviewPal/features/auth/domain/repositories/user_repositories.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/login.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/get_token.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/register.dart';
 import 'package:ReviewPal/features/workspaces/data/datasources/remote_data_source.dart';
+import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/workspace_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:http/http.dart' as http;
 
+import '../core/network/token/token_http_client.dart';
 import 'auth/data/datasources/user_local_data_source.dart';
 import 'auth/data/datasources/user_remote_data_source.dart';
 import 'auth/data/repositories/user_repositories_impl.dart';
@@ -36,9 +39,20 @@ Future<void> init() async {
   sl.registerFactory(() => LoginStatusCubit(
         loginStatusUseCase: sl(),
   ));
+  sl.registerFactory(() => WorkspaceBloc(
+        getJoinedWorkspaces: sl(),
+        getWorkspace: sl(),
+        createWorkspace: sl(),
+        updateWorkspace: sl(),
+        deleteWorkspace: sl(),
+        getCategories: sl(),
+  ));
 
   //feature [auth]
-  _init_auth();
+  initAuth();
+
+  //feature [workspaces]
+  initWorkspaces();
 
   //core
   sl.registerLazySingleton<NetworkInfo>(
@@ -47,12 +61,15 @@ Future<void> init() async {
 
   // External
   sl.registerLazySingleton(() => http.Client());
+  sl.registerLazySingleton(() => TokenRefresher(tokenManager: sl(), client: sl()));
+  sl.registerLazySingleton(() => TokenHttpClient(tokenManager: sl(), client: sl(), tokenRefresher: sl()));
+
   sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(() => InternetConnectionChecker());
 }
 
 // feature [auth]
-void _init_auth() {
+void initAuth() {
   // Use Cases
   sl.registerLazySingleton<LoginUseCase>(
       () => LoginUseCase(userRepositories: sl()));
@@ -76,7 +93,7 @@ void _init_auth() {
 }
 
 // Feature [workspaces]
-void _workspace_init() {
+void initWorkspaces() {
   // Use Cases
   sl.registerLazySingleton<CreateWorkspace>(
       () => CreateWorkspace(sl()));
