@@ -19,6 +19,7 @@ final appThemeData = {
     textButtonTheme: DarkTheme.darkGeneralTextButtonTheme,
     scaffoldBackgroundColor: DarkTheme.darkScaffoldBackgroundColor,
     inputDecorationTheme: DarkTheme.darkInputDecorationTheme,
-    textTheme: DarkTheme.darkTextTheme
+    textTheme: DarkTheme.darkTextTheme,
+    snackBarTheme: DarkTheme.darkSnackBarTheme
   )
 };

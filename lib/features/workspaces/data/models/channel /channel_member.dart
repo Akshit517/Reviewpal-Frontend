@@ -3,10 +3,10 @@ import '../../../domain/entities/channel_member.dart';
 
 class ChannelMemberModel extends ChannelMember {
   const ChannelMemberModel({
-    required int id,
-    required UserModel user,
-    required String role,
-  }) : super(id: id, user: user, role: role);
+    required super.id,
+    required UserModel super.user,
+    required super.role,
+  });
 
   // From JSON
   factory ChannelMemberModel.fromJson(Map<String, dynamic> json) {

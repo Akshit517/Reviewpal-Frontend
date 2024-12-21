@@ -3,11 +3,11 @@ import '../channel /channel.dart';
 
 class CategoryModel extends Category {
   CategoryModel({
-    required int id,
-    required String name,
-    required String workspace,
-    required List<ChannelModel> channels,
-  }) : super(id: id, name: name, workspace: workspace, channels: channels);
+    required super.id,
+    required super.name,
+    required super.workspace,
+    required List<ChannelModel> super.channels,
+  });
 
   // From JSON
   factory CategoryModel.fromJson(Map<String, dynamic> json) {

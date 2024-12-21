@@ -5,19 +5,14 @@ import '../../../domain/entities/submission.dart';
 
 class SubmissionModel extends Submission {
   SubmissionModel({
-    required String id,
+    required super.id,
     required AssignmentModel assignment,
-    required UserModel sender,
-    String? content,
-    String? file,
-    required DateTime submittedAt,
+    required UserModel super.sender,
+    super.content,
+    super.file,
+    required super.submittedAt,
   }) : super(
-          id: id,
           assignment: assignment.toEntity(),
-          sender: sender,
-          content: content,
-          file: file,
-          submittedAt: submittedAt,
         );
 
   // From JSON

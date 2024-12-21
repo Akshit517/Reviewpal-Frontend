@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/resources/routes/routes.dart';
 import '../../../../core/widgets/divider/middle_text_divider.dart';
-import '../../../../core/widgets/text_button/social_text_button.dart';
+import '../../../../core/widgets/buttons/social_text_button.dart';
 import '../../../../core/widgets/text_field/text_form_field.dart';
 import '../../../../core/widgets/text_field/text_field_header.dart';
 

@@ -14,8 +14,8 @@ class GeneralTextButton extends StatelessWidget {
   const GeneralTextButton({
     super.key,
     required this.onPressed,
-    this.buttonHeight, // Now optional
-    this.buttonWidth, // Now optional
+    this.buttonHeight, 
+    this.buttonWidth,
     this.buttonColor,
     required this.text,
     this.textSize,

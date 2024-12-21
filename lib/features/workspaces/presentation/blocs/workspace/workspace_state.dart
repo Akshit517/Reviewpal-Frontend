@@ -10,7 +10,7 @@ abstract class WorkspaceState extends Equatable {
 class WorkspaceInitial extends WorkspaceState {}
 
 class WorkspaceLoading extends WorkspaceState {}
-
+class WorkspacesLoading extends WorkspaceState {}
 class WorkspaceCreated extends WorkspaceState {
   final Workspace workspace;
 
@@ -62,5 +62,5 @@ class CategoriesLoaded extends WorkspaceState {
 class WorkspaceError extends WorkspaceState {
   final String message;
 
-  WorkspaceError({required this.message});
+  const WorkspaceError({required this.message});
 }

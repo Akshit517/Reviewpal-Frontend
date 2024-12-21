@@ -37,7 +37,7 @@ class UserRepositoriesImpl implements UserRepositories {
       try {
         final user = await getUser();
         await localDataSource.cacheUser(user);
-        await localDataSource.cacheToken(user.tokenModel);
+        await localDataSource.cacheToken(user.tokenModel!);
         return Right(user);
       } on ServerException {
         return const Left(ServerFailure());

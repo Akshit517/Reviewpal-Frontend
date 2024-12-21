@@ -1,4 +1,5 @@
 import 'package:ReviewPal/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ReviewPal/features/workspaces/presentation/blocs/category/category_bloc.dart';
 import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/workspace_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +27,9 @@ class _AsgRevAppState extends State<AsgRevApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
-        BlocProvider<WorkspaceBloc>(create: (context) => sl<WorkspaceBloc>()),],
+        BlocProvider<WorkspaceBloc>(create: (context) => sl<WorkspaceBloc>()),
+        BlocProvider<CategoryBloc>(create: (context) => sl<CategoryBloc>(),)
+        ],
       child: MaterialApp.router(
         theme: appThemeData.values.toList()[1],
         routerConfig: CustomNavigationHelper.router,

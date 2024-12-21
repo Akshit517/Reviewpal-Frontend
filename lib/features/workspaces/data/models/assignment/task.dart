@@ -2,16 +2,11 @@ import '../../../domain/entities/task_entity.dart';
 
 class TaskModel extends Task {
   const TaskModel({
-    required String title,
-    required String description,
-    required DateTime dueDate,
-    required int points,
-  }) : super(
-          title: title,
-          description: description,
-          dueDate: dueDate,
-          points: points,
-        );
+    required super.title,
+    required super.description,
+    required super.dueDate,
+    required super.points,
+  });
 
   // From JSON
   factory TaskModel.fromJson(Map<String, dynamic> json) {

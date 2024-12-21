@@ -2,7 +2,7 @@ import 'token_model.dart';
 import '../../domain/entities/user_entity.dart';
 
 class UserModel extends User {
-  final TokenModel tokenModel;
+  final TokenModel? tokenModel;
 
   UserModel(
       {required super.id,
@@ -10,16 +10,18 @@ class UserModel extends User {
       required super.email,
       required super.profilePic,
       required super.authType,
-      required this.tokenModel});
+      this.tokenModel});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final userData = json['user'] ?? json;
     return UserModel(
-        id: json['user']['id'],
-        username: json['user']['username'],
-        email: json['user']['email'],
-        profilePic: json['user']['profile_pic'],
-        authType: json['user']['auth_type'],
-        tokenModel: TokenModel.fromJson(json));
+      id: userData['id'],
+      username: userData['username'],
+      email: userData['email'],
+      profilePic: userData['profile_pic'],
+      authType: userData['auth_type'],
+      tokenModel: json.containsKey('token') ? TokenModel.fromJson(json) : null,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -31,7 +33,7 @@ class UserModel extends User {
         'profile_pic': profilePic,
         'auth_type': authType,
       },
-      ...tokenModel.toJson()
+      ...tokenModel!.toJson()
     };
   }
 }

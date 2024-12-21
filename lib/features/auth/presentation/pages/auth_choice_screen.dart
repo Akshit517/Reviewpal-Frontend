@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/resources/pallete/dark_theme_palette.dart';
 import '../../../../core/resources/routes/routes.dart';
-import '../../../../core/widgets/text_button/general_text_button.dart';
+import '../../../../core/widgets/buttons/general_text_button.dart';
 
 class AuthChoiceScreen extends StatelessWidget {
   const AuthChoiceScreen({super.key});

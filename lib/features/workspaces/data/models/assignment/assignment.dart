@@ -5,16 +5,11 @@ import '../../../domain/entities/assignment_entity.dart';
 
 class AssignmentModel extends Assignment {
   const AssignmentModel({
-    required String description,
-    required bool forTeams,
-    required int totalPoints,
-    required List<TaskModel> tasks,
-  }) : super(
-          description: description,
-          forTeams: forTeams,
-          totalPoints: totalPoints,
-          tasks: tasks,
-        );
+    required super.description,
+    required super.forTeams,
+    required super.totalPoints,
+    required List<TaskModel> super.tasks,
+  });
 
   // From JSON
   factory AssignmentModel.fromJson(Map<String, dynamic> json) {

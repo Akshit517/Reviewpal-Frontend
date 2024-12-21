@@ -11,7 +11,7 @@ class CreateWorkspaceEvent extends WorkspaceEvent {
   final String name;
   final String icon;
 
-  const CreateWorkspaceEvent(this.name, this.icon);
+  const CreateWorkspaceEvent({required this.name, required this.icon});
 
   @override
   List<Object> get props => [name, icon];
@@ -40,7 +40,7 @@ class UpdateWorkspaceEvent extends WorkspaceEvent {
 class GetWorkspaceEvent extends WorkspaceEvent {
   final String workspaceId;
 
-  const GetWorkspaceEvent(this.workspaceId);
+  const GetWorkspaceEvent({required this.workspaceId});
 
   @override
   List<Object> get props => [workspaceId];
@@ -56,7 +56,7 @@ class GetJoinedWorkspacesEvent extends WorkspaceEvent {
 class GetCategoriesEvent extends WorkspaceEvent {
   final String workspaceId;
 
-  const GetCategoriesEvent(this.workspaceId);
+  const GetCategoriesEvent({required this.workspaceId});
 
   @override
   List<Object> get props => [workspaceId];

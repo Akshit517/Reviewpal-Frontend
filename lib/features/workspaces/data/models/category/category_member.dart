@@ -3,10 +3,10 @@ import '../../../domain/entities/category_member.dart';
 
 class CategoryMemberModel extends CategoryMember {
   const CategoryMemberModel({
-    required int id,
-    required UserModel user,
-    required String role,
-  }) : super(id: id, user: user, role: role);
+    required super.id,
+    required UserModel super.user,
+    required super.role,
+  });
 
   // From JSON
   factory CategoryMemberModel.fromJson(Map<String, dynamic> json) {

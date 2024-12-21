@@ -28,6 +28,7 @@ import 'workspaces/domain/usecases/workspaces/delete_workspace.dart';
 import 'workspaces/domain/usecases/workspaces/get_joined_workspaces.dart';
 import 'workspaces/domain/usecases/workspaces/get_workspace.dart';
 import 'workspaces/domain/usecases/workspaces/update_workspace.dart';
+import 'workspaces/presentation/blocs/category/category_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -45,6 +46,8 @@ Future<void> init() async {
         createWorkspace: sl(),
         updateWorkspace: sl(),
         deleteWorkspace: sl(),
+  ));
+  sl.registerFactory(() => CategoryBloc(
         getCategories: sl(),
   ));
 

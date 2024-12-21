@@ -4,11 +4,11 @@ import '../../../domain/entities/workspace_entity.dart';
 
 class WorkspaceModel extends Workspace {
   const WorkspaceModel({
-    required String id,
-    required String name,
-    required String icon,
-    required UserModel owner,
-  }) : super(id: id, name: name, icon: icon, owner: owner);
+    required super.id,
+    required super.name,
+    required super.icon,
+    required UserModel super.owner,
+  });
 
   // From JSON
   factory WorkspaceModel.fromJson(Map<String, dynamic> json) {

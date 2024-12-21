@@ -2,9 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/error/failures.dart';
-import '../../../domain/entities/category_entity.dart';
 import '../../../domain/entities/workspace_entity.dart';
-import '../../../domain/usecases/category/get_categories.dart';
 import '../../../domain/usecases/workspaces/create_worksapce.dart';
 import '../../../domain/usecases/workspaces/delete_workspace.dart';
 import '../../../domain/usecases/workspaces/get_joined_workspaces.dart';
@@ -20,7 +18,6 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
   final UpdateWorkspace updateWorkspace;
   final GetWorkspace getWorkspace;
   final GetJoinedWorkspaces getJoinedWorkspaces;
-  final GetCategories getCategories;
 
   WorkspaceBloc({
     required this.createWorkspace,
@@ -28,14 +25,12 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     required this.updateWorkspace,
     required this.getWorkspace,
     required this.getJoinedWorkspaces,
-    required this.getCategories,
   }) : super(WorkspaceInitial()) {
     on<CreateWorkspaceEvent>(_onCreateWorkspace);
     on<DeleteWorkspaceEvent>(_onDeleteWorkspace);
     on<UpdateWorkspaceEvent>(_onUpdateWorkspace);
     on<GetWorkspaceEvent>(_onGetWorkspace);
     on<GetJoinedWorkspacesEvent>(_onGetJoinedWorkspaces);
-    on<GetCategoriesEvent>(_onGetCategories);
   }
 
   Future<void> _onCreateWorkspace(
@@ -86,16 +81,6 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     result.fold(
       (failure) => emit(WorkspaceError(message: _mapFailureToMessage(failure))),
       (workspaces) => emit(WorkspacesLoaded(workspaces)),
-    );
-  }
-
-  Future<void> _onGetCategories(
-      GetCategoriesEvent event, Emitter<WorkspaceState> emit) async {
-    emit(WorkspaceLoading());
-    final result = await getCategories(event.workspaceId);
-    result.fold(
-      (failure) => emit(WorkspaceError(message: _mapFailureToMessage(failure))),
-      (categories) => emit(CategoriesLoaded(categories)),
     );
   }
 
