@@ -13,6 +13,7 @@ import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:http/http.dart' as http;
 
+import '../core/network/media/media_uploader.dart';
 import '../core/network/token/token_http_client.dart';
 import 'auth/data/datasources/user_local_data_source.dart';
 import 'auth/data/datasources/user_remote_data_source.dart';
@@ -66,6 +67,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => TokenRefresher(tokenManager: sl(), client: sl()));
   sl.registerLazySingleton(() => TokenHttpClient(tokenManager: sl(), client: sl(), tokenRefresher: sl()));
+  sl.registerLazySingleton(() => MediaUploader(tokenManager: sl(), tokenRefresher: sl()));
 
   sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(() => InternetConnectionChecker());

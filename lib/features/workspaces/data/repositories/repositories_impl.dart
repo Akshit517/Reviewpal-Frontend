@@ -6,6 +6,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/category_entity.dart';
+import '../../domain/entities/category_member.dart';
 import '../../domain/entities/workspace_entity.dart';
 import '../../domain/entities/workspace_member.dart';
 
@@ -74,12 +75,6 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   //  }
   //}
 
-  // Commented as not implemented
-  // @override
-  // Future<Either<Failure, Workspace>> joinWorkspace(String workspaceId) {
-  //   // TODO: Implement this method
-  // }
-
   @override
   Future<Either<Failure, List<Workspace>>> getJoinedWorkspaces() async {
     try {
@@ -103,7 +98,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   @override
   Future<Either<Failure, void>> addWorkspaceMember(String workspaceId, String userEmail, String role) async {
     try {
-      await remoteDataSource.addWorkspaceMember(
+      await remoteDataSource.sendWorkspaceInvite(
         workspaceId: workspaceId,
         userEmail: userEmail,
         role: role,
@@ -179,5 +174,65 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
     }
   }
 
-  // Additional methods would follow a similar pattern.
+  @override
+  Future<Either<Failure, Category>> updateCategory(String workspaceId, String id, String name) async {
+    try {
+      final category = await remoteDataSource.updateCategory(workspaceId, id, name);
+      return Right(category);
+    } catch (e) {
+      return const Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<CategoryMember>>> getCategoryMembers(String workspaceId, String id) async {
+    try {
+      final members = await remoteDataSource.getCategoryMembers(workspaceId, id);
+      return Right(members);
+    } catch (e) {
+      return const Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> addMemberToCategory(String workspaceId, String id, String email) async {
+    try {
+      await remoteDataSource.addMemberToCategory(workspaceId, id, email);
+      return const Right(null);
+    } catch (e) {
+      return const Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> removeMemberFromCategory(String workspaceId, String id, String email) async {
+    try {
+      await remoteDataSource.removeMemberFromCategory(workspaceId, id, email);
+      return const Right(null);
+    } catch (e) {
+      return const Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, CategoryMember>> getCategoryMember(String workspaceId, String id, String email) async {
+    try {
+      final member = await remoteDataSource.getCategoryMember(workspaceId, id, email);
+      return Right(member);
+    } catch (e) {
+      return const Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateCategoryMember(String workspaceId, String id, String email, String role) async {
+    try {
+      await remoteDataSource.updateCategoryMember(workspaceId, id, email, role);
+      return const Right(null);
+    } catch (e) {
+      return const Left(ServerFailure());
+    }
+  }
+
+  
 }

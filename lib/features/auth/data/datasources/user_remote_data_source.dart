@@ -125,4 +125,21 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       throw ServerException();
     }
   }
+
+  Future<List<UserModel>> fetchUsers(String token) async {
+    final response = await client.get(
+      Uri.parse('${AppConstants.baseUrl}users/'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final users = (data['users'] as List)
+          .map((userJson) => UserModel.fromJson(userJson))
+          .toList();
+      return users;
+    } else {
+      throw Exception('Failed to fetch users');
+    }
+  }
 }

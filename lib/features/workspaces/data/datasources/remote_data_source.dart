@@ -6,6 +6,7 @@ import 'package:ReviewPal/features/workspaces/data/models/workspaces/members.dar
 
 import '../../../../core/error/exceptions.dart';
 import '../models/category/category.dart';
+import '../models/category/category_member.dart';
 import '../models/channel /channel.dart';
 import '../models/workspaces/workspace.dart';
 
@@ -24,7 +25,7 @@ abstract class WorkspaceRemoteDataSource {
   Future<void> deleteWorkspace(String workspaceId);
 
   Future<List<WorkspaceMemberModel>> fetchWorkspaceMembers(String workspaceId);
-  Future<void> addWorkspaceMember({
+  Future<void> sendWorkspaceInvite({
     required String workspaceId,
     required String userEmail,
     required String role,
@@ -37,8 +38,13 @@ abstract class WorkspaceRemoteDataSource {
   // Category methods
   Future<CategoryModel> createCategory(String workspaceId, String name);
   Future<List<CategoryModel>> fetchCategories(String workspaceId);
+  Future<CategoryModel> updateCategory(String workspaceId, String categoryId, String name);
   Future<void> deleteCategory(String workspaceId, String categoryId);
+  Future<List<CategoryMemberModel>> getCategoryMembers(String workspaceId, String categoryId);
   Future<void> addMemberToCategory(String workspaceId, String categoryId, String email);
+  Future<void> removeMemberFromCategory(String workspaceId, String categoryId, String email);
+  Future<CategoryMemberModel> getCategoryMember(String workspaceId, String categoryId, String email);
+  Future<void> updateCategoryMember(String workspaceId, String categoryId, String email, String role);
 
   // Channel methods
   Future<ChannelModel> createChannel(String workspaceId, String categoryId, String name);
@@ -120,7 +126,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
   }
 
   @override
-  Future<void> addWorkspaceMember({
+  Future<void> sendWorkspaceInvite({
     required String workspaceId,
     required String userEmail,
     required String role,
@@ -180,8 +186,53 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     _handleResponse(response.statusCode);
   }
 
-  // Channel Methods
+  @override
+  Future<CategoryModel> updateCategory(String workspaceId, String categoryId, String name) async {
+    final response = await client.put(
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/',
+      {'name': name},
+    );
+    _handleResponse(response.statusCode);
+    final Map<String, dynamic> decodedJson = jsonDecode(response.body);
+    return CategoryModel.fromJson(decodedJson);
+  }
 
+  @override
+  Future<List<CategoryMemberModel>> getCategoryMembers(String workspaceId, String categoryId) async {
+    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/members/');
+    _handleResponse(response.statusCode);
+    final List<dynamic> decodedJson = jsonDecode(response.body);
+    return decodedJson.map((e) => CategoryMemberModel.fromJson(e)).toList();
+  }
+
+  @override
+  Future<void> removeMemberFromCategory(String workspaceId, String categoryId, String email) async {
+    final response = await client.delete(
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/members/$email/',
+    );
+    _handleResponse(response.statusCode);
+  }
+
+  @override
+  Future<CategoryMemberModel> getCategoryMember(String workspaceId, String categoryId, String email) async {
+    final response = await client.get(
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/members/$email/',
+    );
+    _handleResponse(response.statusCode);
+    final Map<String, dynamic> decodedJson = jsonDecode(response.body);
+    return CategoryMemberModel.fromJson(decodedJson);
+  }
+
+  @override
+  Future<void> updateCategoryMember(String workspaceId, String categoryId, String email, String role) async {
+    final response = await client.put(
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/members/$email/',
+      {'role': role},
+    );
+    _handleResponse(response.statusCode);
+  }
+
+  // Channel Methods
   @override
   Future<ChannelModel> createChannel(String workspaceId, String categoryId, String name) async {
     final response = await client.post(
@@ -215,4 +266,6 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     );
     _handleResponse(response.statusCode);
   }
+
+  
 }

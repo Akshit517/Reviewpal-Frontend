@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:ReviewPal/features/workspaces/domain/entities/category_entity.dart';
 import 'package:ReviewPal/features/workspaces/domain/entities/workspace_entity.dart';
 import '../../../../core/error/failures.dart';
+import '../entities/category_member.dart';
 import '../entities/workspace_member.dart';
 
 abstract class WorkspaceRepositories {
@@ -26,15 +27,12 @@ abstract class WorkspaceRepositories {
   Future<Either<Failure, List<Category>>> getCategories(String workspaceId);
   Future<Either<Failure, Category>> createCategory(String workspaceId, String name);
   Future<Either<Failure, void>> deleteCategory(String workspaceId, String id);
-
-  // Commented as not implemented
-  // Future<Either<Failure, Category>> updateCategory(String workspaceId, String id, String? name);
-  // Future<Either<Failure, Category>> getCategory(String workspaceId, String id);
-  // Future<Either<Failure, List<CategoryMember>>> getCategoryMembers(String workspaceId, String id);
-  // Future<Either<Failure, void>> addMemberToCategory(String workspaceId, String id, String email);
-  // Future<Either<Failure, void>> removeMemberFromCategory(String workspaceId, String id, String email);
-  // Future<Either<Failure, CategoryMember>> getCategoryMember(String workspaceId, String id, String email);
-  // Future<Either<Failure, void>> updateCategoryMember(String workspaceId, String id, String email, String role);
+  Future<Either<Failure, Category>> updateCategory(String workspaceId, String id, String name);
+  Future<Either<Failure, List<CategoryMember>>> getCategoryMembers(String workspaceId, String id);
+  Future<Either<Failure, void>> addMemberToCategory(String workspaceId, String id, String email);
+  Future<Either<Failure, void>> removeMemberFromCategory(String workspaceId, String id, String email);
+  Future<Either<Failure, CategoryMember>> getCategoryMember(String workspaceId, String id, String email);
+  Future<Either<Failure, void>> updateCategoryMember(String workspaceId, String id, String email, String role);
 
   // Channel methods (to be implemented similarly)
   // Future<Either<Failure, void>> createChannel(String workspaceId, String categoryId, String name, Assignment? assignmentData);
