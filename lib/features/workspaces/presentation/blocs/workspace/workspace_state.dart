@@ -49,16 +49,6 @@ class WorkspacesLoaded extends WorkspaceState {
   List<Object> get props => [workspaces];
 }
 
-class CategoriesLoaded extends WorkspaceState {
-  final List<Category> categories;
-
-  const CategoriesLoaded(this.categories);
-
-  @override
-  List<Object> get props => [categories];
-}
-
-
 class WorkspaceError extends WorkspaceState {
   final String message;
 

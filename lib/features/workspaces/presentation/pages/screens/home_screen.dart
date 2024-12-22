@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              Divider(thickness: 3, color: Colors.grey.shade600,),
+              const Divider(thickness: 4, color: DarkThemePalette.fillColor,),
               Expanded(
                 flex: 8,
                 child: WorkspaceHomeWidget(workspaceId: state.workspace.id,),
