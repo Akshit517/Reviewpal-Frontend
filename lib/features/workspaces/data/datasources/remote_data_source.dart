@@ -150,7 +150,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     _handleResponse(response.statusCode);
   }
 
-  // Category Methods
+  /// Category Methods
 
   @override
   Future<CategoryModel> createCategory(String workspaceId, String name) async {

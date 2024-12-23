@@ -20,7 +20,7 @@ class CreateWorkspaceEvent extends WorkspaceEvent {
 class DeleteWorkspaceEvent extends WorkspaceEvent {
   final String workspaceId;
 
-  const DeleteWorkspaceEvent(this.workspaceId);
+  const DeleteWorkspaceEvent({required this.workspaceId});
 
   @override
   List<Object> get props => [workspaceId];

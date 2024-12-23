@@ -15,12 +15,9 @@ abstract class WorkspaceRepositories {
   Future<Either<Failure, void>> addWorkspaceMember(String workspaceId, String userEmail, String role);
   Future<Either<Failure, void>> removeWorkspaceMember(String workspaceId, String userEmail);
   Future<Either<Failure, List<WorkspaceMember>>> getWorkspaceMembers(String workspaceId);
-  //Future<Either<Failure, void>> leaveWorkspace(String workspaceId);
 
   // Commented as not implemented
   // Future<Either<Failure, void>> leaveWorkspace(String workspaceId);
-  // Future<Either<Failure, Workspace>> joinWorkspace(String workspaceId);
-  // Future<Either<Failure, WorkspaceMember>> getWorkspaceMember(String workspaceId, String email);
   // Future<Either<Failure, void>> updateWorkspaceMember(String workspaceId, String email, String role);
 
   // Category methods

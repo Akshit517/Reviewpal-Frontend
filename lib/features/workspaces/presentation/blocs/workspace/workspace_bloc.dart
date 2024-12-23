@@ -35,7 +35,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
 
   Future<void> _onCreateWorkspace(
       CreateWorkspaceEvent event, Emitter<WorkspaceState> emit) async {
-    emit(WorkspaceLoading());
+    emit(WorkspacesLoading());
     final result = await createWorkspace(event.name, event.icon);
     result.fold(
       (failure) => emit(WorkspaceError(message: _mapFailureToMessage(failure))),
@@ -45,7 +45,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
 
   Future<void> _onDeleteWorkspace(
       DeleteWorkspaceEvent event, Emitter<WorkspaceState> emit) async {
-    emit(WorkspaceLoading());
+    emit(WorkspacesLoading());
     final result = await deleteWorkspace(event.workspaceId);
     result.fold(
       (failure) => emit(WorkspaceError(message: _mapFailureToMessage(failure))),
@@ -55,7 +55,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
 
   Future<void> _onUpdateWorkspace(
       UpdateWorkspaceEvent event, Emitter<WorkspaceState> emit) async {
-    emit(WorkspaceLoading());
+    emit(WorkspacesLoading());
     final result =
         await updateWorkspace(event.workspaceId, event.name, event.icon);
     result.fold(
@@ -76,7 +76,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
 
   Future<void> _onGetJoinedWorkspaces(
       GetJoinedWorkspacesEvent event, Emitter<WorkspaceState> emit) async {
-    emit(WorkspaceLoading());
+    emit(WorkspacesLoading());
     final result = await getJoinedWorkspaces();
     result.fold(
       (failure) => emit(WorkspaceError(message: _mapFailureToMessage(failure))),
