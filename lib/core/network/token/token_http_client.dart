@@ -56,7 +56,8 @@ class TokenHttpClient {
   }
 
   Future<http.Response> delete(
-    String url, {
+    String url, 
+    dynamic body, {
     Map<String, String>? headers,
   }) async {
     final getHeaders = await _prepareHeaders(headers);
@@ -64,6 +65,7 @@ class TokenHttpClient {
       () => client.delete(
         Uri.parse(url),
         headers: getHeaders,
+        body: body != null ? jsonEncode(body) : null,
       ),
     );
   }

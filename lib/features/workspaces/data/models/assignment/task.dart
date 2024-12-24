@@ -23,7 +23,7 @@ class TaskModel extends Task {
     return {
       'task': title,
       'description': description,
-      'due_date': dueDate.toIso8601String(),
+      'due_date': dueDate,
       'points': points,
     };
   }

@@ -3,54 +3,92 @@ import 'dart:convert';
 import 'package:ReviewPal/core/constants/constants.dart';
 import 'package:ReviewPal/core/network/token/token_http_client.dart';
 import 'package:ReviewPal/features/workspaces/data/models/workspaces/members.dart';
+import 'package:ReviewPal/features/workspaces/domain/entities/assignment_entity.dart';
 
 import '../../../../core/error/exceptions.dart';
+import '../../domain/entities/assignment_status.dart';
+import '../models/assignment/assignment.dart';
 import '../models/category/category.dart';
 import '../models/category/category_member.dart';
 import '../models/channel /channel.dart';
+import '../models/channel /channel_member.dart';
+import '../models/iteration/review_iteration_model.dart';
+import '../models/submission/submission.dart';
 import '../models/workspaces/workspace.dart';
 
 abstract class WorkspaceRemoteDataSource {
+  /// [Workspace] methods
   Future<List<WorkspaceModel>> fetchWorkspaces();
-  Future<WorkspaceModel> createWorkspace({
-    required String name,
-    required String icon,
-  });
+  Future<WorkspaceModel> createWorkspace({required String name,required String icon,});
   Future<WorkspaceModel> getWorkspace({required String workspaceId});
-  Future<WorkspaceModel> updateWorkspace({
-    required String workspaceId,
-    required String name,
-    required String icon,
-  });
+  Future<WorkspaceModel> updateWorkspace({required String workspaceId,required String name,required String icon});
   Future<void> deleteWorkspace(String workspaceId);
 
+  /// [WorkspaceMember] methods
   Future<List<WorkspaceMemberModel>> fetchWorkspaceMembers(String workspaceId);
-  Future<void> sendWorkspaceInvite({
-    required String workspaceId,
-    required String userEmail,
-    required String role,
-  });
-  Future<void> removeWorkspaceMember({
-    required String workspaceId,
-    required String userEmail,
-  });
+  Future<void> sendWorkspaceInvite({required String workspaceId,required String userEmail,required String role});
+  Future<void> removeWorkspaceMember({required String workspaceId,required String userEmail});
+  Future<void> updateWorkspaceMember(String workspaceId, String email, String role);
 
-  // Category methods
+  /// [Category] methods
   Future<CategoryModel> createCategory(String workspaceId, String name);
   Future<List<CategoryModel>> fetchCategories(String workspaceId);
   Future<CategoryModel> updateCategory(String workspaceId, String categoryId, String name);
   Future<void> deleteCategory(String workspaceId, String categoryId);
+
+  /// [CategoryMember] methods
   Future<List<CategoryMemberModel>> getCategoryMembers(String workspaceId, String categoryId);
   Future<void> addMemberToCategory(String workspaceId, String categoryId, String email);
   Future<void> removeMemberFromCategory(String workspaceId, String categoryId, String email);
   Future<CategoryMemberModel> getCategoryMember(String workspaceId, String categoryId, String email);
   Future<void> updateCategoryMember(String workspaceId, String categoryId, String email, String role);
 
-  // Channel methods
-  Future<ChannelModel> createChannel(String workspaceId, String categoryId, String name);
+  /// [Channel] methods
+  Future<ChannelModel> createChannel(String workspaceId, String categoryId, String name, Assignment assignment);
   Future<List<ChannelModel>> fetchChannels(String workspaceId, String categoryId);
+  Future<ChannelModel> updateChannel(String workspaceId, String categoryId, String channelId, String? name, Assignment assignment);
   Future<void> deleteChannel(String workspaceId, String categoryId, String channelId);
+
+  /// [ChannelMember] methods
   Future<void> addMemberToChannel(String workspaceId, String categoryId, String channelId, String email);
+  Future<void> removeMemberFromChannel(String workspaceId, String categoryId, String channelId, String email);
+  Future<List<ChannelMemberModel>> getChannelMembers(String workspaceId, String categoryId, String channelId);
+  Future<void> updateChannelMember(String workspaceId, String categoryId, String channelId, String email, String role);
+
+  /// [Assignment] methods
+  Future<AssignmentModel> updateAssignment(String workspaceId, String categoryId, String channelId, Assignment assignment);
+  Future<AssignmentModel> getAssignment(String workspaceId, String categoryId, String channelId);
+
+  /// [SubmissionReviewee] methods
+  Future<List<SubmissionModel>> getSubmissionReviewees(String workspaceId, String categoryId, String channelId);
+  Future<List<SubmissionModel>> postSubmissionReviewee(String workspaceId, String categoryId, String channelId, String? content, String? file);
+
+  /// [SubmissionReviewer] methods
+  Future<List<SubmissionModel>> getSubmissionByUserId(String workspaceId, String categoryId, String channelId, String userId);
+
+  /// [Iteration] methods
+  Future<ReviewIterationModel> createIteration(
+    String workspaceId,
+    int categoryId,
+    String channelId,
+    int submissionId,
+    String remarks,
+    AssignmentStatus? assignmentStatus,
+  );
+
+  Future<ReviewIterationModel> getReviewerIteration(
+    String workspaceId,
+    String categoryId,
+    String channelId,
+    String submissionId,
+  );
+
+  Future<Map<String, dynamic>> getRevieweeIterations(
+    String workspaceId,
+    String categoryId,
+    String channelId,
+    String submissionId,
+  );
 }
 
 class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
@@ -66,6 +104,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     }
   }
 
+  /// [Workspace] Methods
   @override
   Future<List<WorkspaceModel>> fetchWorkspaces() async {
     final response = await client.get('${AppConstants.baseUrl}api/workspaces/');
@@ -113,7 +152,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
 
   @override
   Future<void> deleteWorkspace(String workspaceId) async {
-    final response = await client.delete('${AppConstants.baseUrl}api/workspaces/$workspaceId/');
+    final response = await client.delete('${AppConstants.baseUrl}api/workspaces/$workspaceId/', null);
     _handleResponse(response.statusCode);
   }
 
@@ -150,7 +189,18 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     _handleResponse(response.statusCode);
   }
 
-  /// Category Methods
+  @override
+  Future<void> updateWorkspaceMember(String workspaceId, String email, String role) async {
+    final response = await client.put(
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/members/',
+      {
+        'user_email': email,
+        'role': role
+      },
+    );
+    _handleResponse(response.statusCode);
+  }
+  /// [Category] Methods
 
   @override
   Future<CategoryModel> createCategory(String workspaceId, String name) async {
@@ -173,7 +223,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
 
   @override
   Future<void> deleteCategory(String workspaceId, String categoryId) async {
-    final response = await client.delete('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/');
+    final response = await client.delete('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/', null);
     _handleResponse(response.statusCode);
   }
 
@@ -208,7 +258,8 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
   @override
   Future<void> removeMemberFromCategory(String workspaceId, String categoryId, String email) async {
     final response = await client.delete(
-      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/members/$email/',
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/members/$email/'
+      , null
     );
     _handleResponse(response.statusCode);
   }
@@ -232,13 +283,31 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     _handleResponse(response.statusCode);
   }
 
-  // Channel Methods
+  /// [Channel] Methods
   @override
-  Future<ChannelModel> createChannel(String workspaceId, String categoryId, String name) async {
+  Future<ChannelModel> createChannel(String workspaceId, String categoryId, String name, Assignment assignment) async {
     final response = await client.post(
       '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/',
-      {'name': name},
+      { 
+        'name': name,
+        'assignment_data': (assignment as AssignmentModel).toJson(),
+      },
     );
+    _handleResponse(response.statusCode);
+    final Map<String, dynamic> decodedJson = jsonDecode(response.body);
+    return ChannelModel.fromJson(decodedJson);
+  }
+
+  @override
+  Future<ChannelModel> updateChannel(String workspaceId, String categoryId, String channelId, String? name, Assignment assignment) async {
+    final response = await client.put(
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/',
+      {
+        'name': name,
+        'assignment_data': (assignment as AssignmentModel).toJson(),
+      },
+    );
+    
     _handleResponse(response.statusCode);
     final Map<String, dynamic> decodedJson = jsonDecode(response.body);
     return ChannelModel.fromJson(decodedJson);
@@ -254,7 +323,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
 
   @override
   Future<void> deleteChannel(String workspaceId, String categoryId, String channelId) async {
-    final response = await client.delete('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/');
+    final response = await client.delete('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/', null);
     _handleResponse(response.statusCode);
   }
 
@@ -267,5 +336,141 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     _handleResponse(response.statusCode);
   }
 
+  @override
+  Future<void> removeMemberFromChannel(String workspaceId, String categoryId, String channelId, String email) async {
+    final response = await client.delete(
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/members/',
+      {'user_email': email},
+    );
+    _handleResponse(response.statusCode);
+  }
+
+  @override
+  Future<void> updateChannelMember(String workspaceId, String categoryId, String channelId, String email, String role) async {
+    final response = await client.put(
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/members/',
+      {
+        'user_email': email, 
+        'role': role
+      },
+    );
+    _handleResponse(response.statusCode);
+  }
+
+  @override
+  Future<List<ChannelMemberModel>> getChannelMembers(String workspaceId, String categoryId, String channelId) async {
+    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/members/');
+    _handleResponse(response.statusCode);
+    final List<dynamic> decodedJson = jsonDecode(response.body);
+    return decodedJson.map((e) => ChannelMemberModel.fromJson(e)).toList();
+  }
+
+  /// [Assignment] Methods
+
+  @override
+  Future<AssignmentModel> updateAssignment(String workspaceId, String categoryId, String channelId, Assignment assignment) async {
+    final response = await client.put(
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/assignment/',
+      (assignment as AssignmentModel).toJson(),
+    );
+    _handleResponse(response.statusCode);
+    final Map<String, dynamic> decodedJson = jsonDecode(response.body);
+    return AssignmentModel.fromJson(decodedJson);
+  }
+
+  @override
+  Future<AssignmentModel> getAssignment(String workspaceId, String categoryId, String channelId) async {
+    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/assignment/');
+    _handleResponse(response.statusCode);
+    final Map<String, dynamic> decodedJson = jsonDecode(response.body);
+    return AssignmentModel.fromJson(decodedJson);
+  }
+
+  /// [SubmissionReviewee] Methods
+
+  @override
+  Future<List<SubmissionModel>> getSubmissionReviewees(String workspaceId, String categoryId, String channelId) async {
+    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submission/reviewee/');
+    _handleResponse(response.statusCode);
+    final List<dynamic> decodedJson = jsonDecode(response.body);
+    return decodedJson.map((e) => SubmissionModel.fromJson(e)).toList();
+  }
+
+  @override
+  Future<List<SubmissionModel>> postSubmissionReviewee(String workspaceId, String categoryId, String channelId, String? content, String? file) async {
+    final response = await client.post('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submission/reviewee/', 
+    {
+      'content': content,
+      'file': file
+    }); 
+    _handleResponse(response.statusCode);
+    final List<dynamic> decodedJson = jsonDecode(response.body);
+    return decodedJson.map((e) => SubmissionModel.fromJson(e)).toList();
+  }
+
+  /// [SubmissionReviewer] Methods
+
+  @override
+  Future<List<SubmissionModel>> getSubmissionByUserId(String workspaceId, String categoryId, String channelId, String userId) async {
+    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submission/reviewers/$userId/');
+    _handleResponse(response.statusCode);
+    final List<dynamic> decodedJson = jsonDecode(response.body);
+    return decodedJson.map((e) => SubmissionModel.fromJson(e)).toList();
+  }
+
+  /// [Iteration] Methods
+
+  @override
+  Future<ReviewIterationModel> createIteration(
+    String workspaceId,
+    int categoryId,
+    String channelId,
+    int submissionId,
+    String remarks,
+    AssignmentStatus? assignmentStatus,
+  ) async {
+    final response = await client.post(
+      '${AppConstants.baseUrl}/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewer-iterations/',
+      jsonEncode({
+        'remarks': remarks,
+        'assignment_status': assignmentStatus != null
+            ? {
+                'status': assignmentStatus.status,
+                'earned_points': assignmentStatus.earnedPoints,
+              }
+            : null,
+      }),
+    );
+    _handleResponse(response.statusCode);
+    return ReviewIterationModel.fromJson(json.decode(response.body));
+  }
+
+  @override
+  Future<ReviewIterationModel> getReviewerIteration(
+    String workspaceId,
+    String categoryId,
+    String channelId,
+    String submissionId,
+  ) async {
+    final response = await client.get(
+        '${AppConstants.baseUrl}/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewer-iterations/',
+    );
+    _handleResponse(response.statusCode);
+    return ReviewIterationModel.fromJson(json.decode(response.body));
+  }
+
+  @override
+  Future<Map<String, dynamic>> getRevieweeIterations(
+    String workspaceId,
+    String categoryId,
+    String channelId,
+    String submissionId,
+  ) async {
+    final response = await client.get(
+        '${AppConstants.baseUrl}workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewee-iterations/',
+    );
+    _handleResponse(response.statusCode);
+    return json.decode(response.body);
+  } 
   
 }

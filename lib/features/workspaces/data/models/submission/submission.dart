@@ -6,36 +6,24 @@ import '../../../domain/entities/submission.dart';
 class SubmissionModel extends Submission {
   SubmissionModel({
     required super.id,
-    required AssignmentModel assignment,
-    required UserModel super.sender,
+    super.assignment,
+    super.sender,
     super.content,
     super.file,
     required super.submittedAt,
-  }) : super(
-          assignment: assignment.toEntity(),
-        );
-
-  // From JSON
-  factory SubmissionModel.fromJson(Map<String, dynamic> json) {
+  });
+factory SubmissionModel.fromJson(Map<String, dynamic> json) {
     return SubmissionModel(
-      id: json['id'],
-      assignment: AssignmentModel.fromJson(json['assignment']),
-      sender: UserModel.fromJson(json['sender']), // Use UserModel here
-      content: json['content'],
-      file: json['file'],
-      submittedAt: DateTime.parse(json['submitted_at']),
+      id: json['id'] as String,
+      assignment: json['assignment'] != null 
+          ? AssignmentModel.fromJson(json['assignment'] as Map<String, dynamic>)
+          : null,
+      sender: json['sender'] != null 
+          ? UserModel.fromJson(json['sender'] as Map<String, dynamic>)
+          : null,
+      content: json['content'] as String?,
+      file: json['file'] as String?,
+      submittedAt: json['submitted_at']
     );
-  }
-
-  // To JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'assignment': assignment,
-      'sender': sender, // Use sender.toJson() here
-      'content': content,
-      'file': file,
-      'submitted_at': submittedAt.toIso8601String(),
-    };
   }
 }

@@ -10,8 +10,8 @@ class ChannelModel extends Channel {
   factory ChannelModel.fromJson(Map<String, dynamic> json) {
     return ChannelModel(
       name: json['name'],
-      assignment: json['assignment_data'] != null
-          ? AssignmentModel.fromJson(json['assignment_data'])
+      assignment: json['assignment'] != null
+          ? AssignmentModel.fromJson(json['assignment'])
           : null,
     );
   }
