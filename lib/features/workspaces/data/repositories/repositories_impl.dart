@@ -1,19 +1,21 @@
-import 'package:ReviewPal/features/auth/data/datasources/user_local_data_source.dart';
-import 'package:ReviewPal/features/workspaces/data/datasources/remote_data_source.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/submission.dart';
-import 'package:ReviewPal/features/workspaces/domain/repositories/workspace_repositories.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
+import '../../../auth/data/datasources/user_local_data_source.dart';
 import '../../domain/entities/assignment_entity.dart';
+import '../../domain/entities/assignment_status.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../domain/entities/category_member.dart';
 import '../../domain/entities/channel_entity.dart';
 import '../../domain/entities/channel_member.dart';
 import '../../domain/entities/review_iteration.dart';
+import '../../domain/entities/review_iteration_response.dart';
+import '../../domain/entities/submission.dart';
 import '../../domain/entities/workspace_entity.dart';
 import '../../domain/entities/workspace_member.dart';
+import '../../domain/repositories/workspace_repositories.dart';
+import '../datasources/remote_data_source.dart';
 
 class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   final WorkspaceRemoteDataSource remoteDataSource;
@@ -67,17 +69,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
 
   //@override
   //Future<Either<Failure, void>> leaveWorkspace(String workspaceId) async {
-  //  try {
-  //     final user = await userLocalDataSource.getCachedUser();
-  //     final email = user.email;
-  //     await remoteDataSource.removeWorkspaceMember(
-  //      workspaceId: workspaceId, 
-  //      userEmail: email);
-  //     return const Right(null);
-  //  }
-  //  catch (e) {
-  //    return Left(_handleException(e));
-  //  }
+  //  TODO: Implement this method
   //}
 
   @override
@@ -257,6 +249,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   Future<Either<Failure, void>> createChannel(String workspaceId, String categoryId, String name, Assignment assignment) async {
     try {
       final channel = await remoteDataSource.createChannel(workspaceId, categoryId, name, assignment);
+      // ignore: void_checks
       return Right(channel);
     } catch (e) {
       return Left(_handleException(e));
@@ -276,6 +269,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   @override
   Future<Either<Failure, void>> updateChannel(String workspaceId, String categoryId, String channelId, String? name, Assignment assignment) async {
     try {
+      await remoteDataSource.updateAssignment(workspaceId, categoryId, channelId, assignment);
       await remoteDataSource.updateChannel(workspaceId, categoryId, channelId, name, assignment);
       return const Right(null);
     } catch (e) {
@@ -294,9 +288,19 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> addMemberToChannel(String workspaceId, String categoryId, String channelId, String email) async {
+  Future<Either<Failure, void>> addMemberToChannel(String workspaceId, String categoryId, String channelId, String email, String role) async {
     try {
-      await remoteDataSource.addMemberToChannel(workspaceId, categoryId, channelId, email);
+      await remoteDataSource.addMemberToChannel(workspaceId, categoryId, channelId, email, role);
+      return const Right(null);
+    } catch (e) {
+      return Left(_handleException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateChannelMember(String workspaceId, String categoryId, String channelId, String email, String role) async {
+    try {
+      await remoteDataSource.updateChannelMember(workspaceId, categoryId, channelId, email, role);
       return const Right(null);
     } catch (e) {
       return Left(_handleException(e));
@@ -322,7 +326,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
       return Left(_handleException(e));
     }
   }
-
+  
   @override
   Future<Either<Failure, void>> updateAssignment(String workspaceId, String categoryId, String channelId, Assignment assignment) async {
     try {
@@ -374,6 +378,23 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
     }
   }
 
-  
+  @override
+  Future<Either<Failure, ReviewIteration>> createIteration(String workspaceId, String categoryId, String channelId, String submissionId, String remarks, AssignmentStatus? assignmentStatus) async {
+    try {
+      ReviewIteration create =  await remoteDataSource.createIteration(workspaceId, categoryId, channelId, submissionId, remarks, assignmentStatus);
+      return Right(create);
+    } catch (e) {
+      return Left(_handleException(e));
+    }
+  }
 
+  @override
+  Future<Either<Failure, RevieweeIterationsResponse>> getRevieweeIterations(String workspaceId, String categoryId, String channelId, String submissionId) async {
+    try {
+      RevieweeIterationsResponse create =  await remoteDataSource.getRevieweeIterations(workspaceId, categoryId, channelId, submissionId);
+      return Right(create);
+    } catch (e) {
+      return Left(_handleException(e));
+    }
+  }
 }

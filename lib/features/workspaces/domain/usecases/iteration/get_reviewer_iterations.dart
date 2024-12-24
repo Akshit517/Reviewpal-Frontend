@@ -1,8 +1,9 @@
-import 'package:ReviewPal/features/workspaces/domain/repositories/workspace_repositories.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecases.dart';
+import '../../entities/review_iteration_response.dart';
+import '../../repositories/workspace_repositories.dart';
 
 class GetRevieweeIterations implements UseCase<RevieweeIterationsResponse, GetReviewParams> {
   final WorkspaceRepositories repository;
@@ -18,4 +19,18 @@ class GetRevieweeIterations implements UseCase<RevieweeIterationsResponse, GetRe
       params.submissionId,
     );
   }
+}
+
+class GetReviewParams {
+  final String workspaceId;
+  final String categoryId;
+  final String channelId;
+  final String submissionId;
+
+  GetReviewParams({
+    required this.workspaceId,
+    required this.categoryId,
+    required this.channelId,
+    required this.submissionId, 
+  });
 }

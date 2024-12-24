@@ -1,21 +1,22 @@
-import 'package:ReviewPal/features/workspaces/domain/repositories/workspace_repositories.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failures.dart';
+import '../../../../../core/usecases/usecases.dart';
 import '../../entities/review_iteration.dart';
+import '../../repositories/workspace_repositories.dart';
+import 'get_reviewer_iterations.dart';
 
-class GetReviewerIteration {
+class GetReviewerIteration implements UseCase<ReviewIteration, GetReviewParams> {
   final WorkspaceRepositories repository;
 
   GetReviewerIteration(this.repository);
 
-  @override
-  Future<Either<Failure, ReviewIteration>> call(String workspaceId, String categoryId, String channelId, String submissionId) async {
+  Future<Either<Failure, ReviewIteration>> call(GetReviewParams params) async {
     return await repository.getReviewerIteration(
-      workspaceId,
-      categoryId,
-      channelId,
-      submissionId,
+      params.workspaceId,
+      params.categoryId,
+      params.channelId,
+      params.submissionId,
     );
   }
 }

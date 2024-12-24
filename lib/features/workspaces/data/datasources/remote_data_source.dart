@@ -1,11 +1,9 @@
 import 'dart:convert';
 
-import 'package:ReviewPal/core/constants/constants.dart';
-import 'package:ReviewPal/core/network/token/token_http_client.dart';
-import 'package:ReviewPal/features/workspaces/data/models/workspaces/members.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/assignment_entity.dart';
-
+import '../../../../core/constants/constants.dart';
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/network/token/token_http_client.dart';
+import '../../domain/entities/assignment_entity.dart';
 import '../../domain/entities/assignment_status.dart';
 import '../models/assignment/assignment.dart';
 import '../models/category/category.dart';
@@ -13,7 +11,9 @@ import '../models/category/category_member.dart';
 import '../models/channel /channel.dart';
 import '../models/channel /channel_member.dart';
 import '../models/iteration/review_iteration_model.dart';
+import '../models/iteration/review_iteration_response.dart';
 import '../models/submission/submission.dart';
+import '../models/workspaces/members.dart';
 import '../models/workspaces/workspace.dart';
 
 abstract class WorkspaceRemoteDataSource {
@@ -50,7 +50,7 @@ abstract class WorkspaceRemoteDataSource {
   Future<void> deleteChannel(String workspaceId, String categoryId, String channelId);
 
   /// [ChannelMember] methods
-  Future<void> addMemberToChannel(String workspaceId, String categoryId, String channelId, String email);
+  Future<void> addMemberToChannel(String workspaceId, String categoryId, String channelId, String email, String role);
   Future<void> removeMemberFromChannel(String workspaceId, String categoryId, String channelId, String email);
   Future<List<ChannelMemberModel>> getChannelMembers(String workspaceId, String categoryId, String channelId);
   Future<void> updateChannelMember(String workspaceId, String categoryId, String channelId, String email, String role);
@@ -69,9 +69,9 @@ abstract class WorkspaceRemoteDataSource {
   /// [Iteration] methods
   Future<ReviewIterationModel> createIteration(
     String workspaceId,
-    int categoryId,
+    String categoryId,
     String channelId,
-    int submissionId,
+    String submissionId,
     String remarks,
     AssignmentStatus? assignmentStatus,
   );
@@ -83,7 +83,7 @@ abstract class WorkspaceRemoteDataSource {
     String submissionId,
   );
 
-  Future<Map<String, dynamic>> getRevieweeIterations(
+  Future<RevieweeIterationsResponseModel> getRevieweeIterations(
     String workspaceId,
     String categoryId,
     String channelId,
@@ -328,10 +328,13 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
   }
 
   @override
-  Future<void> addMemberToChannel(String workspaceId, String categoryId, String channelId, String email) async {
+  Future<void> addMemberToChannel(String workspaceId, String categoryId, String channelId, String email, String role) async {
     final response = await client.post(
       '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/members/',
-      {'user_email': email},
+      {
+        'user_email': email,
+        'role': role
+      },
     );
     _handleResponse(response.statusCode);
   }
@@ -423,9 +426,9 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
   @override
   Future<ReviewIterationModel> createIteration(
     String workspaceId,
-    int categoryId,
+    String categoryId,
     String channelId,
-    int submissionId,
+    String submissionId,
     String remarks,
     AssignmentStatus? assignmentStatus,
   ) async {
@@ -460,7 +463,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> getRevieweeIterations(
+  Future<RevieweeIterationsResponseModel> getRevieweeIterations(
     String workspaceId,
     String categoryId,
     String channelId,
@@ -470,7 +473,6 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
         '${AppConstants.baseUrl}workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewee-iterations/',
     );
     _handleResponse(response.statusCode);
-    return json.decode(response.body);
+    return RevieweeIterationsResponseModel.fromJson(json.decode(response.body));
   } 
-  
 }

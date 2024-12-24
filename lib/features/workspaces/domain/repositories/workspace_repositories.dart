@@ -1,18 +1,20 @@
 import 'package:dartz/dartz.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/category_entity.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/workspace_entity.dart';
+
 import '../../../../core/error/failures.dart';
 import '../entities/assignment_entity.dart';
 import '../entities/assignment_status.dart';
+import '../entities/category_entity.dart';
 import '../entities/category_member.dart';
 import '../entities/channel_entity.dart';
 import '../entities/channel_member.dart';
 import '../entities/review_iteration.dart';
+import '../entities/review_iteration_response.dart';
 import '../entities/submission.dart';
+import '../entities/workspace_entity.dart';
 import '../entities/workspace_member.dart';
 
 abstract class WorkspaceRepositories {
-  // Workspace methods
+  /// [Workspace] methods
   Future<Either<Failure, Workspace>> createWorkspace(String name, String icon);
   Future<Either<Failure, void>> deleteWorkspace(String workspaceId);
   Future<Either<Failure, Workspace>> updateWorkspace(String workspaceId, String name, String icon);
@@ -26,7 +28,7 @@ abstract class WorkspaceRepositories {
   // Commented as not implemented
   // Future<Either<Failure, void>> leaveWorkspace(String workspaceId);
 
-  // Category methods
+  /// [Category] methods
   Future<Either<Failure, List<Category>>> getCategories(String workspaceId);
   Future<Either<Failure, Category>> createCategory(String workspaceId, String name);
   Future<Either<Failure, void>> deleteCategory(String workspaceId, String id);
@@ -37,26 +39,28 @@ abstract class WorkspaceRepositories {
   Future<Either<Failure, CategoryMember>> getCategoryMember(String workspaceId, String id, String email);
   Future<Either<Failure, void>> updateCategoryMember(String workspaceId, String id, String email, String role);
 
-  // Channel methods (to be implemented similarly)
+  /// [Channel] methods
   Future<Either<Failure, void>> createChannel(String workspaceId, String categoryId, String name, Assignment assignmentData);
   Future<Either<Failure, void>> updateChannel(String workspaceId, String categoryId, String channelId, String? name, Assignment assignmentData);
   Future<Either<Failure, List<Channel>>> getChannels(String workspaceId, String categoryId);
   Future<Either<Failure, void>> deleteChannel(String workspaceId, String categoryId, String channelId);
   Future<Either<Failure, List<ChannelMember>>> getChannelMembers(String workspaceId, String categoryId, String channelId);
-  Future<Either<Failure, void>> addMemberToChannel(String workspaceId, String categoryId, String channelId, String email);
+  Future<Either<Failure, void>> addMemberToChannel(String workspaceId, String categoryId, String channelId, String email, String role);
   Future<Either<Failure, void>> removeMemberFromChannel(String workspaceId, String categoryId, String channelId, String email);
-  Future<Either<Failure, ChannelMember>> updateChannelMember(String workspaceId, String categoryId, String channelId, String email, String role);
+  Future<Either<Failure, void>> updateChannelMember(String workspaceId, String categoryId, String channelId, String email, String role);
 
+  /// [Assignment] methods
   Future<Either<Failure, Assignment>> getAssignment(String workspaceId, String categoryId, String channelId);
   Future<Either<Failure, void>> updateAssignment(String workspaceId, String categoryId, String channelId, Assignment assignment);
 
-  // Submission Reviewee methods (to be implemented)
+  /// [Submission] methods
   Future<Either<Failure, List<Submission>>> getSubmissionReviewees(
       String workspaceId, String categoryId, String channelId);
   Future<Either<Failure, void>> createSubmissionReviewee(
       String workspaceId, String categoryId, String channelId,  String? content, String? file);
   Future<Either<Failure, List<Submission>>> getSubmissionByUserId(
       String workspaceId, String categoryId, String channelId, String userId);
+  // Submission Reviewee methods (to be implemented)
   //Future<Either<Failure, void>> updateSubmissionReviewee(
   //    String workspaceId, String categoryId, String channelId, Map<String, dynamic> data);
   // Future<Either<Failure, void>> deleteSubmissionReviewee(
