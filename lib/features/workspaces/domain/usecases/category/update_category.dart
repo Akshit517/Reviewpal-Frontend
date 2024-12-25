@@ -9,7 +9,7 @@ class UpdateCategoryUseCase {
 
   UpdateCategoryUseCase({required this.repository});
 
-  Future<Either<Failure, Category>> call(String workspaceId, String categoryId, String name) async {
+  Future<Either<Failure, Category>> call(String workspaceId, int categoryId, String name) async {
     return await repository.updateCategory(workspaceId, categoryId, name);
   }
 }

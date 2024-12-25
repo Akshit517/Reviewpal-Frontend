@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../core/resources/pallete/dark_theme_palette.dart';
 import '../../blocs/workspace/workspace_bloc.dart';
+import 'create_category_dialog.dart';
 import 'workspace_header.dart';
 import 'categories_list.dart';
 
@@ -28,6 +30,34 @@ class CategoriesSidebar extends StatelessWidget {
                 thickness: 4,
                 color: DarkThemePalette.fillColor,
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: IconButton(
+                        onPressed: (){
+                          _showAddCategoryDialog(context, workspaceState);
+                        }, 
+                        icon: SvgPicture.asset(
+                          "assets/icons/category_add.svg",
+                        )
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: IconButton(
+                        onPressed: (){}, 
+                        icon: SvgPicture.asset(
+                          "assets/icons/graph_view.svg",
+                        )
+                      ),
+                    )
+                  ],   
+                ),
+              ),
               Expanded(
                 child: CategoriesList(workspace: workspaceState.workspace),
               ),
@@ -38,6 +68,18 @@ class CategoriesSidebar extends StatelessWidget {
         } else {
           return _buildNoWorkspaceView();
         }
+      },
+    );
+  }
+
+  void _showAddCategoryDialog(BuildContext context, WorkspaceLoaded workspaceState) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text("Add Category"),
+          content: CreateCategoryDialog(workspaceId: workspaceState.workspace.id, ctx: ctx),
+        );
       },
     );
   }

@@ -107,8 +107,8 @@ class HomeScreenSidebar extends StatelessWidget {
   }
 
   void _handleWorkspaceTap(BuildContext context, Workspace workspace) {
-    context.read<CategoryBloc>().add(GetCategoriesEvent(workspaceId: workspace.id));
     context.read<WorkspaceBloc>().add(GetWorkspaceEvent(workspaceId: workspace.id));
+    context.read<CategoryBloc>().add(GetCategoriesEvent(workspaceId: workspace.id));
   }
 
   void _showAddWorkspaceDialog(BuildContext context) {

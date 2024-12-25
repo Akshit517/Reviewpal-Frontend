@@ -23,7 +23,7 @@ class CreateSubmissionUseCase implements UseCase<void, CreateSubmissionParams> {
 
 class CreateSubmissionParams {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String channelId;
   final String? content;
   final String? file;

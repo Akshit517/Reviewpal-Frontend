@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecases.dart';
 import '../../entities/assignment_entity.dart';
+import '../../entities/channel_entity.dart';
 import '../../repositories/workspace_repositories.dart';
 
 class CreateChannelUseCase implements UseCase<void, CreateChannelParams> {
@@ -11,7 +12,7 @@ class CreateChannelUseCase implements UseCase<void, CreateChannelParams> {
   CreateChannelUseCase({required this.repository});
 
   @override
-  Future<Either<Failure, void>> call(CreateChannelParams params) async {
+  Future<Either<Failure, Channel>> call(CreateChannelParams params) async {
     return await repository.createChannel(
       params.workspaceId,
       params.categoryId,
@@ -23,7 +24,7 @@ class CreateChannelUseCase implements UseCase<void, CreateChannelParams> {
 
 class CreateChannelParams {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String name;
   final Assignment assignmentData;
 

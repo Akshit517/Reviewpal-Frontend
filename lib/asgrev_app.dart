@@ -1,12 +1,15 @@
-import 'package:ReviewPal/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:ReviewPal/features/workspaces/presentation/blocs/category/category_bloc.dart';
-import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/workspace_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/resources/routes/routes.dart';
 import 'core/resources/app_themes/themes.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/injection.dart';
+import 'features/workspaces/presentation/blocs/category/category_bloc.dart';
+import 'features/workspaces/presentation/blocs/channel/channel_bloc/channel_bloc.dart';
+import 'features/workspaces/presentation/blocs/channel/member/channel_member_bloc.dart';
+import 'features/workspaces/presentation/blocs/workspace/member/workspace_member_bloc.dart';
+import 'features/workspaces/presentation/blocs/workspace/workspace_bloc.dart';
 
 class AsgRevApp extends StatefulWidget {
   const AsgRevApp({super.key});
@@ -28,7 +31,10 @@ class _AsgRevAppState extends State<AsgRevApp> {
       providers: [
         BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
         BlocProvider<WorkspaceBloc>(create: (context) => sl<WorkspaceBloc>()),
-        BlocProvider<CategoryBloc>(create: (context) => sl<CategoryBloc>(),)
+        BlocProvider<WorkspaceMemberBloc>(create: (context) => sl<WorkspaceMemberBloc>()),
+        BlocProvider<CategoryBloc>(create: (context) => sl<CategoryBloc>()),
+        BlocProvider<ChannelBloc>(create: (context) => sl<ChannelBloc>()),
+        BlocProvider<ChannelMemberBloc>(create: (context) => sl<ChannelMemberBloc>())
         ],
       child: MaterialApp.router(
         theme: appThemeData.values.toList()[1],

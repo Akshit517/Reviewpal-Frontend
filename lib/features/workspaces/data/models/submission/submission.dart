@@ -14,7 +14,7 @@ class SubmissionModel extends Submission {
   });
 factory SubmissionModel.fromJson(Map<String, dynamic> json) {
     return SubmissionModel(
-      id: json['id'] as String,
+      id: json['id'],
       assignment: json['assignment'] != null 
           ? AssignmentModel.fromJson(json['assignment'] as Map<String, dynamic>)
           : null,

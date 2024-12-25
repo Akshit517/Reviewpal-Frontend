@@ -11,15 +11,13 @@ class CategoryModel extends Category {
 
   // From JSON
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    var channelsFromJson = json['channels'] as List;
-    List<ChannelModel> channelsList =
-        channelsFromJson.map((channelJson) => ChannelModel.fromJson(channelJson)).toList();
-
     return CategoryModel(
       id: json['id'],
       name: json['name'],
       workspace: json['workspace'],
-      channels: channelsList,
+      channels: (json['channels'] as List<dynamic>?)
+              ?.map((channelJson) => ChannelModel.fromJson(channelJson))
+              .toList() ?? [],
     );
   }
 

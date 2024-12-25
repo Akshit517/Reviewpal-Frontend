@@ -9,14 +9,14 @@ sealed class ChannelEvent extends Equatable {
 
 class GetChannelsEvent extends ChannelEvent {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
 
   const GetChannelsEvent({required this.workspaceId, required this.categoryId});
 }
 
 class CreateChannelEvent extends ChannelEvent {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String name;
   final Assignment assignment;
 
@@ -30,7 +30,7 @@ class CreateChannelEvent extends ChannelEvent {
 
 class UpdateChannelEvent extends ChannelEvent {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String channelId;
   final String? name;
   final Assignment? assignment;
@@ -46,7 +46,7 @@ class UpdateChannelEvent extends ChannelEvent {
 
 class DeleteChannelEvent extends ChannelEvent {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String channelId;
 
   const DeleteChannelEvent({

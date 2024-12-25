@@ -15,11 +15,11 @@ class AssignmentModel extends Assignment {
   factory AssignmentModel.fromJson(Map<String, dynamic> json) {
     return AssignmentModel(
       description: json['description'],
-      forTeams: json['for_teams'],
+      forTeams: json['for_teams'] ?? false,
       totalPoints: json['total_points'],
-      tasks: List<TaskModel>.from(
-        json['tasks'].map((task) => TaskModel.fromJson(task)),
-      ),
+      tasks: (json['tasks'] as List<dynamic>?)
+              ?.map((task) => TaskModel.fromJson(task))
+              .toList() ?? [],
     );
   }
 

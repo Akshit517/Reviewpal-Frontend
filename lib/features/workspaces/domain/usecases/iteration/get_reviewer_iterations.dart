@@ -23,7 +23,7 @@ class GetRevieweeIterations implements UseCase<RevieweeIterationsResponse, GetRe
 
 class GetReviewParams {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String channelId;
   final String submissionId;
 

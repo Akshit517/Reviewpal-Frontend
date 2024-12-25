@@ -3,12 +3,14 @@ import 'package:ReviewPal/features/workspaces/domain/entities/channel_entity.dar
 
 class ChannelModel extends Channel {
   const ChannelModel({
+    required super.id,
     required super.name,
     AssignmentModel? super.assignment,
   });
 
   factory ChannelModel.fromJson(Map<String, dynamic> json) {
     return ChannelModel(
+      id: json['id'],
       name: json['name'],
       assignment: json['assignment'] != null
           ? AssignmentModel.fromJson(json['assignment'])

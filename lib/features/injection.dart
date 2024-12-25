@@ -6,6 +6,13 @@ import 'package:ReviewPal/features/auth/domain/usecases/login.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/get_token.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/register.dart';
 import 'package:ReviewPal/features/workspaces/data/datasources/remote_data_source.dart';
+import 'package:ReviewPal/features/workspaces/domain/usecases/category/create_category.dart';
+import 'package:ReviewPal/features/workspaces/domain/usecases/category/update_category.dart';
+import 'package:ReviewPal/features/workspaces/domain/usecases/channels/channel_member.dart';
+import 'package:ReviewPal/features/workspaces/domain/usecases/channels/create_channel.dart';
+import 'package:ReviewPal/features/workspaces/domain/usecases/workspaces/workspace_member.dart';
+import 'package:ReviewPal/features/workspaces/presentation/blocs/channel/channel_bloc/channel_bloc.dart';
+import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/member/workspace_member_bloc.dart';
 import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/workspace_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -23,13 +30,18 @@ import 'auth/presentation/bloc/auth_bloc.dart';
 import 'auth/presentation/cubit/login_status_cubit.dart';
 import 'workspaces/data/repositories/repositories_impl.dart';
 import 'workspaces/domain/repositories/workspace_repositories.dart';
+import 'workspaces/domain/usecases/category/delete_category.dart';
 import 'workspaces/domain/usecases/category/get_categories.dart';
+import 'workspaces/domain/usecases/channels/delete_channel.dart';
+import 'workspaces/domain/usecases/channels/get_channels.dart';
+import 'workspaces/domain/usecases/channels/update_channel.dart';
 import 'workspaces/domain/usecases/workspaces/create_worksapce.dart';
 import 'workspaces/domain/usecases/workspaces/delete_workspace.dart';
 import 'workspaces/domain/usecases/workspaces/get_joined_workspaces.dart';
 import 'workspaces/domain/usecases/workspaces/get_workspace.dart';
 import 'workspaces/domain/usecases/workspaces/update_workspace.dart';
 import 'workspaces/presentation/blocs/category/category_bloc.dart';
+import 'workspaces/presentation/blocs/channel/member/channel_member_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -48,10 +60,32 @@ Future<void> init() async {
         updateWorkspace: sl(),
         deleteWorkspace: sl(),
   ));
-  sl.registerFactory(() => CategoryBloc(
-        getCategories: sl(),
+  sl.registerFactory(() => WorkspaceMemberBloc(
+    getWorkspaceMemberUseCase: sl(), 
+    getWorkspaceMembersUseCase: sl(), 
+    addWorkspaceMemberUseCase: sl(), 
+    deleteWorkspaceMemberUseCase: sl(), 
+    updateWorkspaceMemberUseCase: sl()
   ));
-
+  sl.registerFactory(() => CategoryBloc(
+    getCategories: sl(),
+    createCategory: sl(),
+    updateCategoryUseCase: sl(),
+    deleteCategoryUseCase: sl(),
+  ));
+  sl.registerFactory(() => ChannelBloc(
+    getChannels: sl(), 
+    createChannel: sl(), 
+    updateChannel: sl(), 
+    deleteChannel: sl()
+  ));
+  sl.registerFactory(() => ChannelMemberBloc(
+    getChannelMembersUseCase: sl(),
+    getChannelMemberUseCase: sl(), 
+    addChannelMemberUseCase: sl(), 
+    deleteChannelMemberUseCase: sl(), 
+    updateChannelMemberUseCase: sl()
+  ));
   //feature [auth]
   initAuth();
 
@@ -110,9 +144,59 @@ void initWorkspaces() {
       () => GetWorkspace(sl()));
   sl.registerLazySingleton<GetJoinedWorkspaces>(
       () => GetJoinedWorkspaces(sl()));
+  sl.registerLazySingleton<GetWorkspaceMemberUseCase>(
+      () => GetWorkspaceMemberUseCase(repository: sl())
+  );
+  sl.registerLazySingleton<GetWorkspaceMembersUseCase>(
+      () => GetWorkspaceMembersUseCase(repository: sl())
+  );
+  sl.registerLazySingleton<AddWorkspaceMemberUseCase>(
+      () => AddWorkspaceMemberUseCase(repository: sl())
+  );
+  sl.registerLazySingleton<DeleteWorkspaceMemberUseCase>(
+      () => DeleteWorkspaceMemberUseCase(repository: sl())
+  );
+  sl.registerLazySingleton<UpdateWorkspaceMemberUseCase>(
+      () => UpdateWorkspaceMemberUseCase(repository: sl())
+  );
   sl.registerLazySingleton<GetCategories>(
       () => GetCategories(sl()));
-
+  sl.registerLazySingleton<UpdateCategoryUseCase>(
+      () => UpdateCategoryUseCase(repository: sl())
+  );
+  sl.registerLazySingleton<DeleteCategory>(
+      () => DeleteCategory(sl())
+  );
+  sl.registerLazySingleton<CreateCategory>(
+      () => CreateCategory(sl())
+  );
+  sl.registerLazySingleton<CreateChannelUseCase>(
+      () => CreateChannelUseCase(repository: sl())
+  );
+  sl.registerLazySingleton(
+      () => UpdateChannelUseCase(workspaceRepositories: sl())
+  );
+  sl.registerLazySingleton(
+      () => DeleteChannelUseCase(repository: sl())
+  );
+  sl.registerLazySingleton(
+    () => GetChannelsUseCase(repository: sl())
+  );
+  sl.registerLazySingleton(
+    () => GetChannelMembersUseCase(repository: sl())
+  );
+  sl.registerLazySingleton(
+    () => GetChannelMemberUseCase(repository: sl())
+  );
+  sl.registerLazySingleton(
+    () => AddChannelMemberUseCase(repository: sl()) 
+  );
+  sl.registerLazySingleton(
+    () => DeleteChannelMemberUseCase(repository: sl())
+  );
+  sl.registerLazySingleton(
+    () => UpdateChannelMemberUseCase(repository: sl())
+  );
   // Repositories
   sl.registerLazySingleton<WorkspaceRepositories>(() => WorkspaceRepositoryImpl(
         remoteDataSource: sl(),

@@ -5,10 +5,10 @@ import '../../../../../core/usecases/usecases.dart';
 import '../../entities/category_member.dart';
 import '../../repositories/workspace_repositories.dart';
 
-class GetCategoryMemberUseCase implements UseCase<List<CategoryMember>, CategoryMemberParams> {
+class GetCategoryMembersUseCase implements UseCase<List<CategoryMember>, CategoryMemberParams> {
   final WorkspaceRepositories repository;
 
-  GetCategoryMemberUseCase({required this.repository});
+  GetCategoryMembersUseCase({required this.repository});
 
   @override
   Future<Either<Failure, List<CategoryMember>>> call(CategoryMemberParams params) async {
@@ -18,6 +18,21 @@ class GetCategoryMemberUseCase implements UseCase<List<CategoryMember>, Category
     );
   }
 }
+
+class GetCategoryMemberUseCase implements UseCase<CategoryMember, CategoryMemberParams> {
+  final WorkspaceRepositories repository;
+
+  GetCategoryMemberUseCase({required this.repository});
+
+  @override
+  Future<Either<Failure, CategoryMember>> call(CategoryMemberParams params) async {
+    return await repository.getCategoryMember(
+      params.workspaceId, 
+      params.categoryId, 
+      params.email
+    );
+  }
+} 
 
 class UpdateCategoryMemberUseCase implements UseCase<void, CategoryMemberParams> {
   final WorkspaceRepositories repository;
@@ -68,7 +83,7 @@ class DeleteCategoryMemberUseCase implements UseCase<void, CategoryMemberParams>
 
 class CategoryMemberParams {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String email;
   final String? role;
 

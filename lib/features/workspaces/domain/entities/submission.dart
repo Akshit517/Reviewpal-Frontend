@@ -2,7 +2,7 @@ import '../../../auth/domain/entities/user_entity.dart';
 import 'assignment_entity.dart';
 
 class Submission {
-  final String id;
+  final int id;
   final Assignment? assignment;
   final User? sender;
   final String? content;

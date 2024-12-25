@@ -1,7 +1,7 @@
 import 'channel_entity.dart';
 
 class Category {
-  final String id;
+  final int id;
   final String name;
   final String workspace;
   final List<Channel> channels;

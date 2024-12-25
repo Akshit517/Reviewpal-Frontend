@@ -24,7 +24,7 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
     required this.createChannel,
     required this.updateChannel,
     required this.deleteChannel
-  }) : super(ChannelInitial()) {
+  }) : super(ChannelState()) {
     on<GetChannelsEvent>(_getChannels);
     on<CreateChannelEvent>(_createChannel);
     on<UpdateChannelEvent>(_updateChannel);
@@ -33,21 +33,21 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
 
   Future<void> _getChannels(
       GetChannelsEvent event, Emitter<ChannelState> emit) async {
-    emit(ChannelLoading());
+    emit(ChannelState(isLoading: true));
     final result = await getChannels(
       ChannelParams(
         workspaceId: event.workspaceId, 
         categoryId: event.categoryId
       ));
     result.fold(
-      (failure) => emit(ChannelError(message: _mapFailureToMessage(failure))),
-      (channels) => emit(ChannelsLoaded(channels: channels)),
+      (failure) => emit(state.copyWith(message: _mapFailureToMessage(failure), isSuccess: false)),
+      (channels) => emit(state.copyWith(channels: channels, isSuccess: true)),
     );
   }
 
   Future<void> _createChannel(
       CreateChannelEvent event, Emitter<ChannelState> emit) async {
-    emit(ChannelLoading());
+    emit(ChannelState(isLoading: true));
     final result = await createChannel(
       CreateChannelParams(
         workspaceId: event.workspaceId,
@@ -56,15 +56,19 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
         assignmentData: event.assignment
       )
     );
+
     result.fold(
-      (failure) => emit(ChannelError(message: _mapFailureToMessage(failure))),
-      (channel) => emit(const ChannelSuccess(message: "Channel created successfully")),
+      (failure) => emit(state.copyWith(message: _mapFailureToMessage(failure), isSuccess: false)),
+      (channel) => emit(state.copyWith(
+        channels: [...state.channels, channel],
+        message: "Channel created successfully", 
+        isSuccess: true)),
     );
   }
 
   Future<void> _updateChannel(
       UpdateChannelEvent event, Emitter<ChannelState> emit) async {
-    emit(ChannelLoading());
+    emit(state.copyWith(isLoading: true));
     final result = await updateChannel(
       UpdateChannelParams(
         workspaceId: event.workspaceId,
@@ -75,14 +79,18 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
       )
     );
     result.fold(
-      (failure) => emit(ChannelError(message: _mapFailureToMessage(failure))),
-      (channel) => emit(const ChannelSuccess(message: "Channel updated successfully")),
+      (failure) => emit(state.copyWith(message: _mapFailureToMessage(failure), isSuccess: false)),
+      (channel) => emit(state.copyWith(
+        channels: state.channels.map((e) => e.id == channel.id ? channel : e).toList(),
+        message: "Channel updated successfully",
+        isSuccess: true
+        )),
     );
   }
 
   Future<void> _deleteChannel(
       DeleteChannelEvent event, Emitter<ChannelState> emit) async {
-    emit(ChannelLoading());
+    emit(state.copyWith(isLoading: true));
     final result = await deleteChannel(
       ChannelParams(
         workspaceId: event.workspaceId,
@@ -91,8 +99,12 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
       )
     );
     result.fold(
-      (failure) => emit(ChannelError(message: _mapFailureToMessage(failure))),
-      (_) => emit(const ChannelSuccess(message: "Channel deleted successfully")),
+      (failure) => emit(state.copyWith(message: _mapFailureToMessage(failure), isSuccess: false)),
+      (_) => emit(state.copyWith(
+        channels: state.channels.where((channel) => channel.id != event.channelId).toList(),
+        message: "Channel deleted successfully",
+        isSuccess: true
+        )),
     );
   } 
 

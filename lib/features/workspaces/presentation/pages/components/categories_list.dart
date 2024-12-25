@@ -5,10 +5,10 @@ import '../../../domain/entities/category_entity.dart';
 import '../../../domain/entities/channel_entity.dart';
 import '../../../domain/entities/workspace_entity.dart';
 import '../../blocs/category/category_bloc.dart';
-import '../../blocs/channel/bloc/channel_bloc.dart';
+import '../../blocs/channel/channel_bloc/channel_bloc.dart';
 import 'custom_expansion_tile.dart';
 
-class CategoriesList extends StatelessWidget {
+class CategoriesList extends StatefulWidget {
   final Workspace workspace;
   final VoidCallback? onCategorySelected;
 
@@ -17,6 +17,17 @@ class CategoriesList extends StatelessWidget {
     required this.workspace,
     this.onCategorySelected,
   });
+
+  @override
+  State<CategoriesList> createState() => _CategoriesListState();
+}
+
+class _CategoriesListState extends State<CategoriesList> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +41,9 @@ class CategoriesList extends StatelessWidget {
             children: state.categories
                 .map((category) => _buildCategory(
                       context,
-                      workspace,
+                      widget.workspace,
                       category,
-                      onCategorySelected,
+                      widget.onCategorySelected,
                     ))
                 .toList(),
           );
@@ -50,28 +61,29 @@ class CategoriesList extends StatelessWidget {
     Category category,
     VoidCallback? onCategorySelected,
   ) {
+    context.read<ChannelBloc>().add(GetChannelsEvent(workspaceId: workspace.id, categoryId: category.id));
     return CustomExpansionTile(
       title: category.name,
       children: [
         BlocBuilder<ChannelBloc, ChannelState>(
           builder: (context, state) {
-            if (state is ChannelLoading) {
+            if (state.isLoading == true && state.isLoading != null) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state is ChannelsLoaded) {
-              return Column(
-                children: state.channels
-                    .map((channel) => _buildSubcategory(
-                          workspace,
-                          category,
-                          channel,
-                          onCategorySelected,
-                        ))
-                    .toList(),
-              );
-            } else if (state is ChannelError) {
+            } else if (state.isSuccess == false && state.isSuccess != null) {
               return Center(child: Text("Error: ${state.message}"));
+            } else if (state.isSuccess == true && state.isSuccess != null && state.channels.isEmpty) {
+              return const Center(child: Text("No Channels Available"));
             }
-            return const Center(child: Text("No Channels Available"));
+            return Column(
+              children: state.channels
+                  .map((channel) => _buildSubcategory(
+                        workspace,
+                        category,
+                        channel,
+                        onCategorySelected,
+                      ))
+                  .toList(),
+            );
           },
         ),
       ],

@@ -11,6 +11,7 @@ class GetReviewerIteration implements UseCase<ReviewIteration, GetReviewParams> 
 
   GetReviewerIteration(this.repository);
 
+  @override
   Future<Either<Failure, ReviewIteration>> call(GetReviewParams params) async {
     return await repository.getReviewerIteration(
       params.workspaceId,

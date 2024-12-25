@@ -19,7 +19,7 @@ class GetAssignmentUseCase implements UseCase<Assignment, AssignmentParams> {
 
 class AssignmentParams {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String channelId;
 
   AssignmentParams(this.workspaceId, this.categoryId, this.channelId);

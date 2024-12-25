@@ -26,7 +26,7 @@ class CreateReviewIteration implements UseCase<ReviewIteration, CreateReviewPara
 
 class CreateReviewParams {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String channelId;
   final String submissionId;
   final String remarks;

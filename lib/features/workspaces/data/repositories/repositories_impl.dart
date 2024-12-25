@@ -129,11 +129,15 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
     }
   }
 
-  // Commented as not implemented
-  // @override
-  // Future<Either<Failure, WorkspaceMember>> getWorkspaceMember(String workspaceId, String email) {
-  //   // TODO: Implement this method
-  // }
+  @override
+  Future<Either<Failure, WorkspaceMember>> getWorkspaceMember(String workspaceId, String email) async {
+    try {
+      final member = await remoteDataSource.getWorkspaceMember(workspaceId, email);
+      return Right(member);
+    } catch (e) {
+      return Left(_handleException(e));
+    }
+  }
 
   @override
   Future<Either<Failure, void>> updateWorkspaceMember(String workspaceId, String email, String role) async {
@@ -166,7 +170,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> deleteCategory(String workspaceId, String id) async {
+  Future<Either<Failure, void>> deleteCategory(String workspaceId, int id) async {
     try {
       await remoteDataSource.deleteCategory(workspaceId, id);
       return const Right(null);
@@ -176,7 +180,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, Category>> updateCategory(String workspaceId, String id, String name) async {
+  Future<Either<Failure, Category>> updateCategory(String workspaceId, int id, String name) async {
     try {
       final category = await remoteDataSource.updateCategory(workspaceId, id, name);
       return Right(category);
@@ -186,7 +190,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, List<CategoryMember>>> getCategoryMembers(String workspaceId, String id) async {
+  Future<Either<Failure, List<CategoryMember>>> getCategoryMembers(String workspaceId, int id) async {
     try {
       final members = await remoteDataSource.getCategoryMembers(workspaceId, id);
       return Right(members);
@@ -196,7 +200,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> addMemberToCategory(String workspaceId, String id, String email) async {
+  Future<Either<Failure, void>> addMemberToCategory(String workspaceId, int id, String email) async {
     try {
       await remoteDataSource.addMemberToCategory(workspaceId, id, email);
       return const Right(null);
@@ -206,7 +210,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> removeMemberFromCategory(String workspaceId, String id, String email) async {
+  Future<Either<Failure, void>> removeMemberFromCategory(String workspaceId, int id, String email) async {
     try {
       await remoteDataSource.removeMemberFromCategory(workspaceId, id, email);
       return const Right(null);
@@ -216,7 +220,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, CategoryMember>> getCategoryMember(String workspaceId, String id, String email) async {
+  Future<Either<Failure, CategoryMember>> getCategoryMember(String workspaceId, int id, String email) async {
     try {
       final member = await remoteDataSource.getCategoryMember(workspaceId, id, email);
       return Right(member);
@@ -226,7 +230,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> updateCategoryMember(String workspaceId, String id, String email, String role) async {
+  Future<Either<Failure, void>> updateCategoryMember(String workspaceId, int id, String email, String role) async {
     try {
       await remoteDataSource.updateCategoryMember(workspaceId, id, email, role);
       return const Right(null);
@@ -236,7 +240,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, List<Channel>>> getChannels(String workspaceId, String categoryId) async {
+  Future<Either<Failure, List<Channel>>> getChannels(String workspaceId, int categoryId) async {
     try {
       final channels = await remoteDataSource.fetchChannels(workspaceId, categoryId);
       return Right(channels);
@@ -246,10 +250,9 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> createChannel(String workspaceId, String categoryId, String name, Assignment assignment) async {
+  Future<Either<Failure, Channel>> createChannel(String workspaceId, int categoryId, String name, Assignment assignment) async {
     try {
       final channel = await remoteDataSource.createChannel(workspaceId, categoryId, name, assignment);
-      // ignore: void_checks
       return Right(channel);
     } catch (e) {
       return Left(_handleException(e));
@@ -257,7 +260,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> deleteChannel(String workspaceId, String categoryId, String channelId) async {
+  Future<Either<Failure, void>> deleteChannel(String workspaceId, int categoryId, String channelId) async {
     try {
       await remoteDataSource.deleteChannel(workspaceId, categoryId, channelId);
       return const Right(null);
@@ -267,18 +270,18 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> updateChannel(String workspaceId, String categoryId, String channelId, String? name, Assignment assignment) async {
+  Future<Either<Failure, Channel>> updateChannel(String workspaceId, int categoryId, String channelId, String? name, Assignment assignment) async {
     try {
       await remoteDataSource.updateAssignment(workspaceId, categoryId, channelId, assignment);
-      await remoteDataSource.updateChannel(workspaceId, categoryId, channelId, name, assignment);
-      return const Right(null);
+      final channel = await remoteDataSource.updateChannel(workspaceId, categoryId, channelId, name, assignment);
+      return Right(channel);
     } catch (e) {
       return Left(_handleException(e));
     }
   }
 
   @override
-  Future<Either<Failure, List<ChannelMember>>> getChannelMembers(String workspaceId, String categoryId, String channelId) async {
+  Future<Either<Failure, List<ChannelMember>>> getChannelMembers(String workspaceId, int categoryId, String channelId) async {
     try {
       final members = await remoteDataSource.getChannelMembers(workspaceId, categoryId, channelId);
       return Right(members);
@@ -288,7 +291,17 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> addMemberToChannel(String workspaceId, String categoryId, String channelId, String email, String role) async {
+  Future<Either<Failure, ChannelMember>> getChannelMember(String workspaceId, int categoryId, String channelId, String email) async {
+    try {
+      final member = await remoteDataSource.getChannelMember(workspaceId, categoryId, channelId, email);
+      return Right(member);
+    } catch (e) {
+      return Left(_handleException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> addMemberToChannel(String workspaceId, int categoryId, String channelId, String email, String role) async {
     try {
       await remoteDataSource.addMemberToChannel(workspaceId, categoryId, channelId, email, role);
       return const Right(null);
@@ -298,7 +311,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> updateChannelMember(String workspaceId, String categoryId, String channelId, String email, String role) async {
+  Future<Either<Failure, void>> updateChannelMember(String workspaceId, int categoryId, String channelId, String email, String role) async {
     try {
       await remoteDataSource.updateChannelMember(workspaceId, categoryId, channelId, email, role);
       return const Right(null);
@@ -308,7 +321,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, void>> removeMemberFromChannel(String workspaceId, String categoryId, String channelId, String email) async {
+  Future<Either<Failure, void>> removeMemberFromChannel(String workspaceId, int categoryId, String channelId, String email) async {
     try {
       await remoteDataSource.removeMemberFromChannel(workspaceId, categoryId, channelId, email);
       return const Right(null);
@@ -318,7 +331,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, Assignment>> getAssignment(String workspaceId, String categoryId, String channelId) async {
+  Future<Either<Failure, Assignment>> getAssignment(String workspaceId, int categoryId, String channelId) async {
     try {
       final assignment = await remoteDataSource.getAssignment(workspaceId, categoryId, channelId);
       return Right(assignment);
@@ -328,7 +341,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
   
   @override
-  Future<Either<Failure, void>> updateAssignment(String workspaceId, String categoryId, String channelId, Assignment assignment) async {
+  Future<Either<Failure, void>> updateAssignment(String workspaceId, int categoryId, String channelId, Assignment assignment) async {
     try {
       await remoteDataSource.updateAssignment(workspaceId, categoryId, channelId, assignment);
       return const Right(null);
@@ -338,7 +351,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, List<Submission>>> getSubmissionReviewees(String workspaceId, String categoryId, String channelId) async {
+  Future<Either<Failure, List<Submission>>> getSubmissionReviewees(String workspaceId, int categoryId, String channelId) async {
     try {
       final submissions = await remoteDataSource.getSubmissionReviewees(workspaceId, categoryId, channelId);
       return Right(submissions);
@@ -348,7 +361,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, List<Submission>>> createSubmissionReviewee(String workspaceId, String categoryId, String channelId, String? content, String? file) async {
+  Future<Either<Failure, List<Submission>>> createSubmissionReviewee(String workspaceId, int categoryId, String channelId, String? content, String? file) async {
     try {
       final submissions = await remoteDataSource.postSubmissionReviewee(workspaceId, categoryId, channelId, content, file);
       return Right(submissions);
@@ -358,7 +371,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, List<Submission>>> getSubmissionByUserId(String workspaceId, String categoryId, String channelId, String userId) async {
+  Future<Either<Failure, List<Submission>>> getSubmissionByUserId(String workspaceId, int categoryId, String channelId, String userId) async {
     try {
       final submissions = await remoteDataSource.getSubmissionByUserId(workspaceId, categoryId, channelId, userId);
       return Right(submissions);
@@ -369,7 +382,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   
   /// [Iteration] Methods
   @override
-  Future<Either<Failure, ReviewIteration>> getReviewerIteration(String workspaceId, String categoryId, String channelId, String submissionId) async {
+  Future<Either<Failure, ReviewIteration>> getReviewerIteration(String workspaceId, int categoryId, String channelId, String submissionId) async {
     try {
       final iteration = await remoteDataSource.getReviewerIteration(workspaceId, categoryId, channelId, submissionId);
       return Right(iteration);
@@ -379,7 +392,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, ReviewIteration>> createIteration(String workspaceId, String categoryId, String channelId, String submissionId, String remarks, AssignmentStatus? assignmentStatus) async {
+  Future<Either<Failure, ReviewIteration>> createIteration(String workspaceId, int categoryId, String channelId, String submissionId, String remarks, AssignmentStatus? assignmentStatus) async {
     try {
       ReviewIteration create =  await remoteDataSource.createIteration(workspaceId, categoryId, channelId, submissionId, remarks, assignmentStatus);
       return Right(create);
@@ -389,7 +402,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, RevieweeIterationsResponse>> getRevieweeIterations(String workspaceId, String categoryId, String channelId, String submissionId) async {
+  Future<Either<Failure, RevieweeIterationsResponse>> getRevieweeIterations(String workspaceId, int categoryId, String channelId, String submissionId) async {
     try {
       RevieweeIterationsResponse create =  await remoteDataSource.getRevieweeIterations(workspaceId, categoryId, channelId, submissionId);
       return Right(create);

@@ -5,16 +5,14 @@ class TaskModel extends Task {
     required super.title,
     required super.description,
     required super.dueDate,
-    required super.points,
   });
 
   // From JSON
   factory TaskModel.fromJson(Map<String, dynamic> json) {
     return TaskModel(
       title: json['task'],
-      description: json['description'],
+      description: json['description'] ?? '',
       dueDate: DateTime.parse(json['due_date']),
-      points: json['points'],
     );
   }
 
@@ -24,7 +22,6 @@ class TaskModel extends Task {
       'task': title,
       'description': description,
       'due_date': dueDate,
-      'points': points,
     };
   }
 }

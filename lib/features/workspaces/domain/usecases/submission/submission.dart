@@ -29,7 +29,7 @@ class GetSubmissionUseCase implements UseCase<List<Submission>, SubmissionParams
 
 class SubmissionParams {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String channelId;
   final String? userId;
 

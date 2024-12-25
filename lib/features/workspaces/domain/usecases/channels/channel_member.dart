@@ -1,14 +1,14 @@
-import 'package:ReviewPal/core/usecases/usecases.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/channel_member.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failures.dart';
+import '../../../../../core/usecases/usecases.dart';
+import '../../entities/channel_member.dart';
 import '../../repositories/workspace_repositories.dart';
 
-class GetChannelMemberUseCase implements UseCase<List<ChannelMember>, ChannelMemberParams>{
+class GetChannelMembersUseCase implements UseCase<List<ChannelMember>, ChannelMemberParams>{
   final WorkspaceRepositories repository;
 
-  GetChannelMemberUseCase({required this.repository});
+  GetChannelMembersUseCase({required this.repository});
 
   @override
   Future<Either<Failure, List<ChannelMember>>> call(ChannelMemberParams params) async {
@@ -16,6 +16,22 @@ class GetChannelMemberUseCase implements UseCase<List<ChannelMember>, ChannelMem
       params.workspaceId, 
       params.categoryId, 
       params.channelId
+    );
+  }
+}
+
+class GetChannelMemberUseCase implements UseCase<ChannelMember, ChannelMemberParams>{
+  final WorkspaceRepositories repository;
+
+  GetChannelMemberUseCase({required this.repository});
+
+  @override
+  Future<Either<Failure, ChannelMember>> call(ChannelMemberParams params) async {
+    return await repository.getChannelMember(
+      params.workspaceId, 
+      params.categoryId, 
+      params.channelId, 
+      params.email!
     );
   }
 }
@@ -31,7 +47,7 @@ class AddChannelMemberUseCase implements UseCase<void, ChannelMemberParams>{
       params.workspaceId, 
       params.categoryId, 
       params.channelId, 
-      params.email,
+      params.email!,
       params.role!  
     );
   }
@@ -48,7 +64,7 @@ class UpdateChannelMemberUseCase implements UseCase<void, ChannelMemberParams>{
       params.workspaceId, 
       params.categoryId, 
       params.channelId, 
-      params.email, 
+      params.email!, 
       params.role!
     );
   }
@@ -65,23 +81,23 @@ class DeleteChannelMemberUseCase implements UseCase<void, ChannelMemberParams>{
       params.workspaceId, 
       params.categoryId, 
       params.channelId, 
-      params.email, 
+      params.email!, 
     );
   }
 }
 
 class ChannelMemberParams {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String channelId;
-  final String email;
+  final String? email;
   final String? role;
 
   ChannelMemberParams({
     required this.workspaceId,
     required this.categoryId,
     required this.channelId,
-    required this.email,
+    this.email,
     this.role
   });
 }

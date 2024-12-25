@@ -25,3 +25,12 @@ class CategoriesLoaded extends CategoryState {
   @override
   List<Object> get props => [categories];
 }
+
+class CategorySuccess extends CategoryState {
+  final String message;
+
+  const CategorySuccess({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}

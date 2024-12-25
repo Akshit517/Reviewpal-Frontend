@@ -77,64 +77,67 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const TextFieldHeader(
-                text: 'ADD WORKSPACE',
-              ),
-              const SizedBox(height: 8.0),
-              TextFormFieldWidget(
-                hintText: "Workspace Name",
-                controller: _workspaceNameTextController,
-                haveObscureText: false,
-                haveSuffixIconObscure: false,
-              ),
-              const SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: DarkThemePalette.fillColor,
-                    ),
-                    onPressed: _pickImage,
-                    child: const Text('Select Icon'),
-                  ),
-                   if (_selectedImage != null)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.file(
-                        _selectedImage!,
-                        height: 100,
-                        width: 100,
-                        fit: BoxFit.cover,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 400),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const TextFieldHeader(
+                  text: 'ADD WORKSPACE',
+                ),
+                const SizedBox(height: 8.0),
+                TextFormFieldWidget(
+                  hintText: "Workspace Name",
+                  controller: _workspaceNameTextController,
+                  haveObscureText: false,
+                  haveSuffixIconObscure: false,
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: DarkThemePalette.fillColor,
                       ),
+                      onPressed: _pickImage,
+                      child: const Text('Select Icon'),
                     ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  TextButton(
-                    child: const Text('Cancel'),
-                    onPressed: () {
-                      _clearControllers();
-                      Navigator.pop(context);
-                    },
-                  ),
-                  TextButton(
-                    child: const Text('Add'),
-                    onPressed: () async => _uploadImageAndCreateWorkspace(context),
-                  ),
-                ],
-              ),
-            ],
+                     if (_selectedImage != null)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.file(
+                          _selectedImage!,
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    TextButton(
+                      child: const Text('Cancel'),
+                      onPressed: () {
+                        _clearControllers();
+                        Navigator.pop(context);
+                      },
+                    ),
+                    TextButton(
+                      child: const Text('Add'),
+                      onPressed: () async => _uploadImageAndCreateWorkspace(context),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

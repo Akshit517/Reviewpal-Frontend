@@ -19,7 +19,7 @@ class GetChannelsUseCase implements UseCase<List<Channel>, ChannelParams> {
 
 class ChannelParams {
   final String workspaceId;
-  final String categoryId;
+  final int categoryId;
   final String? channelId;
 
   ChannelParams({

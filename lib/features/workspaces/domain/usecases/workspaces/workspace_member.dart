@@ -16,6 +16,17 @@ class GetWorkspaceMembersUseCase implements UseCase<List<WorkspaceMember>, Strin
   }
 }
 
+class GetWorkspaceMemberUseCase implements UseCase<WorkspaceMember, WorkspaceMemberParams> {
+  final WorkspaceRepositories repository;
+
+  GetWorkspaceMemberUseCase({required this.repository});
+
+  @override
+  Future<Either<Failure, WorkspaceMember>> call(WorkspaceMemberParams params) async {
+    return await repository.getWorkspaceMember(params.workspaceId, params.userEmail);
+  }
+}
+
 class AddWorkspaceMemberUseCase implements UseCase<void, WorkspaceMemberParams> {
   final WorkspaceRepositories repository;
 

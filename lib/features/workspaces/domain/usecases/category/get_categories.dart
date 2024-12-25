@@ -10,6 +10,7 @@ class GetCategories {
   GetCategories(this.repository);
 
   Future<Either<Failure, List<Category>>> call(String workspaceId) async {
-    return await repository.getCategories(workspaceId);
+    final category = await repository.getCategories(workspaceId);
+    return category;
   }
 }
