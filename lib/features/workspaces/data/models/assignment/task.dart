@@ -1,9 +1,9 @@
 import '../../../domain/entities/task_entity.dart';
 
 class TaskModel extends Task {
-  const TaskModel({
+  TaskModel({
     required super.title,
-    required super.description,
+    super.description,
     required super.dueDate,
   });
 

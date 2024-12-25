@@ -27,28 +27,34 @@ class HomeScreenSidebar extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          Expanded(child: _buildWorkspaceList()),
+          Expanded(child: _buildWorkspaceList(context)),
           _buildAddWorkspaceButton(context),
         ],
       ),
     );
   }
 
-  Widget _buildWorkspaceList() {
-    return BlocConsumer<WorkspaceBloc, WorkspaceState>(
-      listenWhen: (previous, current) => 
-          current is WorkspaceCreated || 
-          current is WorkspaceError || 
-          current is WorkspaceDeleted,
-      listener: _handleWorkspaceStateChanges,
-      buildWhen: (previous, current) =>
-          current is WorkspacesLoaded || current is WorkspacesLoading || current is WorkspaceError,
-      builder: (context, state) {
-        if (state is WorkspacesLoaded) {
-          return _buildLoadedWorkspaces(context, state.workspaces);
-        }
-        return _buildLoadingShimmer();
+  Widget _buildWorkspaceList(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: (){
+        context.read<WorkspaceBloc>().add(const GetJoinedWorkspacesEvent());
+        return Future<void>.value();
       },
+      child: BlocConsumer<WorkspaceBloc, WorkspaceState>(
+        listenWhen: (previous, current) => 
+            current is WorkspaceCreated || 
+            current is WorkspaceError || 
+            current is WorkspaceDeleted,
+        listener: _handleWorkspaceStateChanges,
+        buildWhen: (previous, current) =>
+            current is WorkspacesLoaded || current is WorkspacesLoading || current is WorkspaceError,
+        builder: (context, state) {
+          if (state is WorkspacesLoaded) {
+            return _buildLoadedWorkspaces(context, state.workspaces);
+          }
+          return _buildLoadingShimmer();
+        },
+      ),
     );
   }
 
@@ -146,10 +152,13 @@ class _WorkspaceAvatar extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
-        child: ClipOval(
-          child: UniversalImage(
-            imageUrl: workspace.icon,
-            fit: BoxFit.fill,
+        child: SizedBox(
+          width: radius * 2,
+          child: ClipOval(
+            child: UniversalImage(
+              imageUrl: workspace.icon,
+              fit: BoxFit.fill,
+            ),
           ),
         ),
       ),

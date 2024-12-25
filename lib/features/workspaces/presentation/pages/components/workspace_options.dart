@@ -54,21 +54,13 @@ class WorkspaceOptions extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-   onPressed: () async {
-            // Get the WorkspaceBloc instance
-            final workspaceBloc = context.read<WorkspaceBloc>();
-            
-            // Add delete event and wait for it to complete
-            workspaceBloc.add(DeleteWorkspaceEvent(workspaceId: workspace.id));
-            
-            // Wait for the delete event to be processed
-            await Future.delayed(Duration.zero);
-            
-            // Add get workspaces event after deletion is complete
-            workspaceBloc.add(const GetJoinedWorkspacesEvent());
-            
-            Navigator.pop(context);
-          },
+            onPressed: () async {
+                     final workspaceBloc = context.read<WorkspaceBloc>();      
+                     workspaceBloc.add(DeleteWorkspaceEvent(workspaceId: workspace.id));
+                     await Future.delayed(const Duration(seconds: 1));
+                     workspaceBloc.add(const GetJoinedWorkspacesEvent());
+                     Navigator.pop(context);
+                   },
             child: const Text('Delete'),
           ),
         ],

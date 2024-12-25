@@ -45,7 +45,7 @@ class _CreateCategoryDialogState extends State<CreateCategoryDialog> {
               child: const Text("Cancel"),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 context.read<CategoryBloc>().add(CreateCategoryEvent(
                       workspaceId: widget.workspaceId,
                       name: _nameController.text.trim(),

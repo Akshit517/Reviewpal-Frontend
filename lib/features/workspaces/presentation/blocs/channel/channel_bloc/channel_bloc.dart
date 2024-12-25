@@ -31,43 +31,66 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
     on<DeleteChannelEvent>(_deleteChannel);
   }
 
-  Future<void> _getChannels(
-      GetChannelsEvent event, Emitter<ChannelState> emit) async {
-    emit(ChannelState(isLoading: true));
+  Future<void> _getChannels(GetChannelsEvent event, Emitter<ChannelState> emit) async {
+    emit(state.copyWith(isLoading: true));
     final result = await getChannels(
       ChannelParams(
         workspaceId: event.workspaceId, 
         categoryId: event.categoryId
       ));
+    
     result.fold(
-      (failure) => emit(state.copyWith(message: _mapFailureToMessage(failure), isSuccess: false)),
-      (channels) => emit(state.copyWith(channels: channels, isSuccess: true)),
+      (failure) => emit(state.copyWith(
+        message: _mapFailureToMessage(failure), 
+        isSuccess: false, 
+        isLoading: false
+      )),
+      (channels) {
+        final updatedChannels = Map<int, List<Channel>>.from(state.channelsByCategory);
+        updatedChannels[event.categoryId] = channels;
+        
+        emit(state.copyWith(
+          channelsByCategory: updatedChannels,
+          isSuccess: true,
+          isLoading: false
+        ));
+      },
     );
   }
 
-  Future<void> _createChannel(
-      CreateChannelEvent event, Emitter<ChannelState> emit) async {
-    emit(ChannelState(isLoading: true));
-    final result = await createChannel(
-      CreateChannelParams(
-        workspaceId: event.workspaceId,
-        categoryId: event.categoryId,
-        name: event.name,
-        assignmentData: event.assignment
-      )
-    );
+  Future<void> _createChannel(CreateChannelEvent event, Emitter<ChannelState> emit) async {
+  emit(state.copyWith(isLoading: true));
+  final result = await createChannel(
+    CreateChannelParams(
+      workspaceId: event.workspaceId,
+      categoryId: event.categoryId,
+      name: event.name,
+      assignmentData: event.assignment
+    )
+  );
 
-    result.fold(
-      (failure) => emit(state.copyWith(message: _mapFailureToMessage(failure), isSuccess: false)),
-      (channel) => emit(state.copyWith(
-        channels: [...state.channels, channel],
-        message: "Channel created successfully", 
-        isSuccess: true)),
-    );
-  }
+  result.fold(
+    (failure) => emit(state.copyWith(
+      message: _mapFailureToMessage(failure), 
+      isSuccess: false, 
+      isLoading: false
+    )),
+    (channel) {
+      final updatedChannels = Map<int, List<Channel>>.from(state.channelsByCategory);
+      final categoryChannels = updatedChannels[event.categoryId] ?? [];
+      updatedChannels[event.categoryId] = [...categoryChannels, channel];
+      
+      emit(state.copyWith(
+        channelsByCategory: updatedChannels,
+        message: "Channel created successfully",
+        isSuccess: true,
+        isLoading: false
+      ));
+    }
+  );
+}
 
-  Future<void> _updateChannel(
-      UpdateChannelEvent event, Emitter<ChannelState> emit) async {
+  Future<void> _updateChannel(UpdateChannelEvent event, Emitter<ChannelState> emit) async {
     emit(state.copyWith(isLoading: true));
     final result = await updateChannel(
       UpdateChannelParams(
@@ -78,35 +101,63 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
         assignmentData: event.assignment!
       )
     );
+    
     result.fold(
-      (failure) => emit(state.copyWith(message: _mapFailureToMessage(failure), isSuccess: false)),
-      (channel) => emit(state.copyWith(
-        channels: state.channels.map((e) => e.id == channel.id ? channel : e).toList(),
-        message: "Channel updated successfully",
-        isSuccess: true
-        )),
+      (failure) => emit(state.copyWith(
+        message: _mapFailureToMessage(failure), 
+        isSuccess: false, 
+        isLoading: false
+      )),
+      (channel) {
+        final updatedChannels = Map<int, List<Channel>>.from(state.channelsByCategory);
+        final categoryChannels = updatedChannels[event.categoryId] ?? [];
+        updatedChannels[event.categoryId] = categoryChannels.map(
+          (e) => e.id == channel.id ? channel : e
+        ).toList();
+
+        emit(state.copyWith(
+          channelsByCategory: updatedChannels,
+          message: "Channel updated successfully",
+          isSuccess: true,
+          isLoading: false
+        ));
+      }
     );
   }
 
-  Future<void> _deleteChannel(
-      DeleteChannelEvent event, Emitter<ChannelState> emit) async {
-    emit(state.copyWith(isLoading: true));
-    final result = await deleteChannel(
-      ChannelParams(
-        workspaceId: event.workspaceId,
-        categoryId: event.categoryId,
-        channelId: event.channelId
-      )
-    );
-    result.fold(
-      (failure) => emit(state.copyWith(message: _mapFailureToMessage(failure), isSuccess: false)),
-      (_) => emit(state.copyWith(
-        channels: state.channels.where((channel) => channel.id != event.channelId).toList(),
+
+  Future<void> _deleteChannel(DeleteChannelEvent event, Emitter<ChannelState> emit) async {
+  emit(state.copyWith(isLoading: true));
+  final result = await deleteChannel(
+    ChannelParams(
+      workspaceId: event.workspaceId,
+      categoryId: event.categoryId,
+      channelId: event.channelId
+    )
+  );
+  
+  result.fold(
+    (failure) => emit(state.copyWith(
+      message: _mapFailureToMessage(failure), 
+      isSuccess: false, 
+      isLoading: false
+    )),
+    (_) {
+      final updatedChannels = Map<int, List<Channel>>.from(state.channelsByCategory);
+      final categoryChannels = updatedChannels[event.categoryId] ?? [];
+      updatedChannels[event.categoryId] = categoryChannels
+          .where((channel) => channel.id != event.channelId)
+          .toList();
+
+      emit(state.copyWith(
+        channelsByCategory: updatedChannels,
         message: "Channel deleted successfully",
-        isSuccess: true
-        )),
-    );
-  } 
+        isSuccess: true,
+        isLoading: false
+      ));
+    }
+  );
+  }
 
   String _mapFailureToMessage(Failure failure) {
     if (failure is UnauthorizedFailure) {

@@ -8,12 +8,14 @@ class TextFormFieldWidget extends StatefulWidget {
     required this.hintText,
     required this.haveObscureText,
     required this.haveSuffixIconObscure,
+    this.inputType,
   });
 
   final TextEditingController controller;
   final String hintText;
   final bool haveObscureText;
   final bool haveSuffixIconObscure;
+  final TextInputType? inputType;
 
   @override
   State<TextFormFieldWidget> createState() => _TextFieldWidgetState();
@@ -28,6 +30,7 @@ class _TextFieldWidgetState extends State<TextFormFieldWidget> {
       controller: widget.controller,
       obscureText: widget.haveObscureText ? _obsocureText : false,
       cursorColor: DarkThemePalette.textPrimary,
+      keyboardType: widget.inputType ?? TextInputType.text,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'This field cannot be empty';

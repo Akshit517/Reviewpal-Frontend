@@ -6,12 +6,14 @@ class CustomExpansionTile extends StatefulWidget {
   final String title;
   final List<Widget> children;
   final Function? onTap;
+  final Function? onLongPress;
 
   const CustomExpansionTile({
     super.key,
     required this.title,
     this.children = const [],
     this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -50,6 +52,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
                     widget.onTap!();
                   }
                 },
+                onLongPress: widget.onLongPress as void Function()?,
                 child: Container(
                   decoration: BoxDecoration(
                     color: _isHovered

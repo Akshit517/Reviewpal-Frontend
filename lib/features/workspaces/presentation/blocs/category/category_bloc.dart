@@ -21,8 +21,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     required this.getCategories,
     required this.updateCategoryUseCase,
     required this.deleteCategoryUseCase,
-    required this.createCategory
-  }) : super(CategoryInitial()) {
+    required this.createCategory,
+  }) : super(CategoryState()) {
     on<GetCategoriesEvent>(_onGetCategories);
     on<UpdateCategoryEvent>(_onUpdateCategory);
     on<DeleteCategoryEvent>(_onDeleteCategory);
@@ -31,41 +31,84 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
   Future<void> _onGetCategories(
       GetCategoriesEvent event, Emitter<CategoryState> emit) async {
-    emit(CategoryLoading());
+    emit(state.copyWith(isLoading: true, isSuccess: false));
     final result = await getCategories(event.workspaceId);
     result.fold(
-      (failure) => emit(CategoryError(message: _mapFailureToMessage(failure))),
-      (categories) => emit(CategoriesLoaded(categories)),
+      (failure) => emit(state.copyWith(
+        isLoading: false,
+        isSuccess: false,
+        message: _mapFailureToMessage(failure),
+      )),
+      (categories) => emit(state.copyWith(
+        categories: categories,
+        isLoading: false,
+        isSuccess: true,
+      )),
     );
   }
 
   Future<void> _onUpdateCategory(
       UpdateCategoryEvent event, Emitter<CategoryState> emit) async {
-    emit(CategoryLoading());
-    final result = await updateCategoryUseCase(event.workspaceId, event.categoryId, event.name);
+    emit(state.copyWith(isLoading: true, isSuccess: false));
+    final result = await updateCategoryUseCase(
+      event.workspaceId,
+      event.categoryId,
+      event.name,
+    );
     result.fold(
-      (failure) => emit(CategoryError(message: _mapFailureToMessage(failure))),
-      (_) => emit(const CategorySuccess(message: "Category Updated")),
+      (failure) => emit(state.copyWith(
+        isLoading: false,
+        isSuccess: false,
+        message: _mapFailureToMessage(failure),
+      )),
+      (updatedCategory) => emit(state.copyWith(
+        categories: state.categories
+            .map((category) =>
+                (category.id == updatedCategory.id) ? updatedCategory : category).toList(),
+        isLoading: false,
+        isSuccess: true,
+        message: 'Category Updated',
+      )),
     );
   }
 
   Future<void> _onDeleteCategory(
       DeleteCategoryEvent event, Emitter<CategoryState> emit) async {
-    emit(CategoryLoading());
+    emit(state.copyWith(isLoading: true, isSuccess: false));
     final result = await deleteCategoryUseCase(event.workspaceId, event.categoryId);
     result.fold(
-      (failure) => emit(CategoryError(message: _mapFailureToMessage(failure))),
-      (_) => emit(const CategorySuccess(message: 'Category Deleted')),
+      (failure) => emit(state.copyWith(
+        isLoading: false,
+        isSuccess: false,
+        message: _mapFailureToMessage(failure),
+      )),
+      (_) => emit(state.copyWith(
+        categories: state.categories
+            .where((category) => category.id != event.categoryId)
+            .toList(),
+        isLoading: false,
+        isSuccess: true,
+        message: 'Category Deleted',
+      )),
     );
   }
 
   Future<void> _onCreateCategory(
       CreateCategoryEvent event, Emitter<CategoryState> emit) async {
-    emit(CategoryLoading());
+    emit(state.copyWith(isLoading: true, isSuccess: false));
     final result = await createCategory(event.workspaceId, event.name);
     result.fold(
-      (failure) => emit(CategoryError(message: _mapFailureToMessage(failure))),
-      (_) => emit(const CategorySuccess(message: 'Category Created')),
+      (failure) => emit(state.copyWith(
+        isLoading: false,
+        isSuccess: false,
+        message: _mapFailureToMessage(failure),
+      )),
+      (newCategory) => emit(state.copyWith(
+        categories: [...state.categories, newCategory],
+        isLoading: false,
+        isSuccess: true,
+        message: 'Category Created',
+      )),
     );
   }
 

@@ -16,6 +16,7 @@ class CategoriesSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WorkspaceBloc, WorkspaceState>(
+      buildWhen: (previous, current) => previous != current,
       builder: (context, workspaceState) {
         if (workspaceState is WorkspaceLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -31,7 +32,7 @@ class CategoriesSidebar extends StatelessWidget {
                 color: DarkThemePalette.fillColor,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: const EdgeInsets.symmetric(vertical: 2),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
