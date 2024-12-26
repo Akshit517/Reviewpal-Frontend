@@ -1,3 +1,4 @@
+import 'package:ReviewPal/core/widgets/pillbox/pillbox.dart';
 import 'package:ReviewPal/features/workspaces/domain/entities/workspace_member.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/widgets/effects/shimmer_loading_effect.dart';
 import '../../../domain/entities/workspace_entity.dart';
+import '../../blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
 import '../../blocs/workspace/member/workspace_member_bloc.dart';
 
 class WorkspaceMemberWidget extends StatefulWidget {
@@ -28,6 +30,8 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final singleWorkspaceMemberState =
+        context.watch<SingleWorkspaceMemberCubit>().state;
     return Scaffold(
       appBar: _buildAppBar("Workspace Members"),
       body: LayoutBuilder(
@@ -44,7 +48,8 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
                 Container(
                   width: contentWidth,
                   padding: const EdgeInsets.all(15.0),
-                  child: _buildPageContent(constraints),
+                  child: _buildPageContent(
+                      constraints, singleWorkspaceMemberState),
                 ),
                 if (isTablet) const Spacer(flex: 1),
               ],
@@ -82,15 +87,19 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
     );
   }
 
-  Widget _buildPageContent(BoxConstraints constraints) {
+  Widget _buildPageContent(
+    BoxConstraints constraints,
+    SingleWorkspaceMemberState singleWorkspaceMemberState,
+  ) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: BlocConsumer<WorkspaceMemberBloc, WorkspaceMemberState>(
           listener: (context, state) {
             if (state is WorkspaceMemberError) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(state.message)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
             }
           },
           builder: (context, state) {
@@ -98,52 +107,78 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: state.members!
-                    .map((member) => ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.grey[800],
-                            child: Text(member.user.username[0].toUpperCase()),
-                          ),
-                          title: Text(member.user.username),
-                          subtitle: Text(member.role),
-                          onLongPress: () {
-                            _selectedRole = member.role;
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (context) => Container(
-                                height: 150,
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  children: [
-                                    _buildUpdateRole(context, member),
-                                    _buildRemoveMember(context, member),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ))
-                    .toList(),
+                children: state.members!.map((member) {
+                  final role =
+                      member.role == "workspace_admin" ? "ADMIN" : "MEMBER";
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.grey[800],
+                      child: Text(
+                        member.user.username[0].toUpperCase(),
+                      ),
+                    ),
+                    title: Text(member.user.username),
+                    subtitle: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 150),
+                      child: PillBox(text: role),
+                    ),
+                    onLongPress: () => _handleLongPress(
+                      context,
+                      singleWorkspaceMemberState,
+                      member,
+                    ),
+                  );
+                }).toList(),
               );
             } else if (state is WorkspaceMemberLoading) {
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: 5,
-                itemBuilder: (context, index) => ShimmerLoading(
-                  isLoading: true,
-                  child: Container(
-                    height: 70,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[800],
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ),
-              );
+              return _buildLoadingShimmer();
             }
             return const Center(child: Text('No members found'));
           },
+        ),
+      ),
+    );
+  }
+
+  void _handleLongPress(
+    BuildContext context,
+    SingleWorkspaceMemberState singleWorkspaceMemberState,
+    WorkspaceMember member,
+  ) {
+    if (singleWorkspaceMemberState.isSuccess == true &&
+        singleWorkspaceMemberState.isLoading == false &&
+        singleWorkspaceMemberState.member!.role == "workspace_admin") {
+      _selectedRole = member.role;
+
+      showModalBottomSheet(
+        context: context,
+        builder: (context) => Container(
+          height: 150,
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildUpdateRole(context, member),
+              _buildRemoveMember(context, member),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildLoadingShimmer() {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: 5,
+      itemBuilder: (context, index) => ShimmerLoading(
+        isLoading: true,
+        child: Container(
+          height: 70,
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(8.0),
+          ),
         ),
       ),
     );

@@ -6,6 +6,7 @@ import '../../../../../core/resources/routes/routes.dart';
 import '../../../../../core/widgets/divider/bottomsheet_divider.dart';
 import '../../../../../core/widgets/text_field/text_form_field.dart';
 import '../../../domain/entities/workspace_entity.dart';
+import '../../blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
 import '../../blocs/workspace/member/workspace_member_bloc.dart';
 
 class SettingsBottomsheet extends StatefulWidget {
@@ -22,9 +23,12 @@ class _SettingsBottomsheetState extends State<SettingsBottomsheet> {
 
   @override
   Widget build(BuildContext context) {
+    final singleWorkspaceMemberState = context.watch<SingleWorkspaceMemberCubit>().state;
     return Wrap(
       children: [
         const BottomSheetDivider(),
+        if (singleWorkspaceMemberState.isSuccess == true && 
+          singleWorkspaceMemberState.isLoading == false && singleWorkspaceMemberState.member!.role == "workspace_admin")
         _buildAddWorkspaceMemberTile(context),
         ListTile(
           leading: const Icon(Icons.group_rounded),

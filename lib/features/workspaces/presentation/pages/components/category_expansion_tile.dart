@@ -1,3 +1,4 @@
+import 'package:ReviewPal/features/workspaces/presentation/pages/screens/assignment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -6,6 +7,7 @@ import '../../../domain/entities/category_entity.dart';
 import '../../../domain/entities/channel_entity.dart';
 import '../../../domain/entities/workspace_entity.dart';
 import '../../blocs/channel/channel_bloc/channel_bloc.dart';
+import '../screens/doubt_screen.dart';
 import 'category_options.dart';
 import 'custom_expansion_tile.dart';
 
@@ -101,36 +103,17 @@ class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
     String option,
     Workspace workspace,
     Category category,
-    Channel channelId,
+    Channel channel,
     ChannelType type,
   ) {
-    return InkWell(
-      onTap: () {},
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        margin: const EdgeInsets.only(bottom: 8.0),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Icon(
-                type == ChannelType.assignment
-                    ? Icons.assignment_outlined
-                    : Icons.chat_bubble_outline,
-                color: Colors.grey,
-              ),
-            ),
-            Expanded(
-              child: Text(
-                option,
-                style: const TextStyle(color: Colors.grey),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    if(ChannelType.assignment == type) {
+      return AssignmentScreen(
+        workspace: workspace, 
+        category: category, 
+        channel: channel);
+    } else {
+      return DoubtScreen(workspace: workspace, category: category, channel: channel);
+    }
   }
 }
 enum ChannelType { assignment, doubts }

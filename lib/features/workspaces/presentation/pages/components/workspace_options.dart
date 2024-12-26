@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/widgets/divider/bottomsheet_divider.dart';
 import '../../../domain/entities/workspace_entity.dart';
+import '../../blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
 import '../../blocs/workspace/workspace_bloc.dart';
 
 class WorkspaceOptions extends StatelessWidget {
@@ -12,6 +15,7 @@ class WorkspaceOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //final singleWorkspaceMemberState = context.watch<SingleWorkspaceMemberCubit>().state;
     return Wrap(
       children: [
         const BottomSheetDivider(),
@@ -55,11 +59,22 @@ class WorkspaceOptions extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
-                     final workspaceBloc = context.read<WorkspaceBloc>();      
+                     final workspaceBloc = context.read<WorkspaceBloc>();
+                     final completer = Completer<void>();
+                     late StreamSubscription subscription;
+                      subscription = workspaceBloc.stream.listen((state) {
+                        if (state is WorkspaceDeleted) {
+                          workspaceBloc.add(const GetJoinedWorkspacesEvent());
+                          completer.complete();
+                          subscription.cancel();
+                        } else if (state is WorkspaceError) {
+                          completer.completeError(state.message);
+                          subscription.cancel();
+                        }
+                      });
                      workspaceBloc.add(DeleteWorkspaceEvent(workspaceId: workspace.id));
-                     await Future.delayed(const Duration(seconds: 1));
-                     workspaceBloc.add(const GetJoinedWorkspacesEvent());
-                     Navigator.pop(context);
+                     await completer.future;
+                     if(context.mounted) Navigator.pop(context);
                    },
             child: const Text('Delete'),
           ),

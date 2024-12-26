@@ -46,7 +46,7 @@ class WorkspaceHeader extends StatelessWidget {
                         return const PillBox(text: "ERR");
                       } else if (state.isLoading == false && state.isSuccess == true) { 
                         String role = state.member!.role;
-                        role = (role == "workspace_admin")? "Admin" : "Member";
+                        role = (role == "workspace_admin")? "ADMIN" : "MEMBER";
                         return PillBox(text: role);
                       } else {
                         return const ShimmerLoading(

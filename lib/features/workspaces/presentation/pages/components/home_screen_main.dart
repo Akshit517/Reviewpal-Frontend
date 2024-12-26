@@ -5,7 +5,7 @@ import 'content_view.dart';
 
 class HomeScreenMain extends StatelessWidget {
   static const double _desktopBreakpoint = 1200;
-  static const double _sidebarWidth = 300.0;
+  static const double _sidebarWidth = 400.0;
 
   const HomeScreenMain({super.key});
 

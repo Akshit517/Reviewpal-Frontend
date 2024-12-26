@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -40,37 +41,6 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
     }
   }
 
-  Future<void> _uploadImageAndCreateWorkspace(BuildContext context) async {
-    if (_selectedImage != null  && _workspaceNameTextController.text.isNotEmpty) {
-      try {
-        final uploadedUrl = await sl<MediaUploader>().uploadMedia(
-          image: _selectedImage!,
-        );
-        if (context.mounted) {
-          context.read<WorkspaceBloc>().add(
-              CreateWorkspaceEvent(
-                name: _workspaceNameTextController.text.trim(),
-                icon: uploadedUrl,
-              ),
-            );
-          context.read<WorkspaceBloc>().add(const GetJoinedWorkspacesEvent());  
-          _clearControllers();
-          Navigator.pop(context);
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload image: $e')),
-        );
-        }
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill the required fields!!!')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -107,7 +77,7 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
                       onPressed: _pickImage,
                       child: const Text('Select Icon'),
                     ),
-                     if (_selectedImage != null)
+                    if (_selectedImage != null)
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Image.file(
@@ -132,7 +102,8 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
                     ),
                     TextButton(
                       child: const Text('Add'),
-                      onPressed: () async => _uploadImageAndCreateWorkspace(context),
+                      onPressed: () async =>
+                          _uploadImageAndCreateWorkspace(context),
                     ),
                   ],
                 ),
@@ -142,6 +113,53 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
         ),
       ),
     );
+  }
+
+  Future<void> _uploadImageAndCreateWorkspace(BuildContext context) async {
+    if (_selectedImage == null || _workspaceNameTextController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill the required fields!!!')),
+      );
+      return;
+    }
+    try {
+      final uploadedUrl = await sl<MediaUploader>().uploadMedia(
+        image: _selectedImage!,
+      );
+      if (!context.mounted) return;
+      final workspaceBloc = context.read<WorkspaceBloc>();
+      final completer = Completer<void>();
+      late StreamSubscription subscription;
+      subscription = workspaceBloc.stream.listen((state) {
+        if (state is WorkspaceCreated || state is WorkspaceError) {
+          if (state is WorkspaceError) {
+            // ignore: use_build_context_synchronously
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          } else if (state is WorkspaceCreated) {
+            workspaceBloc.add(const GetJoinedWorkspacesEvent());
+            _clearControllers();
+            // ignore: use_build_context_synchronously
+            Navigator.pop(context);
+          }
+          subscription.cancel();
+          completer.complete();
+        }
+      });
+      workspaceBloc.add(
+        CreateWorkspaceEvent(
+          name: _workspaceNameTextController.text.trim(),
+          icon: uploadedUrl,
+        ),
+      );
+      await completer.future;
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload image: $e')),
+      );
+    }
   }
 
   void _clearControllers() {

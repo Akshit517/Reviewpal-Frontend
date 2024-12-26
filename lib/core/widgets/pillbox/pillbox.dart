@@ -14,9 +14,9 @@ class PillBox extends StatelessWidget {
     required this.text,
     this.width = 50.0,
     this.height = 20.0,
-    this.backgroundColor = const Color.fromARGB(245, 247, 142, 134),
-    this.textColor = const Color.fromARGB(255, 230, 65, 65),
-    this.borderRadius = 10.0,
+    this.backgroundColor = const Color.fromARGB(255, 254, 158, 158),
+    this.textColor = const Color.fromARGB(255, 255, 0, 0),
+    this.borderRadius = 8.0,
     this.textStyle,
   });
 
@@ -35,8 +35,8 @@ class PillBox extends StatelessWidget {
         style: textStyle ??
             TextStyle(
               color: textColor,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
             ),
         textAlign: TextAlign.center,
       ),
