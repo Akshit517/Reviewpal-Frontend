@@ -1,4 +1,3 @@
-import 'package:ReviewPal/features/workspaces/presentation/pages/screens/workspace_member.dart';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -8,9 +7,13 @@ import '../../../features/auth/presentation/pages/callback_screen.dart';
 import '../../../features/auth/presentation/pages/login_screen.dart';
 import '../../../features/auth/presentation/pages/signup_screen.dart';
 import '../../../features/workspaces/domain/entities/category_entity.dart';
+import '../../../features/workspaces/domain/entities/channel_entity.dart';
 import '../../../features/workspaces/domain/entities/workspace_entity.dart';
 import '../../../features/workspaces/presentation/pages/screens/add_assignment.dart';
+import '../../../features/workspaces/presentation/pages/screens/assignment_screen.dart';
+import '../../../features/workspaces/presentation/pages/screens/doubt_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/home_screen.dart';
+import '../../../features/workspaces/presentation/pages/screens/workspace_member.dart';
 import '../../widgets/bottom_navigation_bar/scaffold_with_nested_navigation.dart';
 
 class CustomNavigationHelper {
@@ -29,6 +32,8 @@ class CustomNavigationHelper {
   static const String profilePath = '/profile';
   static const String addAssignmentScreenPath = '/addAssignmentScreen';
   static const String workspaceMembersPath = '/workspaceMembers';
+  static const String assignmentPath ='/assignment';
+  static const String doubtPath ='/doubt';
   
   static final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -100,9 +105,11 @@ class CustomNavigationHelper {
           Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
           return CustomTransitionPage(
             key: state.pageKey,
-            child: AddAssignmentWidget(
+            child: AddUpdateAssignmentWidget(
               workspace: extra['workspace'] as Workspace,
               category: extra['category'] as Category,
+              channel: extra['channel'] as Channel?,
+              forUpdateAssignment: extra['forUpdateAssignment'] as bool,
             ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return FadeTransition(
@@ -121,6 +128,46 @@ class CustomNavigationHelper {
             key: state.pageKey,
             child: WorkspaceMemberWidget(
               workspace: extra['workspace'] as Workspace,
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: assignmentPath,
+        pageBuilder: (context, state) {
+          Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: AssignmentScreen(
+              workspace: extra['workspace'] as Workspace,
+              category: extra['category'] as Category,
+              channel: extra['channel'] as Channel,
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: doubtPath,
+        pageBuilder: (context, state) {
+          Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: DoubtScreen(
+              workspace: extra['workspace'] as Workspace,
+              category: extra['category'] as Category,
+              channel: extra['channel'] as Channel,
             ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return FadeTransition(

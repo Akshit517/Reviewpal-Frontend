@@ -174,6 +174,7 @@ class _WorkspaceAvatar extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
+        borderRadius: BorderRadius.circular(16),
         child: SizedBox(
           width: radius * 2,
           child: ClipOval(

@@ -1,15 +1,17 @@
-import 'package:ReviewPal/features/workspaces/presentation/pages/screens/assignment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../../core/resources/routes/routes.dart';
+import '../../../../../core/widgets/buttons/custom_expansion_tile.dart';
 import '../../../../../core/widgets/effects/shimmer_loading_effect.dart';
 import '../../../domain/entities/category_entity.dart';
 import '../../../domain/entities/channel_entity.dart';
 import '../../../domain/entities/workspace_entity.dart';
 import '../../blocs/channel/channel_bloc/channel_bloc.dart';
-import '../screens/doubt_screen.dart';
 import 'category_options.dart';
-import 'custom_expansion_tile.dart';
+import 'channel_options.dart';
 
 class CategoryExpansionTile extends StatefulWidget {
   final Workspace workspace;
@@ -79,6 +81,12 @@ class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
     Channel channel,
   ) {
     return CustomExpansionTile(
+      onLongPress: (){
+        showBottomSheet(
+          context: context, 
+          builder: (context) => ChannelOptions(workspace: workspace, category: category, channel: channel)
+        );
+      },
       title: channel.name,
       children: [
         _buildSubSubcategoryOption(
@@ -106,14 +114,37 @@ class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
     Channel channel,
     ChannelType type,
   ) {
-    if(ChannelType.assignment == type) {
-      return AssignmentScreen(
-        workspace: workspace, 
-        category: category, 
-        channel: channel);
-    } else {
-      return DoubtScreen(workspace: workspace, category: category, channel: channel);
-    }
+      return ListTile(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        minTileHeight: 25,
+        minLeadingWidth: 4,
+        contentPadding: const EdgeInsets.only(left: 8),
+        leading:  SvgPicture.asset('assets/icons/hash.svg'),
+        title: Text(option, style: TextStyle(color: Colors.grey[300], fontSize: 16, fontWeight: FontWeight.w500)),
+        onTap: () {
+          if (ChannelType.assignment == type) {
+            context.push(
+              CustomNavigationHelper.assignmentPath,
+              extra: {
+                "workspace": workspace,
+                "category": category,
+                "channel": channel,
+              }
+            );
+          } else if (ChannelType.doubts == type) {
+            context.push(
+              CustomNavigationHelper.doubtPath,
+              extra: {
+                "workspace": workspace,
+                "category": category,
+                "channel": channel,
+              }
+            );
+          }
+        },
+      );
   }
 }
 enum ChannelType { assignment, doubts }

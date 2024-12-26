@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/resources/pallete/dark_theme_palette.dart';
+import '../../resources/pallete/dark_theme_palette.dart';
+
 
 class CustomExpansionTile extends StatefulWidget {
   final String title;
@@ -46,6 +47,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
           Column(
             children: [
               InkWell(
+                borderRadius: BorderRadius.circular(8.0),
                 onTap: () {
                   setState(() => _isExpanded = !_isExpanded);
                   if (!_isExpanded && widget.onTap != null) {
@@ -58,7 +60,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
                     color: _isHovered
                         ? Colors.white.withOpacity(0.1)
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
                   padding: const EdgeInsets.symmetric(
                     vertical: 8.0,
@@ -76,9 +78,9 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
                       Expanded(
                         child: Text(
                           widget.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                          style: TextStyle(
+                            color: Colors.grey[350],
+                            fontWeight: FontWeight.w600,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),

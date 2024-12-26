@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 import '../../../../core/constants/constants.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/token/token_http_client.dart';
@@ -303,38 +305,25 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
   /// [Channel] Methods
   @override
   Future<ChannelModel> createChannel(String workspaceId, int categoryId, String name, Assignment assignment) async {
-    final description = assignment.description;
-    final forTeams = assignment.forTeams;
-    final totalPoints = assignment.totalPoints;
     final tasks = assignment.tasks;
     final tasksList = tasks.map((task) {
       return {
         'task':task.title,
-        'total_points': task.dueDate,
+        'due_date': DateFormat('yyyy-MM-dd').format(task.dueDate),
       };
     }).toList();
-    print(tasksList);
-   
     final response = await client.post(
       '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/',
       { 
         'name': name,
         'assignment_data': {
-          'description': description,
-          'for_teams': forTeams,
-          'total_points': totalPoints,
+          'description': assignment.description,
+          'for_teams': assignment.forTeams,
+          'total_points': assignment.totalPoints,
           'tasks': tasksList,
         },
       },
     );
-    print('dsvvdsssssvd');
-    //final response = await client.post(
-    //  '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/',
-    //  { 
-    //    'name': name,
-    //    'assignment_data': (assignment as AssignmentModel).toJson(),
-    //  },
-    //);
     _handleResponse(response.statusCode);
     final Map<String, dynamic> decodedJson = jsonDecode(response.body);
     return ChannelModel.fromJson(decodedJson);
@@ -342,11 +331,23 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
 
   @override
   Future<ChannelModel> updateChannel(String workspaceId, int categoryId, String channelId, String? name, Assignment assignment) async {
+    final tasks = assignment.tasks;
+    final tasksList = tasks.map((task) {
+      return {
+        'task':task.title,
+        'due_date': DateFormat('yyyy-MM-dd').format(task.dueDate),
+      };
+    }).toList();
     final response = await client.put(
       '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/',
-      {
+       { 
         'name': name,
-        'assignment_data': (assignment as AssignmentModel).toJson(),
+        'assignment_data': {
+          'description': assignment.description,
+          'for_teams': assignment.forTeams,
+          'total_points': assignment.totalPoints,
+          'tasks': tasksList,
+        },
       },
     );
     
@@ -422,9 +423,21 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
 
   @override
   Future<AssignmentModel> updateAssignment(String workspaceId, int categoryId, String channelId, Assignment assignment) async {
+    final tasks = assignment.tasks;
+    final tasksList = tasks.map((task) {
+      return {
+        'task':task.title,
+        'due_date': DateFormat('yyyy-MM-dd').format(task.dueDate),
+      };
+    }).toList();
     final response = await client.put(
       '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/assignment/',
-      (assignment as AssignmentModel).toJson(),
+       {
+          'description': assignment.description,
+          'for_teams': assignment.forTeams,
+          'total_points': assignment.totalPoints,
+          'tasks': tasksList,
+       },
     );
     _handleResponse(response.statusCode);
     final Map<String, dynamic> decodedJson = jsonDecode(response.body);

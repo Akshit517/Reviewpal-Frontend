@@ -5,34 +5,56 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/widgets/text_field/text_form_field.dart';
 import '../../../domain/entities/assignment_entity.dart';
 import '../../../domain/entities/category_entity.dart';
+import '../../../domain/entities/channel_entity.dart';
 import '../../../domain/entities/task_entity.dart';
 import '../../../domain/entities/workspace_entity.dart';
 import '../../blocs/channel/channel_bloc/channel_bloc.dart';
 
-class AddAssignmentWidget extends StatefulWidget {
+class AddUpdateAssignmentWidget extends StatefulWidget {
   final Workspace workspace;
   final Category category;
+  final Channel? channel;
+  final bool forUpdateAssignment;
 
-  const AddAssignmentWidget({
-    super.key,
-    required this.workspace,
-    required this.category,
-    });
+  const AddUpdateAssignmentWidget(
+      {super.key,
+      required this.workspace,
+      required this.category,
+      this.channel,
+      required this.forUpdateAssignment});
 
   @override
-  State<AddAssignmentWidget> createState() => _AddAssignmentWidgetState();
+  State<AddUpdateAssignmentWidget> createState() => _AddAssignmentWidgetState();
 }
 
-class _AddAssignmentWidgetState extends State<AddAssignmentWidget> {
+class _AddAssignmentWidgetState extends State<AddUpdateAssignmentWidget> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _totalPointsController = TextEditingController();
   final List<TaskRow> _tasks = [];
 
   @override
+  void initState() {
+    if (widget.forUpdateAssignment) {
+      _nameController.text = widget.channel!.name;
+      _descriptionController.text = widget.channel!.assignment!.description;
+       _totalPointsController.text = widget.channel!.assignment!.totalPoints.toString();
+      for (var task in widget.channel!.assignment!.tasks) {
+        _tasks.add(TaskRow(
+          onDelete: () => _removeTask(_tasks.length - 1),
+          initialTask: task,
+        ));
+      }
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final String appBarTitle =
+        widget.forUpdateAssignment ? "Update Assignment" : "Add Assignment";
     return Scaffold(
-      appBar: _buildAppBar('Add Assignment'),
+      appBar: _buildAppBar(appBarTitle),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isTablet = constraints.maxWidth >= 640;
@@ -57,6 +79,7 @@ class _AddAssignmentWidgetState extends State<AddAssignmentWidget> {
       ),
     );
   }
+
   AppBar _buildAppBar(String title) {
     return AppBar(
       title: Text(
@@ -64,13 +87,13 @@ class _AddAssignmentWidgetState extends State<AddAssignmentWidget> {
         style: Theme.of(context).textTheme.titleLarge,
       ),
       bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Divider(
-            height: 1.0,
-            thickness: 3.0,
-            color: Colors.grey,
-          ),
+        preferredSize: Size.fromHeight(1.0),
+        child: Divider(
+          height: 1.0,
+          thickness: 3.0,
+          color: Colors.grey,
         ),
+      ),
       centerTitle: true,
       leading: IconButton(
         onPressed: () {
@@ -86,7 +109,8 @@ class _AddAssignmentWidgetState extends State<AddAssignmentWidget> {
 
   Widget _buildPageContent(BoxConstraints constraints) {
     final isTablet = constraints.maxWidth >= 600;
-    final buttonWidth = isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth * 0.9;
+    final buttonWidth =
+        isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth * 0.9;
 
     return SingleChildScrollView(
       child: Padding(
@@ -94,9 +118,8 @@ class _AddAssignmentWidgetState extends State<AddAssignmentWidget> {
         child: BlocConsumer<ChannelBloc, ChannelState>(
           listener: (context, state) {
             if (state.isSuccess == false) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message!))
-              );
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.message!)));
             } else if (state.isSuccess == true) {
               context.pop();
             }
@@ -144,24 +167,42 @@ class _AddAssignmentWidgetState extends State<AddAssignmentWidget> {
                   height: 50.0,
                   child: TextButton(
                     onPressed: () {
-                      final tasks = _tasks.map((taskRow) => taskRow.getTask()).toList();
-                      context.read<ChannelBloc>().add(
-                        CreateChannelEvent(
-                          workspaceId: widget.workspace.id,
-                          categoryId: widget.category.id,
-                          name: _nameController.text.trim(),
-                          assignment: Assignment(
-                            description: _descriptionController.text.trim(),
-                            forTeams: false,
-                            totalPoints: int.tryParse(_totalPointsController.text.trim()) ?? 0,
-                            tasks: tasks,
-                          )
-                        )
-                      );
+                      final tasks =
+                          _tasks.map((taskRow) => taskRow.getTask()).toList();
+                      if (widget.forUpdateAssignment) {
+                        context.read<ChannelBloc>().add(UpdateChannelEvent(
+                            workspaceId: widget.workspace.id,
+                            categoryId: widget.category.id,
+                            channelId: widget.channel!.id,
+                            name: _nameController.text.trim(),
+                            assignment: Assignment(
+                              description: _descriptionController.text.trim(),
+                              forTeams: false,
+                              totalPoints: int.tryParse(
+                                      _totalPointsController.text.trim()) ??
+                                  0,
+                              tasks: tasks,
+                            )));
+                      } else {
+                        context.read<ChannelBloc>().add(CreateChannelEvent(
+                            workspaceId: widget.workspace.id,
+                            categoryId: widget.category.id,
+                            name: _nameController.text.trim(),
+                            assignment: Assignment(
+                              description: _descriptionController.text.trim(),
+                              forTeams: false,
+                              totalPoints: int.tryParse(
+                                      _totalPointsController.text.trim()) ??
+                                  0,
+                              tasks: tasks,
+                            )));
+                      }
                     },
-                    child: const Text(
-                      'Add Assignment',
-                      style: TextStyle(fontSize: 16),
+                    child: Text(
+                      widget.forUpdateAssignment
+                          ? 'Update Assignment'
+                          : 'Add Assignment',
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ),
@@ -193,8 +234,13 @@ class TaskRow extends StatelessWidget {
   final TextEditingController _dateController = TextEditingController();
   final VoidCallback onDelete;
 
-  TaskRow({super.key, required this.onDelete});
-
+  TaskRow({super.key, required this.onDelete, Task? initialTask}) {
+    if (initialTask != null) {
+      _taskController.text = initialTask.title;
+      _dateController.text =
+          initialTask.dueDate.toIso8601String().split('T')[0];
+    }
+  }
   Task getTask() {
     return Task(
       title: _taskController.text.trim(),
@@ -250,4 +296,3 @@ class TaskRow extends StatelessWidget {
     );
   }
 }
- 

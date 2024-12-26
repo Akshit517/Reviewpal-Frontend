@@ -104,6 +104,8 @@ class _CategoryOptionsState extends State<CategoryOptions> {
               extra: {
                 'workspace': widget.widget.workspace,
                 'category': widget.widget.category,
+                'forUpdateAssignment':false,
+                'channel':null
               });
             Navigator.pop(context);
           },
