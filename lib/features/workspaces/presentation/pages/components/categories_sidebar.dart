@@ -24,41 +24,14 @@ class CategoriesSidebar extends StatelessWidget {
           return Column(
             children: [
               WorkspaceHeader(
-                name: workspaceState.workspace.name,
+                workspace: workspaceState.workspace,
                 isDesktop: isDesktop,
               ),
               const Divider(
                 thickness: 4,
                 color: DarkThemePalette.fillColor,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: IconButton(
-                        onPressed: (){
-                          _showAddCategoryDialog(context, workspaceState);
-                        }, 
-                        icon: SvgPicture.asset(
-                          "assets/icons/category_add.svg",
-                        )
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: IconButton(
-                        onPressed: (){}, 
-                        icon: SvgPicture.asset(
-                          "assets/icons/graph_view.svg",
-                        )
-                      ),
-                    )
-                  ],   
-                ),
-              ),
+              _buildCategoryButtons(context, workspaceState),
               Expanded(
                 child: CategoriesList(workspace: workspaceState.workspace),
               ),
@@ -71,6 +44,37 @@ class CategoriesSidebar extends StatelessWidget {
         }
       },
     );
+  }
+
+  Padding _buildCategoryButtons(BuildContext context, WorkspaceLoaded workspaceState) {
+    return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: IconButton(
+                      onPressed: (){
+                        _showAddCategoryDialog(context, workspaceState);
+                      }, 
+                      icon: SvgPicture.asset(
+                        "assets/icons/category_add.svg",
+                      )
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: IconButton(
+                      onPressed: (){}, 
+                      icon: SvgPicture.asset(
+                        "assets/icons/graph_view.svg",
+                      )
+                    ),
+                  )
+                ],   
+              ),
+            );
   }
 
   void _showAddCategoryDialog(BuildContext context, WorkspaceLoaded workspaceState) {

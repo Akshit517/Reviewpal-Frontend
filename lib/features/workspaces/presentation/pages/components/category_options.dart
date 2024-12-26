@@ -1,7 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../../core/resources/routes/routes.dart';
 import '../../../../../core/widgets/divider/bottomsheet_divider.dart';
 import '../../../../../core/widgets/text_field/text_form_field.dart';
 import '../../blocs/category/category_bloc.dart';
@@ -20,32 +22,7 @@ class CategoryOptions extends StatefulWidget {
 }
 
 class _CategoryOptionsState extends State<CategoryOptions> {
-    final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _pointsController = TextEditingController();
-  final List<TaskController> _taskControllers = [];
-  bool _forTeams = false;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _pointsController.dispose();
-    for (var controller in _taskControllers) {
-      controller.titleController.dispose();
-    }
-    super.dispose();
-  }
-  void _addNewTask() {
-    setState(() {
-      _taskControllers.add(
-        TaskController(
-          titleController: TextEditingController(),
-          dueDate: null,
-        ),
-      );
-    });
-  }
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +50,6 @@ class _CategoryOptionsState extends State<CategoryOptions> {
                         workspaceId: widget.widget.workspace.id,
                         categoryId: widget.widget.category.id,
                       ));
-                      await Future.delayed(const Duration(seconds: 1));
                       Navigator.pop(context);
                     },
                     child: const Text("Delete"),
@@ -119,67 +95,20 @@ class _CategoryOptionsState extends State<CategoryOptions> {
             );
           },
         ),
-      ],
-    );
-  }
-}
-
-
-class TaskInputWidget extends StatelessWidget {
-  final TextEditingController titleController;
-  final DateTime? dueDate;
-  final Function(DateTime) onDateSelected;
-  final VoidCallback onDelete;
-
-  const TaskInputWidget({
-    required this.titleController,
-    required this.dueDate,
-    required this.onDateSelected,
-    required this.onDelete,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextFormFieldWidget(
-            hintText: "Task title",
-            controller: titleController,
-            haveObscureText: false,
-            haveSuffixIconObscure: false,
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.calendar_today),
-          onPressed: () async {
-            final date = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime.now(),
-              lastDate: DateTime.now().add(const Duration(days: 365)),
-            );
-            if (date != null) {
-              onDateSelected(date);
-            }
+        ListTile(
+          leading: const Icon(Icons.add, color: Colors.green),
+          title: const Text("Add Assignment"),
+          onTap: () {
+            context.push(
+              CustomNavigationHelper.addAssignmentScreenPath, 
+              extra: {
+                'workspace': widget.widget.workspace,
+                'category': widget.widget.category,
+              });
+            Navigator.pop(context);
           },
         ),
-        IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: onDelete,
-        ),
       ],
     );
   }
-}
-
-class TaskController {
-  final TextEditingController titleController;
-  DateTime? dueDate;
-
-  TaskController({
-    required this.titleController,
-    this.dueDate,
-  });
 }

@@ -1,3 +1,4 @@
+import 'package:ReviewPal/features/workspaces/presentation/pages/screens/workspace_member.dart';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +7,9 @@ import '../../../features/auth/presentation/pages/auth_choice_screen.dart';
 import '../../../features/auth/presentation/pages/callback_screen.dart';
 import '../../../features/auth/presentation/pages/login_screen.dart';
 import '../../../features/auth/presentation/pages/signup_screen.dart';
+import '../../../features/workspaces/domain/entities/category_entity.dart';
+import '../../../features/workspaces/domain/entities/workspace_entity.dart';
+import '../../../features/workspaces/presentation/pages/screens/add_assignment.dart';
 import '../../../features/workspaces/presentation/pages/screens/home_screen.dart';
 import '../../widgets/bottom_navigation_bar/scaffold_with_nested_navigation.dart';
 
@@ -23,6 +27,8 @@ class CustomNavigationHelper {
   static const String homePath = '/home';
   static const String notificationPath = '/notification';
   static const String profilePath = '/profile';
+  static const String addAssignmentScreenPath = '/addAssignmentScreen';
+  static const String workspaceMembersPath = '/workspaceMembers';
   
   static final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -37,7 +43,7 @@ class CustomNavigationHelper {
     //main router
     router = GoRouter(
       navigatorKey: parentNavigatorKey,
-      initialLocation: isLoggedIn ? homePath : homePath,//change this later
+      initialLocation: isLoggedIn ? homePath : rootAuthPath,
       routes: routes,
     );
     _handleDeepLinks(applinks);
@@ -86,6 +92,43 @@ class CustomNavigationHelper {
             }
           }
           return _errorPage(state.pageKey);
+        },
+      ),
+      GoRoute(
+        path: addAssignmentScreenPath,
+        pageBuilder: (context, state) {
+          Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: AddAssignmentWidget(
+              workspace: extra['workspace'] as Workspace,
+              category: extra['category'] as Category,
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: workspaceMembersPath,
+        pageBuilder: (context, state) {
+          Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: WorkspaceMemberWidget(
+              workspace: extra['workspace'] as Workspace,
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          );
         },
       ),
       StatefulShellRoute.indexedStack(

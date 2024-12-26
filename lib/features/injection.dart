@@ -12,6 +12,7 @@ import 'package:ReviewPal/features/workspaces/domain/usecases/channels/channel_m
 import 'package:ReviewPal/features/workspaces/domain/usecases/channels/create_channel.dart';
 import 'package:ReviewPal/features/workspaces/domain/usecases/workspaces/workspace_member.dart';
 import 'package:ReviewPal/features/workspaces/presentation/blocs/channel/channel_bloc/channel_bloc.dart';
+import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
 import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/member/workspace_member_bloc.dart';
 import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/workspace_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -61,11 +62,13 @@ Future<void> init() async {
         deleteWorkspace: sl(),
   ));
   sl.registerFactory(() => WorkspaceMemberBloc(
-    getWorkspaceMemberUseCase: sl(), 
     getWorkspaceMembersUseCase: sl(), 
     addWorkspaceMemberUseCase: sl(), 
     deleteWorkspaceMemberUseCase: sl(), 
     updateWorkspaceMemberUseCase: sl()
+  ));
+  sl.registerFactory(() => SingleWorkspaceMemberCubit(
+    getWorkspaceMemberUseCase: sl()
   ));
   sl.registerFactory(() => CategoryBloc(
     getCategories: sl(),

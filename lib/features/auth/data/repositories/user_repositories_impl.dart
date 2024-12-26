@@ -30,14 +30,18 @@ class UserRepositoriesImpl implements UserRepositories {
     return await action();
   }
 
-  Future<Either<Failure, User>> _getUser(
+ Future<Either<Failure, User>> _getUser(
     Future<UserModel> Function() getUser,
   ) async {
     return await _checkNetwork(() async {
       try {
         final user = await getUser();
+        if (user.tokenModel != null) {
+          await localDataSource.cacheToken(user.tokenModel!);
+        } else {
+          return const Left(ServerFailure());
+        }
         await localDataSource.cacheUser(user);
-        await localDataSource.cacheToken(user.tokenModel!);
         return Right(user);
       } on ServerException {
         return const Left(ServerFailure());

@@ -24,6 +24,18 @@ class UserModel extends User {
     );
   }
 
+  factory UserModel.authFromJson(Map<String, dynamic> json) {
+    final userData = json['user'] ?? json;
+    return UserModel(
+      id: userData['id'],
+      username: userData['username'],
+      email: userData['email'],
+      profilePic: userData['profile_pic'],
+      authType: userData['auth_type'],
+      tokenModel: TokenModel.fromJson(json),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'user': {

@@ -35,7 +35,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       body: jsonEncode({'email': email, 'password': password}),
     );
     if (response.statusCode == 200) {
-      return UserModel.fromJson(jsonDecode(response.body));
+      return UserModel.authFromJson(jsonDecode(response.body));
     } else {
       throw ServerException();
     }
@@ -56,7 +56,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       }),
     );
     if (response.statusCode == 200) {
-      return UserModel.fromJson(jsonDecode(response.body));
+      return UserModel.authFromJson(jsonDecode(response.body));
     } else {
       throw ServerException();
     }
@@ -72,7 +72,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           {'username': username, 'password': password, 'email': email}),
     );
     if (response.statusCode == 201) {
-      return UserModel.fromJson(jsonDecode(response.body));
+      return UserModel.authFromJson(jsonDecode(response.body));
     } else if (response.statusCode == 409) {
       throw AlreadyExistsException();
     } else {

@@ -8,33 +8,21 @@ part 'workspace_member_event.dart';
 part 'workspace_member_state.dart';
 
 class WorkspaceMemberBloc extends Bloc<WorkspaceMemberEvent, WorkspaceMemberState> {
-  final GetWorkspaceMemberUseCase getWorkspaceMemberUseCase;
   final GetWorkspaceMembersUseCase getWorkspaceMembersUseCase;
   final AddWorkspaceMemberUseCase addWorkspaceMemberUseCase;
   final DeleteWorkspaceMemberUseCase deleteWorkspaceMemberUseCase;
   final UpdateWorkspaceMemberUseCase updateWorkspaceMemberUseCase;
 
   WorkspaceMemberBloc({
-    required this.getWorkspaceMemberUseCase,
     required this.getWorkspaceMembersUseCase,
     required this.addWorkspaceMemberUseCase,
     required this.deleteWorkspaceMemberUseCase,
     required this.updateWorkspaceMemberUseCase,
   }) : super(WorkspaceMemberInitial()) {
-    on<GetWorkspaceMemberEvent>(_getWorkspaceMember);
     on<GetWorkspaceMembersEvent>(_getWorkspaceMembers);
     on<AddWorkspaceMemberEvent>(_addWorkspaceMember);
     on<RemoveWorkspaceMemberEvent>(_deleteWorkspaceMember);
     on<UpdateWorkspaceMemberEvent>(_updateWorkspaceMember);
-  }
-
-  Future<void> _getWorkspaceMember(GetWorkspaceMemberEvent event, Emitter<WorkspaceMemberState> emit) async {
-    emit(WorkspaceMemberLoading());
-    final result = await getWorkspaceMemberUseCase(WorkspaceMemberParams(workspaceId: event.workspaceId, userEmail: event.email));
-    result.fold(
-      (failure) => emit(WorkspaceMemberError(message: failure.message)),
-      (data) => emit(WorkspaceMemberSuccess(member: data)),
-    );
   }
 
   Future<void> _getWorkspaceMembers(GetWorkspaceMembersEvent event, Emitter<WorkspaceMemberState> emit) async {

@@ -1,7 +1,10 @@
+import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../../../core/resources/pallete/dark_theme_palette.dart';
+import '../../../../../core/utils/utils.dart';
 import '../../../../../core/widgets/buttons/inkwell_button.dart';
 import '../../../../../core/widgets/effects/shimmer_loading_effect.dart';
 import '../../../../../core/widgets/image/universal_image.dart';
@@ -112,9 +115,13 @@ class HomeScreenSidebar extends StatelessWidget {
     );
   }
 
-  void _handleWorkspaceTap(BuildContext context, Workspace workspace) {
-    context.read<WorkspaceBloc>().add(GetWorkspaceEvent(workspaceId: workspace.id));
-    context.read<CategoryBloc>().add(GetCategoriesEvent(workspaceId: workspace.id));
+  void _handleWorkspaceTap(BuildContext context, Workspace workspace) async {
+    final user = await Utils.getUser(const FlutterSecureStorage());
+    if (context.mounted) {
+      context.read<WorkspaceBloc>().add(GetWorkspaceEvent(workspaceId: workspace.id));
+      context.read<CategoryBloc>().add(GetCategoriesEvent(workspaceId: workspace.id));
+      context.read<SingleWorkspaceMemberCubit>().getWorkspaceMember(workspace.id, user.email);
+    }
   }
 
   void _showAddWorkspaceDialog(BuildContext context) {

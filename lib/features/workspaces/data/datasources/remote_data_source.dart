@@ -184,8 +184,8 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     required String workspaceId,
     required String userEmail,
   }) async {
-    final response = await client.post(
-      '${AppConstants.baseUrl}api/workspaces/$workspaceId/members/delete/',
+    final response = await client.delete(
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/members/',
       {'user_email': userEmail},
     );
     _handleResponse(response.statusCode);
@@ -205,10 +205,17 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
 
   @override
   Future<WorkspaceMemberModel> getWorkspaceMember(String workspaceId, String email) async {
-    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/members/?email=$email/');
+    final Uri uri = Uri.parse(
+    '${AppConstants.baseUrl}api/workspaces/$workspaceId/members/')
+    .replace(queryParameters: {'email': email});
+    final response = await client.get(uri.toString());
     _handleResponse(response.statusCode);
-    final Map<String, dynamic> decodedJson = jsonDecode(response.body);
-    return WorkspaceMemberModel.fromJson(decodedJson);
+    final List<dynamic> decodedJson = jsonDecode(response.body);
+    final Map<String, dynamic> memberJson = decodedJson.firstWhere(
+      (element) => element['user']['email'] == email,
+      orElse: () => throw Exception('Member not found'),
+    );
+    return WorkspaceMemberModel.fromJson(memberJson);
   }
   /// [Category] Methods
 
@@ -296,13 +303,38 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
   /// [Channel] Methods
   @override
   Future<ChannelModel> createChannel(String workspaceId, int categoryId, String name, Assignment assignment) async {
+    final description = assignment.description;
+    final forTeams = assignment.forTeams;
+    final totalPoints = assignment.totalPoints;
+    final tasks = assignment.tasks;
+    final tasksList = tasks.map((task) {
+      return {
+        'task':task.title,
+        'total_points': task.dueDate,
+      };
+    }).toList();
+    print(tasksList);
+   
     final response = await client.post(
       '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/',
       { 
         'name': name,
-        'assignment_data': (assignment as AssignmentModel).toJson(),
+        'assignment_data': {
+          'description': description,
+          'for_teams': forTeams,
+          'total_points': totalPoints,
+          'tasks': tasksList,
+        },
       },
     );
+    print('dsvvdsssssvd');
+    //final response = await client.post(
+    //  '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/',
+    //  { 
+    //    'name': name,
+    //    'assignment_data': (assignment as AssignmentModel).toJson(),
+    //  },
+    //);
     _handleResponse(response.statusCode);
     final Map<String, dynamic> decodedJson = jsonDecode(response.body);
     return ChannelModel.fromJson(decodedJson);

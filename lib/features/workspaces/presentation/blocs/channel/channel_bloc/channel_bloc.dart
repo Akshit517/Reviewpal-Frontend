@@ -24,7 +24,7 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
     required this.createChannel,
     required this.updateChannel,
     required this.deleteChannel
-  }) : super(ChannelState()) {
+  }) : super(const ChannelState()) {
     on<GetChannelsEvent>(_getChannels);
     on<CreateChannelEvent>(_createChannel);
     on<UpdateChannelEvent>(_updateChannel);
