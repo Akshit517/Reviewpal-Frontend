@@ -1,15 +1,15 @@
-import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../../../core/resources/pallete/dark_theme_palette.dart';
 import '../../../../../core/utils/utils.dart';
 import '../../../../../core/widgets/buttons/inkwell_button.dart';
 import '../../../../../core/widgets/effects/shimmer_loading_effect.dart';
 import '../../../../../core/widgets/image/universal_image.dart';
+import '../../../../injection.dart';
 import '../../../domain/entities/workspace_entity.dart';
 import '../../blocs/category/category_bloc.dart';
+import '../../blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
 import '../../blocs/workspace/workspace_bloc.dart';
 import 'add_workspace_dialog.dart';
 import 'workspace_options.dart';
@@ -39,18 +39,20 @@ class HomeScreenSidebar extends StatelessWidget {
 
   Widget _buildWorkspaceList(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: (){
+      onRefresh: () {
         context.read<WorkspaceBloc>().add(const GetJoinedWorkspacesEvent());
         return Future<void>.value();
       },
       child: BlocConsumer<WorkspaceBloc, WorkspaceState>(
-        listenWhen: (previous, current) => 
-            current is WorkspaceCreated || 
-            current is WorkspaceError || 
+        listenWhen: (previous, current) =>
+            current is WorkspaceCreated ||
+            current is WorkspaceError ||
             current is WorkspaceDeleted,
         listener: _handleWorkspaceStateChanges,
         buildWhen: (previous, current) =>
-            current is WorkspacesLoaded || current is WorkspacesLoading || current is WorkspaceError,
+            current is WorkspacesLoaded ||
+            current is WorkspacesLoading ||
+            current is WorkspaceError,
         builder: (context, state) {
           if (state is WorkspacesLoaded) {
             return _buildLoadedWorkspaces(context, state.workspaces);
@@ -61,7 +63,8 @@ class HomeScreenSidebar extends StatelessWidget {
     );
   }
 
-  void _handleWorkspaceStateChanges(BuildContext context, WorkspaceState state) {
+  void _handleWorkspaceStateChanges(
+      BuildContext context, WorkspaceState state) {
     final message = switch (state) {
       WorkspaceError() => state.message,
       WorkspaceDeleted() => "Workspace deleted successfully!!!",
@@ -76,7 +79,8 @@ class HomeScreenSidebar extends StatelessWidget {
     }
   }
 
-  Widget _buildLoadedWorkspaces(BuildContext context, List<Workspace> workspaces) {
+  Widget _buildLoadedWorkspaces(
+      BuildContext context, List<Workspace> workspaces) {
     return ListView.builder(
       itemCount: workspaces.length,
       itemBuilder: (context, index) => Padding(
@@ -116,11 +120,17 @@ class HomeScreenSidebar extends StatelessWidget {
   }
 
   void _handleWorkspaceTap(BuildContext context, Workspace workspace) async {
-    final user = await Utils.getUser(const FlutterSecureStorage());
+    final user = await Utils.getUser(sl());
     if (context.mounted) {
-      context.read<WorkspaceBloc>().add(GetWorkspaceEvent(workspaceId: workspace.id));
-      context.read<CategoryBloc>().add(GetCategoriesEvent(workspaceId: workspace.id));
-      context.read<SingleWorkspaceMemberCubit>().getWorkspaceMember(workspace.id, user.email);
+      context
+          .read<WorkspaceBloc>()
+          .add(GetWorkspaceEvent(workspaceId: workspace.id));
+      context
+          .read<CategoryBloc>()
+          .add(GetCategoriesEvent(workspaceId: workspace.id));
+      context
+          .read<SingleWorkspaceMemberCubit>()
+          .getWorkspaceMember(workspace.id, user.email);
     }
   }
 
@@ -131,11 +141,16 @@ class HomeScreenSidebar extends StatelessWidget {
     );
   }
 
-  Future<void> _showWorkspaceOptions(BuildContext context, Workspace workspace) {
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) => WorkspaceOptions(workspace: workspace),
-    );
+  Future<void> _showWorkspaceOptions(
+      BuildContext context, Workspace workspace) async {
+    final user = await Utils.getUser(sl());
+    if (context.mounted) {
+      return showModalBottomSheet(
+        context: context,
+        builder: (context) =>
+            WorkspaceOptions(workspace: workspace, user: user),
+      );
+    }
   }
 }
 

@@ -4,29 +4,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/widgets/divider/bottomsheet_divider.dart';
+import '../../../../auth/domain/entities/user_entity.dart';
 import '../../../domain/entities/workspace_entity.dart';
 import '../../blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
 import '../../blocs/workspace/workspace_bloc.dart';
 
-class WorkspaceOptions extends StatelessWidget {
+class WorkspaceOptions extends StatefulWidget {
   final Workspace workspace;
+  final User user;
 
-  const WorkspaceOptions({super.key, required this.workspace});
+  const WorkspaceOptions({super.key, required this.workspace, required this.user});
+
+  @override
+  State<WorkspaceOptions> createState() => _WorkspaceOptionsState();
+}
+
+class _WorkspaceOptionsState extends State<WorkspaceOptions> {
+  @override
+  void initState() {
+    context.read<SingleWorkspaceMemberCubit>().getWorkspaceMember(
+      widget.workspace.id, 
+      widget.user.email);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    //final singleWorkspaceMemberState = context.watch<SingleWorkspaceMemberCubit>().state;
+    final singleWorkspaceMemberState = context.watch<SingleWorkspaceMemberCubit>().state;
     return Wrap(
       children: [
         const BottomSheetDivider(),
+        if (singleWorkspaceMemberState.isSuccess == true && 
+          singleWorkspaceMemberState.isLoading == false && singleWorkspaceMemberState.member!.role == "workspace_admin")
         _buildOptionTile(
           icon: Icons.delete,
-          title: 'Delete Workspace: ${workspace.name}',
+          title: 'Delete Workspace: ${widget.workspace.name}',
           onTap: () => _handleDelete(context),
         ),
         _buildOptionTile(
           icon: Icons.exit_to_app,
-          title: 'Leave Workspace: ${workspace.name}',
+          title: 'Leave Workspace: ${widget.workspace.name}',
           onTap: () => _handleLeave(context),
         ),
       ],
@@ -72,7 +89,7 @@ class WorkspaceOptions extends StatelessWidget {
                           subscription.cancel();
                         }
                       });
-                     workspaceBloc.add(DeleteWorkspaceEvent(workspaceId: workspace.id));
+                     workspaceBloc.add(DeleteWorkspaceEvent(workspaceId: widget.workspace.id));
                      await completer.future;
                      if(context.mounted) Navigator.pop(context);
                    },
