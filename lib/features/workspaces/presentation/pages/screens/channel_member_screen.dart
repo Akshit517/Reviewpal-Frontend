@@ -124,6 +124,8 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
   Widget build(BuildContext context) {
     final singleChannelMemberState =
         context.watch<SingleChannelMemberCubit>().state;
+    final String key =
+        '${widget.workspace.id}-${widget.category.id}-${widget.channel.id}';
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -144,10 +146,13 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
         ),
         actions: [
-          IconButton(
-            onPressed: _showAddMemberDialog,
-            icon: const Icon(Icons.add_rounded),
-          )
+          if (singleChannelMemberState.members[key]!.role == 'reviewer' &&
+              singleChannelMemberState.loadingStates[key] == false &&
+              singleChannelMemberState.successStates[key] == true)
+            IconButton(
+              onPressed: _showAddMemberDialog,
+              icon: const Icon(Icons.add_rounded),
+            )
         ],
       ),
       body: LayoutBuilder(
@@ -164,8 +169,8 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
                 Container(
                   width: contentWidth,
                   padding: const EdgeInsets.all(15.0),
-                  child:
-                      _buildPageContent(constraints, singleChannelMemberState),
+                  child: _buildPageContent(
+                      constraints, singleChannelMemberState, key),
                 ),
                 if (isTablet) const Spacer(flex: 1),
               ],
@@ -176,10 +181,8 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
     );
   }
 
-  Widget _buildPageContent(
-    BoxConstraints constraints,
-    SingleChannelMemberState singleChannelMemberState,
-  ) {
+  Widget _buildPageContent(BoxConstraints constraints,
+      SingleChannelMemberState singleChannelMemberState, String key) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(15.0),
@@ -200,23 +203,42 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
                   final role =
                       member.role == "reviewer" ? "REVIEWER" : "REVIEWEE";
                   return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.grey[800],
-                      child: Text(
-                        member.user.username[0].toUpperCase(),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.grey[800],
+                        child: Text(
+                          member.user.username[0].toUpperCase(),
+                        ),
                       ),
-                    ),
-                    title: Text(member.user.username),
-                    subtitle: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 150),
-                      child: PillBox(text: role),
-                    ),
-                    onLongPress: () => _handleLongPress(
-                      context,
-                      singleChannelMemberState,
-                      member,
-                    ),
-                  );
+                      title: Text(member.user.username),
+                      subtitle: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 150),
+                        child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 300),
+                            child: PillBox(
+                              text: role,
+                              backgroundColor: (member.role == "reviewer")
+                                  ? const Color.fromARGB(255, 105, 67, 67)
+                                  : const Color.fromARGB(255, 52, 74, 44),
+                              textColor: (member.role == "reviewer")
+                                  ? const Color.fromARGB(255, 255, 184, 184)
+                                  : const Color.fromARGB(255, 217, 253, 173),
+                            )),
+                      ),
+                      onLongPress: () => {
+                            if (singleChannelMemberState.members[key]!.role ==
+                                    "reviewer" &&
+                                singleChannelMemberState.loadingStates[key] ==
+                                    false &&
+                                singleChannelMemberState.successStates[key] ==
+                                    true)
+                              {
+                                _handleLongPress(
+                                  context,
+                                  singleChannelMemberState,
+                                  member,
+                                )
+                              }
+                          });
                 }).toList(),
               );
             } else if (state is ChannelMemberLoading) {
@@ -301,7 +323,6 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
             channelId: widget.channel.id,
             userEmail: member.user.email));
         await completer.future;
-
       },
     );
   }

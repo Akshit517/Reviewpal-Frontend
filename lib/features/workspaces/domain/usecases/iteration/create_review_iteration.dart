@@ -28,7 +28,7 @@ class CreateReviewParams {
   final String workspaceId;
   final int categoryId;
   final String channelId;
-  final String submissionId;
+  final int submissionId;
   final String remarks;
   final AssignmentStatus? assignmentStatus;
 

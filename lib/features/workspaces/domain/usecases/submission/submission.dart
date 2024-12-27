@@ -31,7 +31,7 @@ class SubmissionParams {
   final String workspaceId;
   final int categoryId;
   final String channelId;
-  final String? userId;
+  final int? userId;
 
   SubmissionParams({required this.workspaceId, required this.categoryId, required this.channelId, this.userId});
 }

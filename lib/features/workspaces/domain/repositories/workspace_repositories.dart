@@ -61,7 +61,7 @@ abstract class WorkspaceRepositories {
   Future<Either<Failure, void>> createSubmissionReviewee(
       String workspaceId, int categoryId, String channelId,  String? content, String? file);
   Future<Either<Failure, List<Submission>>> getSubmissionByUserId(
-      String workspaceId, int categoryId, String channelId, String userId);
+      String workspaceId, int categoryId, String channelId, int userId);
   // Submission Reviewee methods (to be implemented)
   //Future<Either<Failure, void>> updateSubmissionReviewee(
   //    String workspaceId, int categoryId, String channelId, Map<String, dynamic> data);
@@ -72,7 +72,7 @@ abstract class WorkspaceRepositories {
     String workspaceId,
     int categoryId,
     String channelId,
-    String submissionId,
+    int submissionId,
     String remarks,
     AssignmentStatus? assignmentStatus,
   );
@@ -81,13 +81,13 @@ abstract class WorkspaceRepositories {
     String workspaceId,
     int categoryId,
     String channelId,
-    String submissionId,
+    int submissionId,
   );
 
   Future<Either<Failure, RevieweeIterationsResponse>> getRevieweeIterations(
     String workspaceId,
     int categoryId,
     String channelId,
-    String submissionId,
+    int submissionId,
   );
 }

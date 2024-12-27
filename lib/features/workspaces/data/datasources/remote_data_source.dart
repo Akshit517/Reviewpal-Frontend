@@ -68,14 +68,14 @@ abstract class WorkspaceRemoteDataSource {
   Future<List<SubmissionModel>> postSubmissionReviewee(String workspaceId, int categoryId, String channelId, String? content, String? file);
 
   /// [SubmissionReviewer] methods
-  Future<List<SubmissionModel>> getSubmissionByUserId(String workspaceId, int categoryId, String channelId, String userId);
+  Future<List<SubmissionModel>> getSubmissionByUserId(String workspaceId, int categoryId, String channelId, int userId);
 
   /// [Iteration] methods
   Future<ReviewIterationModel> createIteration(
     String workspaceId,
     int categoryId,
     String channelId,
-    String submissionId,
+    int submissionId,
     String remarks,
     AssignmentStatus? assignmentStatus,
   );
@@ -84,14 +84,14 @@ abstract class WorkspaceRemoteDataSource {
     String workspaceId,
     int categoryId,
     String channelId,
-    String submissionId,
+    int submissionId,
   );
 
   Future<RevieweeIterationsResponseModel> getRevieweeIterations(
     String workspaceId,
     int categoryId,
     String channelId,
-    String submissionId,
+    int submissionId,
   );
 }
 
@@ -484,7 +484,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
   /// [SubmissionReviewer] Methods
 
   @override
-  Future<List<SubmissionModel>> getSubmissionByUserId(String workspaceId, int categoryId, String channelId, String userId) async {
+  Future<List<SubmissionModel>> getSubmissionByUserId(String workspaceId, int categoryId, String channelId, int userId) async {
     final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submission/reviewers/$userId/');
     _handleResponse(response.statusCode);
     final List<dynamic> decodedJson = jsonDecode(response.body);
@@ -498,7 +498,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     String workspaceId,
     int categoryId,
     String channelId,
-    String submissionId,
+    int submissionId,
     String remarks,
     AssignmentStatus? assignmentStatus,
   ) async {
@@ -523,7 +523,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     String workspaceId,
     int categoryId,
     String channelId,
-    String submissionId,
+    int submissionId,
   ) async {
     final response = await client.get(
         '${AppConstants.baseUrl}/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewer-iterations/',
@@ -537,7 +537,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     String workspaceId,
     int categoryId,
     String channelId,
-    String submissionId,
+    int submissionId,
   ) async {
     final response = await client.get(
         '${AppConstants.baseUrl}workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewee-iterations/',

@@ -25,7 +25,7 @@ class GetReviewParams {
   final String workspaceId;
   final int categoryId;
   final String channelId;
-  final String submissionId;
+  final int submissionId;
 
   GetReviewParams({
     required this.workspaceId,

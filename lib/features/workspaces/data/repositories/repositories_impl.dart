@@ -371,7 +371,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, List<Submission>>> getSubmissionByUserId(String workspaceId, int categoryId, String channelId, String userId) async {
+  Future<Either<Failure, List<Submission>>> getSubmissionByUserId(String workspaceId, int categoryId, String channelId, int userId) async {
     try {
       final submissions = await remoteDataSource.getSubmissionByUserId(workspaceId, categoryId, channelId, userId);
       return Right(submissions);
@@ -382,7 +382,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   
   /// [Iteration] Methods
   @override
-  Future<Either<Failure, ReviewIteration>> getReviewerIteration(String workspaceId, int categoryId, String channelId, String submissionId) async {
+  Future<Either<Failure, ReviewIteration>> getReviewerIteration(String workspaceId, int categoryId, String channelId, int submissionId) async {
     try {
       final iteration = await remoteDataSource.getReviewerIteration(workspaceId, categoryId, channelId, submissionId);
       return Right(iteration);
@@ -392,7 +392,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, ReviewIteration>> createIteration(String workspaceId, int categoryId, String channelId, String submissionId, String remarks, AssignmentStatus? assignmentStatus) async {
+  Future<Either<Failure, ReviewIteration>> createIteration(String workspaceId, int categoryId, String channelId, int submissionId, String remarks, AssignmentStatus? assignmentStatus) async {
     try {
       ReviewIteration create =  await remoteDataSource.createIteration(workspaceId, categoryId, channelId, submissionId, remarks, assignmentStatus);
       return Right(create);
@@ -402,7 +402,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepositories {
   }
 
   @override
-  Future<Either<Failure, RevieweeIterationsResponse>> getRevieweeIterations(String workspaceId, int categoryId, String channelId, String submissionId) async {
+  Future<Either<Failure, RevieweeIterationsResponse>> getRevieweeIterations(String workspaceId, int categoryId, String channelId, int submissionId) async {
     try {
       RevieweeIterationsResponse create =  await remoteDataSource.getRevieweeIterations(workspaceId, categoryId, channelId, submissionId);
       return Right(create);
