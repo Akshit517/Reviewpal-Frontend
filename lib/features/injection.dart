@@ -43,6 +43,7 @@ import 'workspaces/domain/usecases/workspaces/get_workspace.dart';
 import 'workspaces/domain/usecases/workspaces/update_workspace.dart';
 import 'workspaces/presentation/blocs/category/category_bloc.dart';
 import 'workspaces/presentation/blocs/channel/member/channel_member_bloc.dart';
+import 'workspaces/presentation/blocs/channel/single_member/single_channel_member_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -82,9 +83,10 @@ Future<void> init() async {
     updateChannel: sl(), 
     deleteChannel: sl()
   ));
+  sl.registerFactory(() => SingleChannelMemberCubit(
+    getChannelMemberUseCase: sl()));
   sl.registerFactory(() => ChannelMemberBloc(
     getChannelMembersUseCase: sl(),
-    getChannelMemberUseCase: sl(), 
     addChannelMemberUseCase: sl(), 
     deleteChannelMemberUseCase: sl(), 
     updateChannelMemberUseCase: sl()

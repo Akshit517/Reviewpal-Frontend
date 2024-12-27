@@ -1,121 +1,91 @@
-// lib/data/repositories/chat_repository_impl.dart
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:dartz/dartz.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failures.dart';
+import '../../../../core/network/internet/network_info.dart';
+import '../../../auth/data/datasources/user_local_data_source.dart';
 import '../../domain/entities/message.dart';
 import '../../domain/repositories/chat_repository.dart';
+import '../datasources/group_chat_remote_data_source.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
-  WebSocketChannel? _channel;
-  final _messageController = StreamController<ChatMessage>.broadcast();
-  
-  @override
-  Future<void> connectToChannel(String workspaceId, String categoryId, String channelId) async {
-    await disconnectFromChannel();
+  final WebSocketChannel channel;
+  final GroupChatRemoteDataSource remoteDataSource;
+  final NetworkInfo networkInfo;
+  final UserLocalDataSource userLocalDataSource;
 
-
-    final wsUrl = 'ws://your-backend/ws/chat/${workspaceId}_${categoryId}_$channelId/';
-    _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
-    
-    // Listen to incoming messages
-    _channel?.stream.listen(
-      (data) {
-        final message = _parseMessage(data);
-        if (message != null) {
-          _messageController.add(message);
-        }
-      },
-      onError: (error) {
-        print('WebSocket error: $error');
-        disconnectFromChannel();
-      },
-      onDone: () {
-        print('WebSocket connection closed');
-        disconnectFromChannel();
-      },
-    );
-  }
+  ChatRepositoryImpl({
+    required this.channel,
+    required this.remoteDataSource,
+    required this.networkInfo,
+    required this.userLocalDataSource
+  });
 
   @override
-  Future<void> disconnectFromChannel() async {
-    await _channel?.sink.close();
-    _channel = null;
-  }
-
-  @override
-  Stream<ChatMessage> get messageStream => _messageController.stream;
-
-  @override
-  Future<void> sendMessage(String message) async {
-    if (_channel == null) {
-      throw Exception('Not connected to any channel');
-    }
-    
-    final messageData = {
-      'message': message,
-    };
-    _channel?.sink.add(jsonEncode(messageData));
-  }
-
-  @override
-  Future<void> sendFile(File file) async {
-    if (_channel == null) {
-      throw Exception('Not connected to any channel');
-    }
-
-    // Read file as bytes
-    final bytes = await file.readAsBytes();
-    final base64Data = base64Encode(bytes);
-    
-    // Create header with file info
-    final header = {
-      'file_name': file.path.split('/').last,
-    };
-    
-    final headerJson = jsonEncode(header);
-    final headerBytes = utf8.encode(headerJson);
-    final headerBase64 = base64Encode(headerBytes);
-    
-    final headerLength = headerBytes.length;
-    final lengthBytes = ByteData(4)..setInt32(0, headerLength, Endian.big);
-    final lengthBase64 = base64Encode(lengthBytes.buffer.asUint8List());
-    
-    final message = 'B' + lengthBase64 + headerBase64 + base64Data;
-    
-    _channel?.sink.add(message);
-  }
-
-  ChatMessage? _parseMessage(dynamic data) {
-    try {
-      final Map<String, dynamic> messageData = jsonDecode(data);
-      
-      if (messageData.containsKey('file_name')) {
-        // This is a file message
-        return ChatMessage(
-          sender: messageData['sender'],
-          content: 'Sent a file: ${messageData['file_name']}',
-          messageId: messageData['message_id'],
-          timestamp: DateTime.now(),
-          type: MessageType.file,
-          fileName: messageData['file_name'],
-        );
-      } else {
-        // Regular text message
-        return ChatMessage(
-          sender: messageData['sender'],
-          content: messageData['content'],
-          messageId: messageData['message_id'],
-          timestamp: DateTime.now(),
-          type: MessageType.text,
-        );
+  Future<Either<Failure, List<Message>>> getChannelMessages(String workspaceId, int categoryId, String channelId) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final messages = await remoteDataSource.getChannelMessages(workspaceId, categoryId, channelId);
+        return Right(messages);
+      } on ServerException {
+        return const Left(const ServerFailure());
       }
-    } catch (e) {
-      print('Error parsing message: $e');
-      return null;
+    } else {
+      return const Left(NetworkFailure());
+    }
+  }
+
+   @override
+  Stream<Either<Failure, Message>> connectToChat(
+    String workspaceId,
+    int categoryId,
+    String channelId
+  ) async* {
+    if (await networkInfo.isConnected) {
+      try {
+        await for (final message in remoteDataSource.connectToChat(
+          workspaceId,
+          categoryId,
+          channelId
+        )) {
+          yield Right(message);
+        }
+      } on ServerException {
+        yield const Left(ServerFailure());
+      }
+    } else {
+      yield const Left(NetworkFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> sendMessage(String message) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await remoteDataSource.sendMessage(message);
+        return const Right(null);
+      } on ServerException {
+        return const Left(ServerFailure());
+      }
+    } else {
+      return const Left(NetworkFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> sendFile(String filePath, String fileName) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await remoteDataSource.sendFile(filePath, fileName);
+        return const Right(null);
+      } on ServerException {
+        return const Left(ServerFailure());
+      }
+    } else {
+      return const Left(NetworkFailure());
     }
   }
 }

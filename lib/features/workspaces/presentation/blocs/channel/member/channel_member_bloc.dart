@@ -9,14 +9,12 @@ part 'channel_member_state.dart';
 
 class ChannelMemberBloc extends Bloc<ChannelMemberEvent, ChannelMemberState> {
   final GetChannelMembersUseCase getChannelMembersUseCase;
-  final GetChannelMemberUseCase getChannelMemberUseCase;
   final AddChannelMemberUseCase addChannelMemberUseCase;
   final DeleteChannelMemberUseCase deleteChannelMemberUseCase;
   final UpdateChannelMemberUseCase updateChannelMemberUseCase;
 
   ChannelMemberBloc({
     required this.getChannelMembersUseCase,
-    required this.getChannelMemberUseCase,
     required this.addChannelMemberUseCase,
     required this.deleteChannelMemberUseCase,
     required this.updateChannelMemberUseCase
@@ -38,7 +36,7 @@ class ChannelMemberBloc extends Bloc<ChannelMemberEvent, ChannelMemberState> {
     );
     result.fold(
       (failure) => emit(ChannelMemberError(message: failure.message)),
-      (members) => emit(ChannelMemberLoaded(members: members))
+      (members) => emit(ChannelMemberSuccess(members: members))
     );
   }
 
@@ -55,7 +53,7 @@ class ChannelMemberBloc extends Bloc<ChannelMemberEvent, ChannelMemberState> {
     );
     result.fold(
       (failure) => emit(ChannelMemberError(message: failure.message)),
-      (message) => emit(const ChannelMemberSuccess(message: "Member added successfully"))
+      (message) => emit(const ChannelMemberSuccess())
     );
   }
 
@@ -71,7 +69,7 @@ class ChannelMemberBloc extends Bloc<ChannelMemberEvent, ChannelMemberState> {
     );
     result.fold(
       (failure) => emit(ChannelMemberError(message: failure.message)),
-      (message) => emit(const ChannelMemberSuccess(message: "Member removed successfully"))
+      (message) => emit(const ChannelMemberSuccess())
     );
   }
 
@@ -88,7 +86,7 @@ class ChannelMemberBloc extends Bloc<ChannelMemberEvent, ChannelMemberState> {
     );
     result.fold(
       (failure) => emit(ChannelMemberError(message: failure.message)),
-      (message) => emit(const ChannelMemberSuccess(message: "Member updated successfully"))
+      (message) => emit(const ChannelMemberSuccess())
     );
   }
 }

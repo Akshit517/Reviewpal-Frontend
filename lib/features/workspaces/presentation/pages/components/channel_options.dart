@@ -73,6 +73,20 @@ class ChannelOptions extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
+        ListTile(
+          leading: const Icon(Icons.groups_2_rounded),
+          title: const Text("View Members"),
+          onTap: () {
+            context.push(
+              CustomNavigationHelper.channelMembersPath,
+              extra: {
+                'workspace': workspace,
+                'category': category,
+                'channel': channel,
+              });
+            Navigator.pop(context);
+          },
+        ),
       ],
     );
   }

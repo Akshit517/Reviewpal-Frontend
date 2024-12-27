@@ -4,7 +4,7 @@ import 'categories_sidebar.dart';
 import 'content_view.dart';
 
 class HomeScreenMain extends StatelessWidget {
-  static const double _desktopBreakpoint = 1200;
+  static const double desktopBreakpoint = 1200;
   static const double _sidebarWidth = 400.0;
 
   const HomeScreenMain({super.key});
@@ -13,7 +13,7 @@ class HomeScreenMain extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth >= _desktopBreakpoint;
+        final isDesktop = constraints.maxWidth >= desktopBreakpoint;
 
         return Row(
           children: [

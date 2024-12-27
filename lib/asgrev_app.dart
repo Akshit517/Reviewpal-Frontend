@@ -8,6 +8,7 @@ import 'features/injection.dart';
 import 'features/workspaces/presentation/blocs/category/category_bloc.dart';
 import 'features/workspaces/presentation/blocs/channel/channel_bloc/channel_bloc.dart';
 import 'features/workspaces/presentation/blocs/channel/member/channel_member_bloc.dart';
+import 'features/workspaces/presentation/blocs/channel/single_member/single_channel_member_cubit.dart';
 import 'features/workspaces/presentation/blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
 import 'features/workspaces/presentation/blocs/workspace/member/workspace_member_bloc.dart';
 import 'features/workspaces/presentation/blocs/workspace/workspace_bloc.dart';
@@ -36,7 +37,8 @@ class _AsgRevAppState extends State<AsgRevApp> {
         BlocProvider<WorkspaceMemberBloc>(create: (context) => sl<WorkspaceMemberBloc>()),
         BlocProvider<CategoryBloc>(create: (context) => sl<CategoryBloc>()),
         BlocProvider<ChannelBloc>(create: (context) => sl<ChannelBloc>()),
-        BlocProvider<ChannelMemberBloc>(create: (context) => sl<ChannelMemberBloc>())
+        BlocProvider<SingleChannelMemberCubit>(create: (context) => sl<SingleChannelMemberCubit>()),
+        BlocProvider<ChannelMemberBloc>(create: (context) => sl<ChannelMemberBloc>()),
         ],
       child: MaterialApp.router(
         theme: appThemeData.values.toList()[1],

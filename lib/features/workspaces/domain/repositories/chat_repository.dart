@@ -1,12 +1,17 @@
 
-import 'dart:io';
+import 'package:dartz/dartz.dart';
 
+import '../../../../core/error/failures.dart';
 import '../entities/message.dart';
 
 abstract class ChatRepository {
-  Future<void> connectToChannel(String workspaceId, String categoryId, String channelId);
-  Future<void> disconnectFromChannel();
-  Stream<ChatMessage> get messageStream;
-  Future<void> sendMessage(String message);
-  Future<void> sendFile(File file);
+  Stream<Either<Failure, Message>> connectToChat(
+    String workspaceId,
+    int categoryId,
+    String channelId
+  );
+  Future<Either<Failure, void>> sendMessage(String message);
+  Future<Either<Failure, void>> sendFile(String filePath, String fileName);
+
+  Future<Either<Failure, List<Message>>> getChannelMessages(String workspaceId, int categoryId, String channelId);
 }

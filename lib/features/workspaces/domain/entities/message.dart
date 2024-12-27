@@ -20,3 +20,23 @@ class ChatMessage {
     this.fileUrl,
   });
 }
+
+class Message {
+  final int id;
+  final int senderId;
+  final String senderName;
+  final String? textContent;
+  final String? file;
+  final DateTime createdAt;
+  final String channelId;
+
+  Message({
+    required this.id,
+    required this.senderId,
+    required this.senderName,
+    this.textContent,
+    this.file,
+    required this.createdAt,
+    required this.channelId,
+  });
+}

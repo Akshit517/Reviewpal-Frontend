@@ -9,8 +9,9 @@ import '../../../features/auth/presentation/pages/signup_screen.dart';
 import '../../../features/workspaces/domain/entities/category_entity.dart';
 import '../../../features/workspaces/domain/entities/channel_entity.dart';
 import '../../../features/workspaces/domain/entities/workspace_entity.dart';
-import '../../../features/workspaces/presentation/pages/screens/add_assignment.dart';
+import '../../../features/workspaces/presentation/pages/screens/add_update_assignment.dart';
 import '../../../features/workspaces/presentation/pages/screens/assignment_screen.dart';
+import '../../../features/workspaces/presentation/pages/screens/channel_member_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/doubt_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/home_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/workspace_member.dart';
@@ -32,6 +33,7 @@ class CustomNavigationHelper {
   static const String profilePath = '/profile';
   static const String addAssignmentScreenPath = '/addAssignmentScreen';
   static const String workspaceMembersPath = '/workspaceMembers';
+  static const String channelMembersPath = '/channelMembers';
   static const String assignmentPath ='/assignment';
   static const String doubtPath ='/doubt';
   
@@ -145,6 +147,26 @@ class CustomNavigationHelper {
           return CustomTransitionPage(
             key: state.pageKey,
             child: AssignmentScreen(
+              workspace: extra['workspace'] as Workspace,
+              category: extra['category'] as Category,
+              channel: extra['channel'] as Channel,
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          );
+        },
+      ),
+       GoRoute(
+        path: channelMembersPath,
+        pageBuilder: (context, state) {
+          Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: ChannelMemberWidget(
               workspace: extra['workspace'] as Workspace,
               category: extra['category'] as Category,
               channel: extra['channel'] as Channel,
