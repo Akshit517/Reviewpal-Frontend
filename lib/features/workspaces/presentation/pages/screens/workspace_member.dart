@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ReviewPal/core/widgets/pillbox/pillbox.dart';
 import 'package:ReviewPal/features/workspaces/domain/entities/workspace_member.dart';
 import 'package:flutter/material.dart';
@@ -188,10 +190,39 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
     return ListTile(
       leading: const Icon(Icons.delete, color: Colors.red),
       title: const Text('Remove Member', style: TextStyle(color: Colors.red)),
-      onTap: () {
-        context.read<WorkspaceMemberBloc>().add(RemoveWorkspaceMemberEvent(
-            workspaceId: widget.workspace.id, email: member.user.email));
-        Navigator.pop(context);
+      onTap: () async {
+        if (!context.mounted) return;
+        final workspaceMemberBloc = context.read<WorkspaceMemberBloc>();
+        final completer = Completer<void>();
+        late StreamSubscription subscription;
+
+        subscription = workspaceMemberBloc.stream.listen((state) {
+          if (state is WorkspaceMemberSuccess ||
+              state is WorkspaceMemberError) {
+            if (state is WorkspaceMemberError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            } else if (state is WorkspaceMemberSuccess) {
+              workspaceMemberBloc.add(
+                  GetWorkspaceMembersEvent(workspaceId: widget.workspace.id));
+            }
+            completer.complete();
+            subscription.cancel();
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+          }
+        });
+
+        workspaceMemberBloc.add(
+          RemoveWorkspaceMemberEvent(
+            workspaceId: widget.workspace.id,
+            email: member.user.email,
+          ),
+        );
+
+        await completer.future;
       },
     );
   }
@@ -231,16 +262,43 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
                   child: const Text('Cancel'),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    if (!context.mounted) return;
+                    final workspaceMemberBloc =
+                        context.read<WorkspaceMemberBloc>();
+                    final completer = Completer<void>();
+                    late StreamSubscription subscription;
+
+                    subscription = workspaceMemberBloc.stream.listen((state) {
+                      if (state is WorkspaceMemberSuccess ||
+                          state is WorkspaceMemberError) {
+                        if (state is WorkspaceMemberError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(state.message)),
+                          );
+                        } else if (state is WorkspaceMemberSuccess) {
+                          workspaceMemberBloc.add(GetWorkspaceMembersEvent(
+                              workspaceId: widget.workspace.id));
+                        }
+                        completer.complete();
+                        subscription.cancel();
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        }
+                      }
+                    });
+
                     if (_selectedRole != null) {
-                      context.read<WorkspaceMemberBloc>().add(
-                          UpdateWorkspaceMemberEvent(
-                              workspaceId: widget.workspace.id,
-                              email: member.user.email,
-                              role: _selectedRole!));
+                      workspaceMemberBloc.add(
+                        UpdateWorkspaceMemberEvent(
+                          workspaceId: widget.workspace.id,
+                          email: member.user.email,
+                          role: _selectedRole!,
+                        ),
+                      );
                     }
-                    Navigator.pop(context);
-                    Navigator.pop(context);
+
+                    await completer.future;
                   },
                   child: const Text('Update'),
                 ),

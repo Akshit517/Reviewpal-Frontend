@@ -1,28 +1,28 @@
 part of 'single_channel_member_cubit.dart';
 
-// ignore: must_be_immutable
 class SingleChannelMemberState extends Equatable {
-  ChannelMember? member; 
-  bool? isLoading;
-  bool? isSuccess;
-  SingleChannelMemberState({
-    this.member,
-    this.isLoading,
-    this.isSuccess,
+  final Map<String, ChannelMember> members;
+  final Map<String, bool> loadingStates;
+  final Map<String, bool> successStates;
+
+  const SingleChannelMemberState({
+    this.members = const {},
+    this.loadingStates = const {},
+    this.successStates = const {},
   });
 
-  @override
-  List<Object?> get props => [member, isLoading, isSuccess];
-
   SingleChannelMemberState copyWith({
-    ChannelMember? member,
-    bool? isLoading,
-    bool? isSuccess,
+    Map<String, ChannelMember>? members,
+    Map<String, bool>? loadingStates,
+    Map<String, bool>? successStates,
   }) {
     return SingleChannelMemberState(
-      member: member ?? this.member,
-      isLoading: isLoading ?? this.isLoading,
-      isSuccess: isSuccess ?? this.isSuccess,
+      members: members ?? this.members,
+      loadingStates: loadingStates ?? this.loadingStates,
+      successStates: successStates ?? this.successStates,
     );
   }
+
+  @override
+  List<Object?> get props => [members, loadingStates, successStates];
 }

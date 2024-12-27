@@ -1,3 +1,4 @@
+import 'package:ReviewPal/core/widgets/pillbox/pillbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,7 +26,7 @@ class ChannelExpansionTile extends StatefulWidget {
       {super.key,
       required this.workspace,
       required this.category,
-      required this.channel, 
+      required this.channel,
       required this.user});
 
   @override
@@ -40,17 +41,16 @@ class _ChannelExpansionTileState extends State<ChannelExpansionTile> {
         widget.workspace.id,
         widget.category.id,
         widget.channel.id,
-        widget.user.email
-      );
+        widget.user.email);
   }
 
   @override
   Widget build(BuildContext context) {
     final state = context.watch<SingleChannelMemberCubit>().state;
-    final data = state.member;
+    final String key = '${widget.workspace.id}-${widget.category.id}-${widget.channel.id}';
     return CustomExpansionTile(
       onLongPress: () {
-        showBottomSheet(
+        showModalBottomSheet(
             context: context,
             builder: (context) => ChannelOptions(
                 workspace: widget.workspace,
@@ -59,6 +59,20 @@ class _ChannelExpansionTileState extends State<ChannelExpansionTile> {
       },
       title: widget.channel.name,
       children: [
+        if (state.successStates[key] == true && state.loadingStates[key] == false)
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 256),
+          child: PillBox(
+            text: (state.members[key]?.role == 'reviewer') ? 'REVIEWER' : 'REVIEWEE',
+            backgroundColor: (state.members[key]?.role == 'reviewer')
+                ? const Color.fromARGB(255, 105, 67, 67)
+                : const Color.fromARGB(255, 52, 74, 44),
+            textColor: (state.members[key]?.role == 'reviewer')
+                ? const Color.fromARGB(255, 255, 184, 184)
+                : const Color.fromARGB(255, 217, 253, 173),
+            width: double.infinity,
+          ),
+        ),
         _buildSubSubcategoryOption(
           "Assignment",
           widget.workspace,

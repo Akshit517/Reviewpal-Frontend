@@ -92,7 +92,9 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
               if (_isExpanded)
                 Padding(
                   padding: const EdgeInsets.only(left: 28.0),
-                  child: Column(children: widget.children),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: widget.children),
                 ),
             ],
           ),

@@ -40,18 +40,28 @@ class WorkspaceHeader extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 4),
-                  child: BlocBuilder<SingleWorkspaceMemberCubit, SingleWorkspaceMemberState>(
+                  child: BlocBuilder<SingleWorkspaceMemberCubit,
+                      SingleWorkspaceMemberState>(
                     builder: (context, state) {
-                      if (state.isLoading == false && state.isSuccess == false) {
+                      if (state.isLoading == false &&
+                          state.isSuccess == false) {
                         return const PillBox(text: "ERR");
-                      } else if (state.isLoading == false && state.isSuccess == true) { 
+                      } else if (state.isLoading == false &&
+                          state.isSuccess == true) {
                         String role = state.member!.role;
-                        role = (role == "workspace_admin")? "ADMIN" : "MEMBER";
-                        return PillBox(text: role);
+                        role = (role == "workspace_admin") ? "ADMIN" : "MEMBER";
+                        return PillBox(
+                          text: role,
+                          backgroundColor: (role == 'ADMIN')
+                              ? const Color.fromARGB(255, 105, 67, 67)
+                              : const Color.fromARGB(255, 52, 74, 44),
+                          textColor: (role == 'ADMIN')
+                              ? const Color.fromARGB(255, 255, 184, 184)
+                              : const Color.fromARGB(255, 217, 253, 173),
+                        );
                       } else {
                         return const ShimmerLoading(
-                            isLoading: true, 
-                            child: PillBox(text: ""));
+                            isLoading: true, child: PillBox(text: ""));
                       }
                     },
                   ),

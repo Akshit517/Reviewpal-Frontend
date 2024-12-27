@@ -17,10 +17,10 @@ class CategoryExpansionTile extends StatefulWidget {
   final Category category;
 
   const CategoryExpansionTile({
-    Key? key,
+    super.key,
     required this.category,
     required this.workspace,
-  }) : super(key: key);
+  });
 
   @override
   State<CategoryExpansionTile> createState() => _CategoryExpansionTileState();

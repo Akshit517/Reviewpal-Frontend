@@ -5,7 +5,7 @@ import '../../../domain/entities/workspace_entity.dart';
 import '../../blocs/category/category_bloc.dart';
 import 'category_expansion_tile.dart';
 
-class CategoriesList extends StatefulWidget {
+class CategoriesList extends StatelessWidget {
   final Workspace workspace;
   final VoidCallback? onCategorySelected;
 
@@ -14,17 +14,6 @@ class CategoriesList extends StatefulWidget {
     required this.workspace,
     this.onCategorySelected,
   });
-
-  @override
-  State<CategoriesList> createState() => _CategoriesListState();
-}
-
-class _CategoriesListState extends State<CategoriesList> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +27,7 @@ class _CategoriesListState extends State<CategoriesList> {
             children: state.categories
                 .map((category) => CategoryExpansionTile(
                   category: category,
-                  workspace: widget.workspace,
+                  workspace: workspace,
                 ))
                 .toList(),
           );

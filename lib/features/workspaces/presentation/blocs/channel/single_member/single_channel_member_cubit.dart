@@ -11,28 +11,39 @@ class SingleChannelMemberCubit extends Cubit<SingleChannelMemberState> {
 
   SingleChannelMemberCubit({
     required this.getChannelMemberUseCase,
-  }) : super(SingleChannelMemberState());
+  }) : super(const SingleChannelMemberState());
 
-  Future<void> getChannelMember(String workspaceId, int categoryId, String channelId, String email) async {
-    emit(state.copyWith(isLoading: true, isSuccess: false));
+  Future<void> getChannelMember(
+    String workspaceId,
+    int categoryId,
+    String channelId,
+    String email,
+  ) async {
+    final String key = '$workspaceId-$categoryId-$channelId';
     
+    emit(state.copyWith(
+      loadingStates: {...state.loadingStates, key: true},
+      successStates: {...state.successStates, key: false},
+    ));
+
     final result = await getChannelMemberUseCase(
       ChannelMemberParams(
-        workspaceId: workspaceId, 
+        workspaceId: workspaceId,
         categoryId: categoryId,
         channelId: channelId,
         email: email,
-      ));
-    
+      ),
+    );
+
     result.fold(
       (failure) => emit(state.copyWith(
-        isLoading: false, 
-        isSuccess: false,
+        loadingStates: {...state.loadingStates, key: false},
+        successStates: {...state.successStates, key: false},
       )),
       (data) => emit(state.copyWith(
-        member: data, 
-        isLoading: false, 
-        isSuccess: true,
+        members: {...state.members, key: data},
+        loadingStates: {...state.loadingStates, key: false},
+        successStates: {...state.successStates, key: true},
       )),
     );
   }

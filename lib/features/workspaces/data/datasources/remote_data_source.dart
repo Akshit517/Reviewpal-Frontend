@@ -413,10 +413,17 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
 
   @override
   Future<ChannelMemberModel> getChannelMember(String workspaceId, int categoryId, String channelId, String email) async {
-    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/members/?email=$email/');
+    final Uri uri = Uri.parse(
+    '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/members/')
+    .replace(queryParameters: {'email': email});
+    final response = await client.get(uri.toString());
     _handleResponse(response.statusCode);
-    final Map<String, dynamic> decodedJson = jsonDecode(response.body);
-    return ChannelMemberModel.fromJson(decodedJson);
+    final List<dynamic> decodedJson = jsonDecode(response.body);
+    final Map<String, dynamic> memberJson = decodedJson.firstWhere(
+      (element) => element['user']['email'] == email,
+      orElse: () => throw Exception('Member not found'),
+    );
+    return ChannelMemberModel.fromJson(memberJson);
   }
 
   /// [Assignment] Methods
