@@ -14,7 +14,6 @@ class ReviewIterationModel extends ReviewIteration {
   });
 
   factory ReviewIterationModel.fromJson(Map<String, dynamic> json) {
-
     return ReviewIterationModel(
       id: json['id'],
       reviewer: UserModel.fromJson(json['reviewer']),

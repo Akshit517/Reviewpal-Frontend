@@ -1,11 +1,14 @@
 import 'package:ReviewPal/core/resources/pallete/dark_theme_palette.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/resources/routes/routes.dart';
 import '../../../domain/entities/category_entity.dart';
 import '../../../domain/entities/channel_entity.dart';
 import '../../../domain/entities/task_entity.dart';
 import '../../../domain/entities/workspace_entity.dart';
+import '../components/create_submission_dialog.dart';
 import '../components/home_screen_main.dart';
 import 'package:intl/intl.dart';
 
@@ -26,6 +29,12 @@ class AssignmentScreen extends StatefulWidget {
 }
 
 class _AssignmentScreenState extends State<AssignmentScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -55,11 +64,70 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.add),
-        label: const Text('Submit Assignment'),
-        backgroundColor: DarkThemePalette.primaryAccent,
+      floatingActionButton: SpeedDial(
+        icon: Icons.menu,
+        activeIcon: Icons.close,
+        backgroundColor: DarkThemePalette.primaryDark,
+        foregroundColor: DarkThemePalette.primaryAccent,
+        overlayColor: Colors.black,
+        overlayOpacity: 0.5,
+        elevation: 5.0,
+        spacing: 10.0,
+        spaceBetweenChildren: 15.0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        label: const Text(
+          'Menu Options',
+          style: TextStyle(fontSize: 16.0, color: Colors.white),
+        ),
+        children: [
+          SpeedDialChild(
+            child: const Icon(Icons.add_rounded),
+            label: 'Create Submissions',
+            labelStyle: const TextStyle(fontSize: 14.0),
+            backgroundColor: DarkThemePalette.primaryDark,
+            onTap: () {
+              showDialog(
+                context: context, 
+                builder: (context) => CreateSubmissionDialog(
+                  workspace: widget.workspace, 
+                  category: widget.category, 
+                  channel: widget.channel
+                ));
+            },
+          ),
+          SpeedDialChild(
+            child: const Icon(Icons.assignment_outlined),
+            label: 'Your Submissions',
+            labelStyle: const TextStyle(fontSize: 14.0),
+            backgroundColor: DarkThemePalette.primaryDark,
+            onTap: () {
+              context.push(
+                CustomNavigationHelper.submissionsPath,
+                extra: {
+                  "workspace": widget.workspace,
+                  "category": widget.category,
+                  "channel": widget.channel
+                }
+              );
+            },
+          ),
+          SpeedDialChild(
+            child: const Icon(Icons.repeat),
+            label: 'Iterate',
+            labelStyle: const TextStyle(fontSize: 14.0),
+            backgroundColor: DarkThemePalette.primaryDark,
+            onTap: () {
+              context.push(
+                CustomNavigationHelper.submissionsByUsersPath,
+                extra: {
+                  "workspace": widget.workspace,
+                  "category": widget.category,
+                  "channel": widget.channel
+                }
+              );
+            },
+          ),
+        ],
       ),
     );
   }

@@ -30,7 +30,7 @@ class WorkspaceHeader extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  workspace.name,
+                  (workspace.name.length > 18)? "${workspace.name.substring(0, 18)}..." : workspace.name,
                   style: TextStyle(
                     fontSize: isDesktop ? 16 : 14,
                     fontWeight: FontWeight.bold,

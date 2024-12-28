@@ -33,11 +33,15 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
 
   @override
   void initState() {
-    context.read<ChannelMemberBloc>().add(GetChannelMembersEvent(
-        workspaceId: widget.workspace.id,
-        categoryId: widget.category.id,
-        channelId: widget.channel.id));
     super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<ChannelMemberBloc>().add(GetChannelMembersEvent(
+            workspaceId: widget.workspace.id,
+            categoryId: widget.category.id,
+            channelId: widget.channel.id));
+      }
+    });
   }
 
   void _showAddMemberDialog() {

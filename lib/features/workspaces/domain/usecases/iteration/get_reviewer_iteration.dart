@@ -4,7 +4,7 @@ import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecases.dart';
 import '../../entities/review_iteration.dart';
 import '../../repositories/workspace_repositories.dart';
-import 'get_reviewer_iterations.dart';
+import 'get_reviewee_iteration.dart';
 
 class GetReviewerIteration implements UseCase<ReviewIteration, GetReviewParams> {
   final WorkspaceRepositories repository;

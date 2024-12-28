@@ -10,6 +10,8 @@ import 'package:ReviewPal/features/workspaces/domain/usecases/category/create_ca
 import 'package:ReviewPal/features/workspaces/domain/usecases/category/update_category.dart';
 import 'package:ReviewPal/features/workspaces/domain/usecases/channels/channel_member.dart';
 import 'package:ReviewPal/features/workspaces/domain/usecases/channels/create_channel.dart';
+import 'package:ReviewPal/features/workspaces/domain/usecases/submission/create_submission.dart';
+import 'package:ReviewPal/features/workspaces/domain/usecases/submission/submission.dart';
 import 'package:ReviewPal/features/workspaces/domain/usecases/workspaces/workspace_member.dart';
 import 'package:ReviewPal/features/workspaces/presentation/blocs/channel/channel_bloc/channel_bloc.dart';
 import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
@@ -36,6 +38,9 @@ import 'workspaces/domain/usecases/category/get_categories.dart';
 import 'workspaces/domain/usecases/channels/delete_channel.dart';
 import 'workspaces/domain/usecases/channels/get_channels.dart';
 import 'workspaces/domain/usecases/channels/update_channel.dart';
+import 'workspaces/domain/usecases/iteration/create_review_iteration.dart';
+import 'workspaces/domain/usecases/iteration/get_reviewee_iteration.dart';
+import 'workspaces/domain/usecases/iteration/get_reviewer_iteration.dart';
 import 'workspaces/domain/usecases/workspaces/create_worksapce.dart';
 import 'workspaces/domain/usecases/workspaces/delete_workspace.dart';
 import 'workspaces/domain/usecases/workspaces/get_joined_workspaces.dart';
@@ -44,6 +49,8 @@ import 'workspaces/domain/usecases/workspaces/update_workspace.dart';
 import 'workspaces/presentation/blocs/category/category_bloc.dart';
 import 'workspaces/presentation/blocs/channel/member/channel_member_bloc.dart';
 import 'workspaces/presentation/blocs/channel/single_member/single_channel_member_cubit.dart';
+import 'workspaces/presentation/blocs/iteration/iteration_bloc.dart';
+import 'workspaces/presentation/blocs/submission/submission_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -90,6 +97,16 @@ Future<void> init() async {
     addChannelMemberUseCase: sl(), 
     deleteChannelMemberUseCase: sl(), 
     updateChannelMemberUseCase: sl()
+  ));
+  sl.registerFactory(() => SubmissionBloc(
+    getSubmission: sl(),
+    createSubmission: sl(),
+    getSubmissionByUserId: sl(),
+  ));
+  sl.registerFactory(() => IterationBloc(
+    createReviewerIteration: sl(),
+    getReviewerIterations: sl(),
+    getRevieweeIterations: sl(),
   ));
   //feature [auth]
   initAuth();
@@ -201,6 +218,24 @@ void initWorkspaces() {
   );
   sl.registerLazySingleton(
     () => UpdateChannelMemberUseCase(repository: sl())
+  );
+  sl.registerLazySingleton(
+    () => CreateSubmissionUseCase(repository: sl())
+  );
+  sl.registerLazySingleton(
+    () => GetSubmissionByUserIdUseCase(repository: sl())
+  );
+  sl.registerLazySingleton(
+    () => GetSubmissionUseCase(repository: sl())
+  );
+  sl.registerLazySingleton(
+    () => GetReviewerIteration(sl())
+  );
+  sl.registerLazySingleton(
+    () => GetRevieweeIterations(sl())
+  );
+  sl.registerLazySingleton(
+    () => CreateReviewIteration(sl())
   );
   // Repositories
   sl.registerLazySingleton<WorkspaceRepositories>(() => WorkspaceRepositoryImpl(

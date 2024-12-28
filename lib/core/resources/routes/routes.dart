@@ -14,7 +14,9 @@ import '../../../features/workspaces/presentation/pages/screens/assignment_scree
 import '../../../features/workspaces/presentation/pages/screens/channel_member_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/doubt_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/home_screen.dart';
+import '../../../features/workspaces/presentation/pages/screens/submissions_by_user.dart';
 import '../../../features/workspaces/presentation/pages/screens/workspace_member.dart';
+import '../../../features/workspaces/presentation/pages/screens/your_submissions_screen.dart';
 import '../../widgets/bottom_navigation_bar/scaffold_with_nested_navigation.dart';
 
 class CustomNavigationHelper {
@@ -36,6 +38,8 @@ class CustomNavigationHelper {
   static const String channelMembersPath = '/channelMembers';
   static const String assignmentPath ='/assignment';
   static const String doubtPath ='/doubt';
+  static const String submissionsPath ='/submissions';
+  static const String submissionsByUsersPath ='/submissionsByUser';
   
   static final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -167,6 +171,46 @@ class CustomNavigationHelper {
           return CustomTransitionPage(
             key: state.pageKey,
             child: ChannelMemberWidget(
+              workspace: extra['workspace'] as Workspace,
+              category: extra['category'] as Category,
+              channel: extra['channel'] as Channel,
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: submissionsPath,
+        pageBuilder: (context, state) {
+          Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: YourSubmissionsScreen(
+              workspace: extra['workspace'] as Workspace,
+              category: extra['category'] as Category,
+              channel: extra['channel'] as Channel,
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          );
+        },
+      ),
+       GoRoute(
+        path: submissionsByUsersPath,
+        pageBuilder: (context, state) {
+          Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: SubmissionsByUserPage(
               workspace: extra['workspace'] as Workspace,
               category: extra['category'] as Category,
               channel: extra['channel'] as Channel,

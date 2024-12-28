@@ -463,7 +463,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
 
   @override
   Future<List<SubmissionModel>> getSubmissionReviewees(String workspaceId, int categoryId, String channelId) async {
-    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submission/reviewee/');
+    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/reviewee/');
     _handleResponse(response.statusCode);
     final List<dynamic> decodedJson = jsonDecode(response.body);
     return decodedJson.map((e) => SubmissionModel.fromJson(e)).toList();
@@ -471,7 +471,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
 
   @override
   Future<List<SubmissionModel>> postSubmissionReviewee(String workspaceId, int categoryId, String channelId, String? content, String? file) async {
-    final response = await client.post('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submission/reviewee/', 
+    final response = await client.post('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/reviewee/', 
     {
       'content': content,
       'file': file
@@ -485,7 +485,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
 
   @override
   Future<List<SubmissionModel>> getSubmissionByUserId(String workspaceId, int categoryId, String channelId, int userId) async {
-    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submission/reviewers/$userId/');
+    final response = await client.get('${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$userId/');
     _handleResponse(response.statusCode);
     final List<dynamic> decodedJson = jsonDecode(response.body);
     return decodedJson.map((e) => SubmissionModel.fromJson(e)).toList();
@@ -503,7 +503,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     AssignmentStatus? assignmentStatus,
   ) async {
     final response = await client.post(
-      '${AppConstants.baseUrl}/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewer-iterations/',
+      '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewer-iterations/',
       jsonEncode({
         'remarks': remarks,
         'assignment_status': assignmentStatus != null
@@ -526,7 +526,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     int submissionId,
   ) async {
     final response = await client.get(
-        '${AppConstants.baseUrl}/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewer-iterations/',
+        '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewer-iterations/',
     );
     _handleResponse(response.statusCode);
     return ReviewIterationModel.fromJson(json.decode(response.body));
@@ -540,7 +540,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
     int submissionId,
   ) async {
     final response = await client.get(
-        '${AppConstants.baseUrl}workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewee-iterations/',
+        '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewee-iterations/',
     );
     _handleResponse(response.statusCode);
     return RevieweeIterationsResponseModel.fromJson(json.decode(response.body));
