@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../../blocs/category/category_bloc.dart';
 import 'category_expansion_tile.dart';
 

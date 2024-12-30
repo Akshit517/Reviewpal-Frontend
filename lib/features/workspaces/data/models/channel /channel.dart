@@ -1,5 +1,5 @@
 import 'package:ReviewPal/features/workspaces/data/models/assignment/assignment.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/channel_entity.dart';
+import 'package:ReviewPal/features/workspaces/domain/entities/channel/channel_entity.dart';
 
 class ChannelModel extends Channel {
   const ChannelModel({

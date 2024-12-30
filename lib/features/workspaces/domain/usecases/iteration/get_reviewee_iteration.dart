@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecases.dart';
-import '../../entities/review_iteration_response.dart';
+import '../../entities/iteration/review_iteration_response.dart';
 import '../../repositories/workspace_repositories.dart';
 
 class GetRevieweeIterations implements UseCase<RevieweeIterationsResponse, GetReviewParams> {

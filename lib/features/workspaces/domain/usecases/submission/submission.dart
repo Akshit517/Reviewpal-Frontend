@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecases.dart';
-import '../../entities/submission.dart';
+import '../../entities/submissions/submission.dart';
 import '../../repositories/workspace_repositories.dart';
 
 class GetSubmissionByUserIdUseCase implements UseCase<List<Submission>, SubmissionParams> {

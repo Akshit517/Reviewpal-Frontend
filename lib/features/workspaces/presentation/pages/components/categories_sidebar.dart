@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../core/resources/pallete/dark_theme_palette.dart';
-import '../../blocs/workspace/workspace_bloc.dart';
+import '../../blocs/workspace/workspace_bloc/workspace_bloc.dart';
 import 'create_category_dialog.dart';
 import 'workspace_header.dart';
 import 'categories_list.dart';

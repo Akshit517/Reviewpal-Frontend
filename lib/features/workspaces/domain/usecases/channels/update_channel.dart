@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecases.dart';
-import '../../entities/assignment_entity.dart';
-import '../../entities/channel_entity.dart';
+import '../../entities/assignment/assignment_entity.dart';
+import '../../entities/channel/channel_entity.dart';
 import '../../repositories/workspace_repositories.dart';
 
 class UpdateChannelUseCase implements UseCase<void, UpdateChannelParams>{

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/entities/submission.dart';
+import '../../../domain/entities/submissions/submission.dart';
 import '../../../domain/usecases/submission/create_submission.dart';
 import '../../../domain/usecases/submission/submission.dart';
 

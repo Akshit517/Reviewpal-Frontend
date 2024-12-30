@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/error/failures.dart';
-import '../../../domain/entities/category_entity.dart';
+import '../../../domain/entities/category/category_entity.dart';
 import '../../../domain/usecases/category/create_category.dart';
 import '../../../domain/usecases/category/delete_category.dart';
 import '../../../domain/usecases/category/get_categories.dart';

@@ -4,10 +4,10 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/resources/routes/routes.dart';
-import '../../../domain/entities/category_entity.dart';
-import '../../../domain/entities/channel_entity.dart';
-import '../../../domain/entities/task_entity.dart';
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../domain/entities/category/category_entity.dart';
+import '../../../domain/entities/channel/channel_entity.dart';
+import '../../../domain/entities/assignment/task_entity.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../components/create_submission_dialog.dart';
 import '../components/home_screen_main.dart';
 import 'package:intl/intl.dart';

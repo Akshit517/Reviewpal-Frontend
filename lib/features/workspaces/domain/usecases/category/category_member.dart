@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecases.dart';
-import '../../entities/category_member.dart';
+import '../../entities/category/category_member.dart';
 import '../../repositories/workspace_repositories.dart';
 
 class GetCategoryMembersUseCase implements UseCase<List<CategoryMember>, CategoryMemberParams> {

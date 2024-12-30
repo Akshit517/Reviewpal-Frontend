@@ -1,5 +1,5 @@
 import '../../../../auth/data/models/user_model.dart';
-import '../../../domain/entities/category_member.dart';
+import '../../../domain/entities/category/category_member.dart';
 
 class CategoryMemberModel extends CategoryMember {
   const CategoryMemberModel({

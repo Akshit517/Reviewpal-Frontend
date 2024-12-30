@@ -3,11 +3,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/network/media/media_uploader.dart';
+import '../../../../../core/infrastructure/media/media_uploader.dart';
 import '../../../../injection.dart';
-import '../../../domain/entities/category_entity.dart';
-import '../../../domain/entities/channel_entity.dart';
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../domain/entities/category/category_entity.dart';
+import '../../../domain/entities/channel/channel_entity.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../../blocs/submission/submission_bloc.dart';
 
 class CreateSubmissionDialog extends StatefulWidget {

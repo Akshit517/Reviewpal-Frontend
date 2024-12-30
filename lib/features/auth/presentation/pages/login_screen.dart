@@ -5,10 +5,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/resources/routes/routes.dart';
-import '../../../../core/widgets/divider/middle_text_divider.dart';
-import '../../../../core/widgets/buttons/social_text_button.dart';
-import '../../../../core/widgets/text_field/text_form_field.dart';
-import '../../../../core/widgets/text_field/text_field_header.dart';
+import '../../../../core/presentation/widgets/divider/middle_text_divider.dart';
+import '../../../../core/presentation/widgets/buttons/social_text_button.dart';
+import '../../../../core/presentation/widgets/text_field/text_form_field.dart';
+import '../../../../core/presentation/widgets/text_field/text_field_header.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

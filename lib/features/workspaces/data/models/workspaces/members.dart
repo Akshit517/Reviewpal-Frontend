@@ -1,5 +1,5 @@
 import '../../../../auth/data/models/user_model.dart';
-import '../../../domain/entities/workspace_member.dart';
+import '../../../domain/entities/workspace/workspace_member.dart';
 
 class WorkspaceMemberModel extends WorkspaceMember {
   const WorkspaceMemberModel({

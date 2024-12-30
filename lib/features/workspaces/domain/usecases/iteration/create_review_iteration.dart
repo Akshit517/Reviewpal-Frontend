@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecases.dart';
-import '../../entities/assignment_status.dart';
-import '../../entities/review_iteration.dart';
+import '../../entities/assignment/assignment_status.dart';
+import '../../entities/iteration/review_iteration.dart';
 import '../../repositories/workspace_repositories.dart';
 
 class CreateReviewIteration implements UseCase<ReviewIteration, CreateReviewParams> {

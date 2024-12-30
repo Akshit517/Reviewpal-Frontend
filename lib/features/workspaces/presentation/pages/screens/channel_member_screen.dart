@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/widgets/effects/shimmer_loading_effect.dart';
-import '../../../../../core/widgets/pillbox/pillbox.dart';
-import '../../../domain/entities/category_entity.dart';
-import '../../../domain/entities/channel_entity.dart';
-import '../../../domain/entities/channel_member.dart';
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../../../core/presentation/widgets/effects/shimmer_loading_effect.dart';
+import '../../../../../core/presentation/widgets/pillbox/pillbox.dart';
+import '../../../domain/entities/category/category_entity.dart';
+import '../../../domain/entities/channel/channel_entity.dart';
+import '../../../domain/entities/channel/channel_member.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../../blocs/channel/member/channel_member_bloc.dart';
 import '../../blocs/channel/single_member/single_channel_member_cubit.dart';
 import '../../blocs/workspace/member/workspace_member_bloc.dart';

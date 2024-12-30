@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/widgets/text_field/text_form_field.dart';
+import '../../../../../core/presentation/widgets/text_field/text_form_field.dart';
 import '../../blocs/category/category_bloc.dart';
 
 class CreateCategoryDialog extends StatefulWidget {

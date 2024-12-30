@@ -1,6 +1,6 @@
 import 'package:ReviewPal/features/auth/data/models/user_model.dart';
 
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 
 class WorkspaceModel extends Workspace {
   const WorkspaceModel({

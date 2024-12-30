@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/resources/routes/routes.dart';
-import '../../../../../core/widgets/divider/bottomsheet_divider.dart';
-import '../../../../../core/widgets/text_field/text_form_field.dart';
+import '../../../../../core/presentation/widgets/divider/bottomsheet_divider.dart';
+import '../../../../../core/presentation/widgets/text_field/text_form_field.dart';
 import '../../blocs/category/category_bloc.dart';
 import 'category_expansion_tile.dart';
 

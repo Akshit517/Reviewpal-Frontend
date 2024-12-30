@@ -1,5 +1,5 @@
-import '../../../domain/entities/assignment_status.dart';
-import '../../../domain/entities/review_iteration_response.dart';
+import '../../../domain/entities/assignment/assignment_status.dart';
+import '../../../domain/entities/iteration/review_iteration_response.dart';
 import 'review_iteration_model.dart';
 
 class RevieweeIterationsResponseModel extends RevieweeIterationsResponse {

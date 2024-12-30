@@ -1,6 +1,6 @@
-import 'package:ReviewPal/core/network/internet/network_info.dart';
-import 'package:ReviewPal/core/network/token/token_manager.dart';
-import 'package:ReviewPal/core/network/token/token_refresher.dart';
+import 'package:ReviewPal/core/network/network_info.dart';
+import 'package:ReviewPal/core/infrastructure/http/token_manager.dart';
+import 'package:ReviewPal/core/infrastructure/http/token_refresher.dart';
 import 'package:ReviewPal/features/auth/domain/repositories/user_repositories.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/login.dart';
 import 'package:ReviewPal/features/auth/domain/usecases/get_token.dart';
@@ -14,17 +14,17 @@ import 'package:ReviewPal/features/workspaces/domain/usecases/submission/create_
 import 'package:ReviewPal/features/workspaces/domain/usecases/submission/submission.dart';
 import 'package:ReviewPal/features/workspaces/domain/usecases/workspaces/workspace_member.dart';
 import 'package:ReviewPal/features/workspaces/presentation/blocs/channel/channel_bloc/channel_bloc.dart';
-import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
+import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/single_member/single_workspace_member_cubit.dart';
 import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/member/workspace_member_bloc.dart';
-import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/workspace_bloc.dart';
+import 'package:ReviewPal/features/workspaces/presentation/blocs/workspace/workspace_bloc/workspace_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:http/http.dart' as http;
 
-import '../core/network/media/media_uploader.dart';
-import '../core/network/token/token_http_client.dart';
+import '../core/infrastructure/media/media_uploader.dart';
+import '../core/infrastructure/http/token_http_client.dart';
 import 'auth/data/datasources/user_local_data_source.dart';
 import 'auth/data/datasources/user_remote_data_source.dart';
 import 'auth/data/repositories/user_repositories_impl.dart';

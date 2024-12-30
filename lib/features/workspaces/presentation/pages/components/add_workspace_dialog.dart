@@ -6,11 +6,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/resources/pallete/dark_theme_palette.dart';
-import '../../../../../core/widgets/text_field/text_field_header.dart';
-import '../../../../../core/widgets/text_field/text_form_field.dart';
+import '../../../../../core/presentation/widgets/text_field/text_field_header.dart';
+import '../../../../../core/presentation/widgets/text_field/text_form_field.dart';
 import '../../../../injection.dart';
-import '../../blocs/workspace/workspace_bloc.dart';
-import 'package:ReviewPal/core/network/media/media_uploader.dart';
+import '../../blocs/workspace/workspace_bloc/workspace_bloc.dart';
+import 'package:ReviewPal/core/infrastructure/media/media_uploader.dart';
 
 class AddWorkspaceDialog extends StatefulWidget {
   const AddWorkspaceDialog({super.key});
@@ -26,8 +26,7 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
 
   @override
   void dispose() {
-    _workspaceNameTextController.dispose();
-    _workspaceIconTextController.dispose();
+    _clearControllers();
     super.dispose();
   }
 

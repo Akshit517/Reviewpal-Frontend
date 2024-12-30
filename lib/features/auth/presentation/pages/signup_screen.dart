@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/text_field/text_form_field.dart';
-import '../../../../core/widgets/text_field/text_field_header.dart';
+import '../../../../core/presentation/widgets/text_field/text_form_field.dart';
+import '../../../../core/presentation/widgets/text_field/text_field_header.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

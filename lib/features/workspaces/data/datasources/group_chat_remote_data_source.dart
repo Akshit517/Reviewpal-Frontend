@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ReviewPal/core/constants/constants.dart';
-import 'package:ReviewPal/core/network/token/token_http_client.dart';
+import 'package:ReviewPal/core/infrastructure/http/token_http_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../../core/error/exceptions.dart';

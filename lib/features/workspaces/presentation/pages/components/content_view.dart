@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/utils/enums.dart';
-import '../../../domain/entities/category_entity.dart';
-import '../../../domain/entities/channel_entity.dart';
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../domain/entities/category/category_entity.dart';
+import '../../../domain/entities/channel/channel_entity.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../screens/assignment_screen.dart';
 import '../screens/doubt_screen.dart';
 

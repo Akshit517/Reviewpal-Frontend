@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecases.dart';
-import '../../entities/workspace_member.dart';
+import '../../entities/workspace/workspace_member.dart';
 import '../../repositories/workspace_repositories.dart';
 
 class GetWorkspaceMembersUseCase implements UseCase<List<WorkspaceMember>, String> {

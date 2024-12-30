@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/resources/routes/routes.dart';
-import '../../../../../core/widgets/divider/bottomsheet_divider.dart';
-import '../../../domain/entities/category_entity.dart';
-import '../../../domain/entities/channel_entity.dart';
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../../../core/presentation/widgets/divider/bottomsheet_divider.dart';
+import '../../../domain/entities/category/category_entity.dart';
+import '../../../domain/entities/channel/channel_entity.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../../blocs/channel/channel_bloc/channel_bloc.dart';
 
 class ChannelOptions extends StatelessWidget {

@@ -3,7 +3,7 @@ import 'package:ReviewPal/features/workspaces/domain/repositories/workspace_repo
 import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failures.dart';
-import '../../entities/workspace_entity.dart';
+import '../../entities/workspace/workspace_entity.dart';
 
 class UpdateWorkspace {
   final WorkspaceRepositories repository;

@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/resources/pallete/dark_theme_palette.dart';
 import '../../../../../core/utils/utils.dart';
-import '../../../../../core/widgets/buttons/inkwell_button.dart';
-import '../../../../../core/widgets/effects/shimmer_loading_effect.dart';
-import '../../../../../core/widgets/image/universal_image.dart';
+import '../../../../../core/presentation/widgets/buttons/inkwell_button.dart';
+import '../../../../../core/presentation/widgets/effects/shimmer_loading_effect.dart';
+import '../../../../../core/presentation/widgets/image/universal_image.dart';
 import '../../../../injection.dart';
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../../blocs/category/category_bloc.dart';
-import '../../blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
-import '../../blocs/workspace/workspace_bloc.dart';
+import '../../blocs/workspace/single_member/single_workspace_member_cubit.dart';
+import '../../blocs/workspace/workspace_bloc/workspace_bloc.dart';
 import 'add_workspace_dialog.dart';
 import 'workspace_options.dart';
 

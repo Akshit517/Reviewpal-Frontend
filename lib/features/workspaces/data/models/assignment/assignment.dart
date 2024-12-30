@@ -1,7 +1,7 @@
 
 import 'package:ReviewPal/features/workspaces/data/models/assignment/task.dart';
 
-import '../../../domain/entities/assignment_entity.dart';
+import '../../../domain/entities/assignment/assignment_entity.dart';
 
 class AssignmentModel extends Assignment {
   const AssignmentModel({

@@ -1,5 +1,5 @@
 import '../../../../auth/data/models/user_model.dart';
-import '../../../domain/entities/channel_member.dart';
+import '../../../domain/entities/channel/channel_member.dart';
 
 class ChannelMemberModel extends ChannelMember {
   const ChannelMemberModel({

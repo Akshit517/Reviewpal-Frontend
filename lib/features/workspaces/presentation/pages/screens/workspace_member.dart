@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:ReviewPal/core/widgets/pillbox/pillbox.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/workspace_member.dart';
+import 'package:ReviewPal/core/presentation/widgets/pillbox/pillbox.dart';
+import 'package:ReviewPal/features/workspaces/domain/entities/workspace/workspace_member.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/widgets/effects/shimmer_loading_effect.dart';
-import '../../../domain/entities/workspace_entity.dart';
-import '../../blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
+import '../../../../../core/presentation/widgets/effects/shimmer_loading_effect.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
+import '../../blocs/workspace/single_member/single_workspace_member_cubit.dart';
 import '../../blocs/workspace/member/workspace_member_bloc.dart';
 
 class WorkspaceMemberWidget extends StatefulWidget {

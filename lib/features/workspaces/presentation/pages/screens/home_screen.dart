@@ -3,7 +3,7 @@ import 'package:ReviewPal/features/workspaces/presentation/pages/components/home
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../blocs/workspace/workspace_bloc.dart';
+import '../../blocs/workspace/workspace_bloc/workspace_bloc.dart';
 import '../components/home_screen_main.dart';
 
 class HomeScreen extends StatefulWidget {

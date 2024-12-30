@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../domain/entities/workspace_member.dart';
+import '../../../../domain/entities/workspace/workspace_member.dart';
 import '../../../../domain/usecases/workspaces/workspace_member.dart';
 
 part 'workspace_member_event.dart';

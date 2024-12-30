@@ -5,9 +5,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
-import '../../../../core/network/internet/network_info.dart';
+import '../../../../core/network/network_info.dart';
 import '../../../auth/data/datasources/user_local_data_source.dart';
-import '../../domain/entities/message.dart';
+import '../../domain/entities/message/message.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../datasources/group_chat_remote_data_source.dart';
 

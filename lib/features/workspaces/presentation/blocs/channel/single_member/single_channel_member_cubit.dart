@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../domain/entities/channel_member.dart';
+import '../../../../domain/entities/channel/channel_member.dart';
 import '../../../../domain/usecases/channels/channel_member.dart';
 
 part 'single_channel_member_state.dart';

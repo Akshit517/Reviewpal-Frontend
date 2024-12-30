@@ -1,4 +1,4 @@
-import 'package:ReviewPal/features/workspaces/domain/entities/workspace_entity.dart';
+import 'package:ReviewPal/features/workspaces/domain/entities/workspace/workspace_entity.dart';
 import 'package:ReviewPal/features/workspaces/domain/repositories/workspace_repositories.dart';
 import 'package:dartz/dartz.dart';
 

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/utils/utils.dart';
-import '../../../../../core/widgets/buttons/custom_expansion_tile.dart';
-import '../../../../../core/widgets/effects/shimmer_loading_effect.dart';
+import '../../../../../core/presentation/widgets/buttons/custom_expansion_tile.dart';
+import '../../../../../core/presentation/widgets/effects/shimmer_loading_effect.dart';
 import '../../../../injection.dart';
-import '../../../domain/entities/category_entity.dart';
-import '../../../domain/entities/channel_entity.dart';
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../domain/entities/category/category_entity.dart';
+import '../../../domain/entities/channel/channel_entity.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../../blocs/channel/channel_bloc/channel_bloc.dart';
 import 'category_options.dart';
 

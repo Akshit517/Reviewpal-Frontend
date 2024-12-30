@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/widgets/divider/bottomsheet_divider.dart';
+import '../../../../../core/presentation/widgets/divider/bottomsheet_divider.dart';
 import '../../../../auth/domain/entities/user_entity.dart';
-import '../../../domain/entities/workspace_entity.dart';
-import '../../blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
-import '../../blocs/workspace/workspace_bloc.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
+import '../../blocs/workspace/single_member/single_workspace_member_cubit.dart';
+import '../../blocs/workspace/workspace_bloc/workspace_bloc.dart';
 
 class WorkspaceOptions extends StatefulWidget {
   final Workspace workspace;
@@ -41,11 +41,11 @@ class _WorkspaceOptionsState extends State<WorkspaceOptions> {
           title: 'Delete Workspace: ${widget.workspace.name}',
           onTap: () => _handleDelete(context),
         ),
-        _buildOptionTile(
-          icon: Icons.exit_to_app,
-          title: 'Leave Workspace: ${widget.workspace.name}',
-          onTap: () => _handleLeave(context),
-        ),
+        // _buildOptionTile(
+        //   icon: Icons.exit_to_app,
+        //   title: 'Leave Workspace: ${widget.workspace.name}',
+        //   onTap: () => _handleLeave(context),
+        // ),
       ],
     );
   }
@@ -100,29 +100,29 @@ class _WorkspaceOptionsState extends State<WorkspaceOptions> {
     );
   }
 
-  void _handleLeave(BuildContext context) {
-    Navigator.pop(context);
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Leave Workspace'),
-        content: const Text('Are you sure you want to leave this workspace?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("You have left the workspace")),
-              );
-            },
-            child: const Text('Leave'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _handleLeave(BuildContext context) {
+  //   Navigator.pop(context);
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('Leave Workspace'),
+  //       content: const Text('Are you sure you want to leave this workspace?'),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('Cancel'),
+  //         ),
+  //         TextButton(
+  //           onPressed: () {
+  //             Navigator.pop(context);
+  //             ScaffoldMessenger.of(context).showSnackBar(
+  //               const SnackBar(content: Text("You have left the workspace")),
+  //             );
+  //           },
+  //           child: const Text('Leave'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

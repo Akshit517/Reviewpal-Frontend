@@ -1,6 +1,6 @@
 import 'package:ReviewPal/features/auth/data/models/user_model.dart';
 
-import '../../../domain/entities/submission.dart';
+import '../../../domain/entities/submissions/submission.dart';
 import '../iteration/review_iteration_model.dart';
 
 class SubmissionModel extends Submission {

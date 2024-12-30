@@ -1,17 +1,17 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failures.dart';
-import '../entities/assignment_entity.dart';
-import '../entities/assignment_status.dart';
-import '../entities/category_entity.dart';
-import '../entities/category_member.dart';
-import '../entities/channel_entity.dart';
-import '../entities/channel_member.dart';
-import '../entities/review_iteration.dart';
-import '../entities/review_iteration_response.dart';
-import '../entities/submission.dart';
-import '../entities/workspace_entity.dart';
-import '../entities/workspace_member.dart';
+import '../entities/assignment/assignment_entity.dart';
+import '../entities/assignment/assignment_status.dart';
+import '../entities/category/category_entity.dart';
+import '../entities/category/category_member.dart';
+import '../entities/channel/channel_entity.dart';
+import '../entities/channel/channel_member.dart';
+import '../entities/iteration/review_iteration.dart';
+import '../entities/iteration/review_iteration_response.dart';
+import '../entities/submissions/submission.dart';
+import '../entities/workspace/workspace_entity.dart';
+import '../entities/workspace/workspace_member.dart';
 
 abstract class WorkspaceRepositories {
   /// [Workspace] methods

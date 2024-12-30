@@ -1,7 +1,7 @@
 import 'package:ReviewPal/features/auth/data/models/user_model.dart';
 
-import '../../../domain/entities/assignment_status.dart';
-import '../../../domain/entities/review_iteration.dart';
+import '../../../domain/entities/assignment/assignment_status.dart';
+import '../../../domain/entities/iteration/review_iteration.dart';
 
 class ReviewIterationModel extends ReviewIteration {
   const ReviewIterationModel({

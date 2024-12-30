@@ -4,9 +4,9 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/constants.dart';
 import '../../../../core/error/exceptions.dart';
-import '../../../../core/network/token/token_http_client.dart';
-import '../../domain/entities/assignment_entity.dart';
-import '../../domain/entities/assignment_status.dart';
+import '../../../../core/infrastructure/http/token_http_client.dart';
+import '../../domain/entities/assignment/assignment_entity.dart';
+import '../../domain/entities/assignment/assignment_status.dart';
 import '../models/assignment/assignment.dart';
 import '../models/category/category.dart';
 import '../models/category/category_member.dart';

@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/resources/routes/routes.dart';
-import '../../../../../core/widgets/divider/bottomsheet_divider.dart';
-import '../../../../../core/widgets/text_field/text_form_field.dart';
-import '../../../domain/entities/workspace_entity.dart';
-import '../../blocs/workspace/cubit_member/single_workspace_member_cubit.dart';
+import '../../../../../core/presentation/widgets/divider/bottomsheet_divider.dart';
+import '../../../../../core/presentation/widgets/text_field/text_form_field.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
+import '../../blocs/workspace/single_member/single_workspace_member_cubit.dart';
 import '../../blocs/workspace/member/workspace_member_bloc.dart';
 
 class SettingsBottomsheet extends StatefulWidget {

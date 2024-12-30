@@ -2,8 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../core/error/failures.dart';
-import '../../../../domain/entities/assignment_entity.dart';
-import '../../../../domain/entities/channel_entity.dart';
+import '../../../../domain/entities/assignment/assignment_entity.dart';
+import '../../../../domain/entities/channel/channel_entity.dart';
 import '../../../../domain/usecases/channels/create_channel.dart';
 import '../../../../domain/usecases/channels/delete_channel.dart';
 import '../../../../domain/usecases/channels/get_channels.dart';

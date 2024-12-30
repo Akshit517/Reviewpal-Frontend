@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../../core/constants/secure_storage_keys.dart';
 import '../../../../core/error/exceptions.dart';
-import '../../../../core/network/token/token_manager.dart';
+import '../../../../core/infrastructure/http/token_manager.dart';
 import '../models/token_model.dart';
 import '../models/user_model.dart';
 

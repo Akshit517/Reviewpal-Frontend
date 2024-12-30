@@ -2,9 +2,9 @@ import 'package:ReviewPal/core/resources/pallete/dark_theme_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/entities/category_entity.dart';
-import '../../../domain/entities/channel_entity.dart';
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../domain/entities/category/category_entity.dart';
+import '../../../domain/entities/channel/channel_entity.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../../blocs/iteration/iteration_bloc.dart';
 import '../../blocs/submission/submission_bloc.dart';
 

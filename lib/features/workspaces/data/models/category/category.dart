@@ -1,4 +1,4 @@
-import '../../../domain/entities/category_entity.dart';
+import '../../../domain/entities/category/category_entity.dart';
 import '../channel /channel.dart';
 
 class CategoryModel extends Category {

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/widgets/text_field/text_form_field.dart';
-import '../../../domain/entities/assignment_entity.dart';
-import '../../../domain/entities/category_entity.dart';
-import '../../../domain/entities/channel_entity.dart';
-import '../../../domain/entities/task_entity.dart';
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../../../core/presentation/widgets/text_field/text_form_field.dart';
+import '../../../domain/entities/assignment/assignment_entity.dart';
+import '../../../domain/entities/category/category_entity.dart';
+import '../../../domain/entities/channel/channel_entity.dart';
+import '../../../domain/entities/assignment/task_entity.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../../blocs/channel/channel_bloc/channel_bloc.dart';
 
 class AddUpdateAssignmentWidget extends StatefulWidget {

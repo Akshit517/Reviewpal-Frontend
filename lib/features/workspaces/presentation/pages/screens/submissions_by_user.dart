@@ -4,12 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/models/iteration/review_iteration_model.dart';
-import '../../../domain/entities/assignment_status.dart';
-import '../../../domain/entities/category_entity.dart';
-import '../../../domain/entities/channel_entity.dart';
-import '../../../domain/entities/channel_member.dart';
-import '../../../domain/entities/submission.dart';
-import '../../../domain/entities/workspace_entity.dart';
+import '../../../domain/entities/assignment/assignment_status.dart';
+import '../../../domain/entities/category/category_entity.dart';
+import '../../../domain/entities/channel/channel_entity.dart';
+import '../../../domain/entities/channel/channel_member.dart';
+import '../../../domain/entities/submissions/submission.dart';
+import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../../blocs/channel/member/channel_member_bloc.dart';
 import '../../blocs/iteration/iteration_bloc.dart';
 import '../../blocs/submission/submission_bloc.dart';

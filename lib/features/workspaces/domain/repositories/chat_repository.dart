@@ -2,7 +2,7 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failures.dart';
-import '../entities/message.dart';
+import '../entities/message/message.dart';
 
 abstract class ChatRepository {
   Stream<Either<Failure, Message>> connectToChat(

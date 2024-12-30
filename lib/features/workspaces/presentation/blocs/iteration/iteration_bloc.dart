@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/entities/assignment_status.dart';
-import '../../../domain/entities/review_iteration.dart';
-import '../../../domain/entities/review_iteration_response.dart';
+import '../../../domain/entities/assignment/assignment_status.dart';
+import '../../../domain/entities/iteration/review_iteration.dart';
+import '../../../domain/entities/iteration/review_iteration_response.dart';
 import '../../../domain/usecases/iteration/create_review_iteration.dart';
 import '../../../domain/usecases/iteration/get_reviewee_iteration.dart';
 import '../../../domain/usecases/iteration/get_reviewer_iteration.dart';

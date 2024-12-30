@@ -6,9 +6,9 @@ import '../../../features/auth/presentation/pages/auth_choice_screen.dart';
 import '../../../features/auth/presentation/pages/callback_screen.dart';
 import '../../../features/auth/presentation/pages/login_screen.dart';
 import '../../../features/auth/presentation/pages/signup_screen.dart';
-import '../../../features/workspaces/domain/entities/category_entity.dart';
-import '../../../features/workspaces/domain/entities/channel_entity.dart';
-import '../../../features/workspaces/domain/entities/workspace_entity.dart';
+import '../../../features/workspaces/domain/entities/category/category_entity.dart';
+import '../../../features/workspaces/domain/entities/channel/channel_entity.dart';
+import '../../../features/workspaces/domain/entities/workspace/workspace_entity.dart';
 import '../../../features/workspaces/presentation/pages/screens/add_update_assignment.dart';
 import '../../../features/workspaces/presentation/pages/screens/assignment_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/channel_member_screen.dart';
@@ -17,7 +17,7 @@ import '../../../features/workspaces/presentation/pages/screens/home_screen.dart
 import '../../../features/workspaces/presentation/pages/screens/submissions_by_user.dart';
 import '../../../features/workspaces/presentation/pages/screens/workspace_member.dart';
 import '../../../features/workspaces/presentation/pages/screens/your_submissions_screen.dart';
-import '../../widgets/bottom_navigation_bar/scaffold_with_nested_navigation.dart';
+import '../../presentation/widgets/bottom_navigation_bar/scaffold_with_nested_navigation.dart';
 
 class CustomNavigationHelper {
   static final CustomNavigationHelper _instance =
