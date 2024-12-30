@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/presentation/widgets/effects/shimmer_loading_effect.dart';
+import '../../../../../core/presentation/widgets/layouts/responsive_layout.dart';
 import '../../../../../core/presentation/widgets/pillbox/pillbox.dart';
 import '../../../domain/entities/category/category_entity.dart';
 import '../../../domain/entities/channel/channel_entity.dart';
@@ -159,98 +160,73 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
             )
         ],
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isTablet = constraints.maxWidth >= 640;
-          final contentWidth =
-              isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth;
-
-          return SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (isTablet) const Spacer(flex: 1),
-                Container(
-                  width: contentWidth,
-                  padding: const EdgeInsets.all(15.0),
-                  child: _buildPageContent(
-                      constraints, singleChannelMemberState, key),
-                ),
-                if (isTablet) const Spacer(flex: 1),
-              ],
-            ),
-          );
-        },
-      ),
+      body: ResponsiveLayout(child: _buildPageContent(singleChannelMemberState, key))
     );
   }
 
-  Widget _buildPageContent(BoxConstraints constraints,
-      SingleChannelMemberState singleChannelMemberState, String key) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: BlocConsumer<ChannelMemberBloc, ChannelMemberState>(
-          listener: (context, state) {
-            if (state is ChannelMemberError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state is ChannelMemberSuccess && state.members != null) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: state.members!.map((member) {
-                  final role =
-                      member.role == "reviewer" ? "REVIEWER" : "REVIEWEE";
-                  return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.grey[800],
-                        child: Text(
-                          member.user.username[0].toUpperCase(),
-                        ),
+  Widget _buildPageContent(SingleChannelMemberState singleChannelMemberState, String key) {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: BlocConsumer<ChannelMemberBloc, ChannelMemberState>(
+        listener: (context, state) {
+          if (state is ChannelMemberError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is ChannelMemberSuccess && state.members != null) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: state.members!.map((member) {
+                final role =
+                    member.role == "reviewer" ? "REVIEWER" : "REVIEWEE";
+                return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.grey[800],
+                      child: Text(
+                        member.user.username[0].toUpperCase(),
                       ),
-                      title: Text(member.user.username),
-                      subtitle: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 150),
-                        child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 300),
-                            child: PillBox(
-                              text: role,
-                              backgroundColor: (member.role == "reviewer")
-                                  ? const Color.fromARGB(255, 105, 67, 67)
-                                  : const Color.fromARGB(255, 52, 74, 44),
-                              textColor: (member.role == "reviewer")
-                                  ? const Color.fromARGB(255, 255, 184, 184)
-                                  : const Color.fromARGB(255, 217, 253, 173),
-                            )),
-                      ),
-                      onLongPress: () => {
-                            if (singleChannelMemberState.members[key]!.role ==
-                                    "reviewer" &&
-                                singleChannelMemberState.loadingStates[key] ==
-                                    false &&
-                                singleChannelMemberState.successStates[key] ==
-                                    true)
-                              {
-                                _handleLongPress(
-                                  context,
-                                  singleChannelMemberState,
-                                  member,
-                                )
-                              }
-                          });
-                }).toList(),
-              );
-            } else if (state is ChannelMemberLoading) {
-              return _buildLoadingShimmer();
-            }
-            return const Center(child: Text('No members found'));
-          },
-        ),
+                    ),
+                    title: Text(member.user.username),
+                    subtitle: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 150),
+                      child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 300),
+                          child: PillBox(
+                            text: role,
+                            backgroundColor: (member.role == "reviewer")
+                                ? const Color.fromARGB(255, 105, 67, 67)
+                                : const Color.fromARGB(255, 52, 74, 44),
+                            textColor: (member.role == "reviewer")
+                                ? const Color.fromARGB(255, 255, 184, 184)
+                                : const Color.fromARGB(255, 217, 253, 173),
+                          )),
+                    ),
+                    onLongPress: () => {
+                          if (singleChannelMemberState.members[key]!.role ==
+                                  "reviewer" &&
+                              singleChannelMemberState.loadingStates[key] ==
+                                  false &&
+                              singleChannelMemberState.successStates[key] ==
+                                  true)
+                            {
+                              _handleLongPress(
+                                context,
+                                singleChannelMemberState,
+                                member,
+                              )
+                            }
+                        });
+              }).toList(),
+            );
+          } else if (state is ChannelMemberLoading) {
+            return _buildLoadingShimmer();
+          }
+          return const Center(child: Text('No members found'));
+        },
       ),
     );
   }
@@ -304,8 +280,8 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
         late StreamSubscription subscription;
         subscription = channelMemberBloc.stream.listen((state) {
           if (state is ChannelMemberSuccess || state is ChannelMemberError) {
+             if (!context.mounted) return;
             if (state is ChannelMemberError) {
-              // ignore: use_build_context_synchronously
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
@@ -314,8 +290,7 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
                   workspaceId: widget.workspace.id,
                   categoryId: widget.category.id,
                   channelId: widget.channel.id));
-              // ignore: use_build_context_synchronously
-              Navigator.pop(context);
+              Navigator.pop(context); 
             }
             subscription.cancel();
             completer.complete();
@@ -401,6 +376,7 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
                               role: _selectedRole!));
                     }
                     await completer.future;
+                     if (!context.mounted) return;
                     Navigator.pop(context);
                   },
                   child: const Text('Update'),

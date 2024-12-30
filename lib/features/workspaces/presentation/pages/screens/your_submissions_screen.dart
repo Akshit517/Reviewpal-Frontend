@@ -1,7 +1,7 @@
-import 'package:ReviewPal/core/resources/pallete/dark_theme_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/resources/pallete/dark_theme_palette.dart';
 import '../../../domain/entities/category/category_entity.dart';
 import '../../../domain/entities/channel/channel_entity.dart';
 import '../../../domain/entities/workspace/workspace_entity.dart';

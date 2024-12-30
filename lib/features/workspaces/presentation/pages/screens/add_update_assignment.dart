@@ -1,3 +1,5 @@
+import 'package:ReviewPal/core/presentation/responsive/responsive_helpers.dart';
+import 'package:ReviewPal/core/presentation/widgets/layouts/responsive_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -53,163 +55,110 @@ class _AddAssignmentWidgetState extends State<AddUpdateAssignmentWidget> {
   Widget build(BuildContext context) {
     final String appBarTitle =
         widget.forUpdateAssignment ? "Update Assignment" : "Add Assignment";
-    return Scaffold(
-      appBar: _buildAppBar(appBarTitle),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isTablet = constraints.maxWidth >= 640;
-          final contentWidth =
-              isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth;
-
-          return SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (isTablet) const Spacer(flex: 1),
-                Container(
-                  width: contentWidth,
-                  padding: const EdgeInsets.all(15.0),
-                  child: _buildPageContent(constraints),
-                ),
-                if (isTablet) const Spacer(flex: 1),
-              ],
-            ),
-          );
-        },
-      ),
+    return ResponsiveScaffold(
+      title: appBarTitle, 
+      content: _buildPageContent()
     );
   }
 
-  AppBar _buildAppBar(String title) {
-    return AppBar(
-      title: Text(
-        title,
-        style: Theme.of(context).textTheme.titleLarge,
-      ),
-      bottom: const PreferredSize(
-        preferredSize: Size.fromHeight(1.0),
-        child: Divider(
-          height: 1.0,
-          thickness: 3.0,
-          color: Colors.grey,
-        ),
-      ),
-      centerTitle: true,
-      leading: IconButton(
-        onPressed: () {
-          context.pop();
+   Widget _buildPageContent() {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: BlocConsumer<ChannelBloc, ChannelState>(
+        listener: (context, state) {
+          if (state.isSuccess == false) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.message!)));
+          } else if (state.isSuccess == true) {
+            context.pop();
+          }
         },
-        icon: const Icon(
-          Icons.arrow_back,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPageContent(BoxConstraints constraints) {
-    final isTablet = constraints.maxWidth >= 600;
-    final buttonWidth =
-        isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth * 0.9;
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: BlocConsumer<ChannelBloc, ChannelState>(
-          listener: (context, state) {
-            if (state.isSuccess == false) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(state.message!)));
-            } else if (state.isSuccess == true) {
-              context.pop();
-            }
-          },
-          builder: (context, state) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextFormFieldWidget(
-                  controller: _nameController,
-                  hintText: 'Enter title...',
-                  haveObscureText: false,
-                  haveSuffixIconObscure: false,
-                ),
-                const SizedBox(height: 8.0),
-                TextFormFieldWidget(
-                  controller: _descriptionController,
-                  hintText: 'Enter description...',
-                  haveObscureText: false,
-                  haveSuffixIconObscure: false,
-                ),
-                const SizedBox(height: 8.0),
-                TextFormFieldWidget(
-                  controller: _totalPointsController,
-                  hintText: 'Enter Points...',
-                  haveObscureText: false,
-                  haveSuffixIconObscure: false,
-                  inputType: TextInputType.number,
-                ),
-                const SizedBox(height: 16.0),
-                ..._tasks,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: _addNewTask,
-                      icon: const Icon(Icons.add_circle),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16.0),
-                SizedBox(
-                  width: buttonWidth,
-                  height: 50.0,
-                  child: TextButton(
-                    onPressed: () {
-                      final tasks =
-                          _tasks.map((taskRow) => taskRow.getTask()).toList();
-                      if (widget.forUpdateAssignment) {
-                        context.read<ChannelBloc>().add(UpdateChannelEvent(
-                            workspaceId: widget.workspace.id,
-                            categoryId: widget.category.id,
-                            channelId: widget.channel!.id,
-                            name: _nameController.text.trim(),
-                            assignment: Assignment(
-                              description: _descriptionController.text.trim(),
-                              forTeams: false,
-                              totalPoints: int.tryParse(
-                                      _totalPointsController.text.trim()) ??
-                                  0,
-                              tasks: tasks,
-                            )));
-                      } else {
-                        context.read<ChannelBloc>().add(CreateChannelEvent(
-                            workspaceId: widget.workspace.id,
-                            categoryId: widget.category.id,
-                            name: _nameController.text.trim(),
-                            assignment: Assignment(
-                              description: _descriptionController.text.trim(),
-                              forTeams: false,
-                              totalPoints: int.tryParse(
-                                      _totalPointsController.text.trim()) ??
-                                  0,
-                              tasks: tasks,
-                            )));
-                      }
-                    },
-                    child: Text(
-                      widget.forUpdateAssignment
-                          ? 'Update Assignment'
-                          : 'Add Assignment',
-                      style: const TextStyle(fontSize: 16),
-                    ),
+        builder: (context, state) {
+          final buttonWidth = ResponsiveHelpers.getButtonWidth(context);
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextFormFieldWidget(
+                controller: _nameController,
+                hintText: 'Enter title...',
+                haveObscureText: false,
+                haveSuffixIconObscure: false,
+              ),
+              const SizedBox(height: 8.0),
+              TextFormFieldWidget(
+                controller: _descriptionController,
+                hintText: 'Enter description...',
+                haveObscureText: false,
+                haveSuffixIconObscure: false,
+              ),
+              const SizedBox(height: 8.0),
+              TextFormFieldWidget(
+                controller: _totalPointsController,
+                hintText: 'Enter Points...',
+                haveObscureText: false,
+                haveSuffixIconObscure: false,
+                inputType: TextInputType.number,
+              ),
+              const SizedBox(height: 16.0),
+              ..._tasks,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: _addNewTask,
+                    icon: const Icon(Icons.add_circle),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16.0),
+              SizedBox(
+                width: buttonWidth,
+                height: 50.0,
+                child: TextButton(
+                  onPressed: () {
+                    final tasks =
+                        _tasks.map((taskRow) => taskRow.getTask()).toList();
+                    if (widget.forUpdateAssignment) {
+                      context.read<ChannelBloc>().add(UpdateChannelEvent(
+                          workspaceId: widget.workspace.id,
+                          categoryId: widget.category.id,
+                          channelId: widget.channel!.id,
+                          name: _nameController.text.trim(),
+                          assignment: Assignment(
+                            description: _descriptionController.text.trim(),
+                            forTeams: false,
+                            totalPoints: int.tryParse(
+                                    _totalPointsController.text.trim()) ??
+                                0,
+                            tasks: tasks,
+                          )));
+                    } else {
+                      context.read<ChannelBloc>().add(CreateChannelEvent(
+                          workspaceId: widget.workspace.id,
+                          categoryId: widget.category.id,
+                          name: _nameController.text.trim(),
+                          assignment: Assignment(
+                            description: _descriptionController.text.trim(),
+                            forTeams: false,
+                            totalPoints: int.tryParse(
+                                    _totalPointsController.text.trim()) ??
+                                0,
+                            tasks: tasks,
+                          )));
+                    }
+                  },
+                  child: Text(
+                    widget.forUpdateAssignment
+                        ? 'Update Assignment'
+                        : 'Add Assignment',
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

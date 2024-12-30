@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:ReviewPal/core/presentation/widgets/pillbox/pillbox.dart';
-import 'package:ReviewPal/features/workspaces/domain/entities/workspace/workspace_member.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../../core/presentation/widgets/effects/shimmer_loading_effect.dart';
+import '../../../../../core/presentation/widgets/layouts/responsive_scaffold.dart';
+import '../../../../../core/presentation/widgets/pillbox/pillbox.dart';
 import '../../../domain/entities/workspace/workspace_entity.dart';
+import '../../../domain/entities/workspace/workspace_member.dart';
 import '../../blocs/workspace/single_member/single_workspace_member_cubit.dart';
 import '../../blocs/workspace/member/workspace_member_bloc.dart';
 
@@ -34,110 +34,57 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
   Widget build(BuildContext context) {
     final singleWorkspaceMemberState =
         context.watch<SingleWorkspaceMemberCubit>().state;
-    return Scaffold(
-      appBar: _buildAppBar("Workspace Members"),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isTablet = constraints.maxWidth >= 640;
-          final contentWidth =
-              isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth;
-
-          return SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (isTablet) const Spacer(flex: 1),
-                Container(
-                  width: contentWidth,
-                  padding: const EdgeInsets.all(15.0),
-                  child: _buildPageContent(
-                      constraints, singleWorkspaceMemberState),
-                ),
-                if (isTablet) const Spacer(flex: 1),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  AppBar _buildAppBar(String title) {
-    return AppBar(
-      title: Text(
-        title,
-        style: Theme.of(context).textTheme.titleLarge,
-      ),
-      bottom: const PreferredSize(
-        preferredSize: Size.fromHeight(1.0),
-        child: Divider(
-          height: 1.0,
-          thickness: 3.0,
-          color: Colors.grey,
-        ),
-      ),
-      centerTitle: true,
-      leading: IconButton(
-        onPressed: () {
-          context.pop();
-        },
-        icon: const Icon(
-          Icons.arrow_back,
-          color: Colors.white,
-        ),
-      ),
-    );
+    return ResponsiveScaffold(
+      title: "Workspace Members", 
+      content: _buildPageContent(singleWorkspaceMemberState));
   }
 
   Widget _buildPageContent(
-    BoxConstraints constraints,
     SingleWorkspaceMemberState singleWorkspaceMemberState,
   ) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: BlocConsumer<WorkspaceMemberBloc, WorkspaceMemberState>(
-          listener: (context, state) {
-            if (state is WorkspaceMemberError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state is WorkspaceMemberSuccess && state.members != null) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: state.members!.map((member) {
-                  final role =
-                      member.role == "workspace_admin" ? "ADMIN" : "MEMBER";
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.grey[800],
-                      child: Text(
-                        member.user.username[0].toUpperCase(),
-                      ),
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: BlocConsumer<WorkspaceMemberBloc, WorkspaceMemberState>(
+        listener: (context, state) {
+          if (state is WorkspaceMemberError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is WorkspaceMemberSuccess && state.members != null) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: state.members!.map((member) {
+                final role =
+                    member.role == "workspace_admin" ? "ADMIN" : "MEMBER";
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.grey[800],
+                    child: Text(
+                      member.user.username[0].toUpperCase(),
                     ),
-                    title: Text(member.user.username),
-                    subtitle: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 150),
-                      child: PillBox(text: role),
-                    ),
-                    onLongPress: () => _handleLongPress(
-                      context,
-                      singleWorkspaceMemberState,
-                      member,
-                    ),
-                  );
-                }).toList(),
-              );
-            } else if (state is WorkspaceMemberLoading) {
-              return _buildLoadingShimmer();
-            }
-            return const Center(child: Text('No members found'));
-          },
-        ),
+                  ),
+                  title: Text(member.user.username),
+                  subtitle: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 150),
+                    child: PillBox(text: role),
+                  ),
+                  onLongPress: () => _handleLongPress(
+                    context,
+                    singleWorkspaceMemberState,
+                    member,
+                  ),
+                );
+              }).toList(),
+            );
+          } else if (state is WorkspaceMemberLoading) {
+            return _buildLoadingShimmer();
+          }
+          return const Center(child: Text('No members found'));
+        },
       ),
     );
   }
@@ -200,6 +147,7 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
           if (state is WorkspaceMemberSuccess ||
               state is WorkspaceMemberError) {
             if (state is WorkspaceMemberError) {
+               if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
@@ -209,6 +157,7 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
             }
             completer.complete();
             subscription.cancel();
+             if (!context.mounted) return;
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             }
@@ -273,6 +222,7 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
                       if (state is WorkspaceMemberSuccess ||
                           state is WorkspaceMemberError) {
                         if (state is WorkspaceMemberError) {
+                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(state.message)),
                           );
@@ -282,6 +232,7 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
                         }
                         completer.complete();
                         subscription.cancel();
+                         if (!context.mounted) return;
                         if (Navigator.canPop(context)) {
                           Navigator.pop(context);
                         }
