@@ -11,7 +11,7 @@ class DarkThemePalette {
   static const Color secondaryDarkGray = Color(0xFF2D2D2D);
 
   // Background Colors
-  static const Color fillColor = Color(0xFF2F2F2F); 
+  static const Color fillColor = Color.fromARGB(255, 52, 52, 52); 
   static const Color backgroundSurface = Color(0xFF1C1C1C);
 
   // Text Colors
@@ -20,4 +20,6 @@ class DarkThemePalette {
 
   // Error Colors
   static const Color errorRed = Colors.redAccent;
+
+  DarkThemePalette._();
 }

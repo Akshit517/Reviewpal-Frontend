@@ -3,7 +3,7 @@ class User {
   final String username;
   final String email;
   final String profilePic;
-  final String authType;
+  final String? authType;
 
   User(
       {required this.id,

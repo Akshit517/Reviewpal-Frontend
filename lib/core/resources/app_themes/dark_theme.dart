@@ -6,14 +6,14 @@ import '../pallete/dark_theme_palette.dart';
 class DarkTheme {
   static const ColorScheme darkColorScheme = ColorScheme(
     brightness: Brightness.dark,
-    primary: DarkThemePalette.primaryDark,
+    primary: DarkThemePalette.primaryAccent,
     onPrimary: DarkThemePalette.textPrimary,
     secondary: DarkThemePalette.secondaryGray,
     onSecondary: DarkThemePalette.secondaryDarkGray,
     surface: DarkThemePalette.backgroundSurface,
     onSurface: DarkThemePalette.textPrimary,
-    error: DarkThemePalette.errorRed,
-    onError: DarkThemePalette.textPrimary,
+    error: Color(0xFFCF6679),
+    onError: Colors.black,
   );
   static TextButtonThemeData darkGeneralTextButtonTheme = TextButtonThemeData(
     style: TextButton.styleFrom(
@@ -42,5 +42,11 @@ class DarkTheme {
         color: DarkThemePalette.textPrimary,
         fontSize: 20,
         fontWeight: FontWeight.w600),
+  );
+  static const SnackBarThemeData darkSnackBarTheme = SnackBarThemeData(
+    backgroundColor: DarkThemePalette.secondaryDarkGray,
+    showCloseIcon: true,
+    contentTextStyle: TextStyle(color: Colors.grey),
+    closeIconColor: Colors.grey
   );
 }

@@ -1,0 +1,1 @@
+enum DisplayScreen { assignment, doubts}

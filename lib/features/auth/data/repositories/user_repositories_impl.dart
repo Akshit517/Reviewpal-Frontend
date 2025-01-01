@@ -8,7 +8,8 @@ import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/user_repositories.dart';
 import '../datasources/user_local_data_source.dart';
 import '../datasources/user_remote_data_source.dart';
-import 'user_model.dart';
+import '../models/token_model.dart';
+import '../models/user_model.dart';
 
 class UserRepositoriesImpl implements UserRepositories {
   final UserLocalDataSource localDataSource;
@@ -28,15 +29,19 @@ class UserRepositoriesImpl implements UserRepositories {
     }
     return await action();
   }
-
-  Future<Either<Failure, User>> _getUser(
+  
+ Future<Either<Failure, User>> _getUser(
     Future<UserModel> Function() getUser,
   ) async {
     return await _checkNetwork(() async {
       try {
         final user = await getUser();
+        if (user.tokenModel != null) {
+          await localDataSource.cacheToken(user.tokenModel!);
+        } else {
+          return const Left(ServerFailure());
+        }
         await localDataSource.cacheUser(user);
-        await localDataSource.cacheToken(user.tokenModel);
         return Right(user);
       } on ServerException {
         return const Left(ServerFailure());
@@ -135,6 +140,20 @@ class UserRepositoriesImpl implements UserRepositories {
       try {
         final tokens = await localDataSource.getCachedToken();
         return Right(tokens);
+      } on ServerException {
+        return const Left(ServerFailure());
+      } on CacheException {
+        return const Left(CacheFailure());
+      }
+    });
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkLoginStatus() async {
+    return await _checkNetwork(() async {
+      try {
+        final TokenModel token = await localDataSource.getCachedToken();
+        return Right(await remoteDataSource.checkTokenValidation(token.refreshToken));
       } on ServerException {
         return const Left(ServerFailure());
       } on CacheException {

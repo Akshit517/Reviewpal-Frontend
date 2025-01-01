@@ -40,8 +40,11 @@ class _CallbackScreenState extends State<CallbackScreen> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
-            print(state.message);
-            print(state.email);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
+            );
             context.go(CustomNavigationHelper.homePath);
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(

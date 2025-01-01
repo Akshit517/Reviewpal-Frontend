@@ -9,6 +9,13 @@ abstract class Failure extends Equatable {
   List<Object> get props => [message];
 }
 
+class WebSocketFailure extends Failure {
+  const WebSocketFailure({super.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
 class ServerFailure extends Failure {
   const ServerFailure({super.message = 'Server failure occurred.'});
 }
@@ -27,4 +34,12 @@ class RefreshTokenInvalidFailure extends Failure {
 
 class AlreadyExistsFailure extends Failure {
   const AlreadyExistsFailure({super.message = 'User already exists.'});
+}
+
+class GeneralFailure extends Failure {
+  const GeneralFailure({super.message = 'General failure occurred.'});
+}
+
+class UnauthorizedFailure extends Failure {
+  const UnauthorizedFailure({super.message = 'Unauthorized failure occurred.'});
 }

@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../../../../core/constants/secure_storage_keys.dart';
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/infrastructure/http/token_manager.dart';
 import '../models/token_model.dart';
-import '../repositories/user_model.dart';
+import '../models/user_model.dart';
 
 abstract class UserLocalDataSource {
   Future<UserModel> getCachedUser();
@@ -15,20 +17,15 @@ abstract class UserLocalDataSource {
   Future<void> deleteToken();
   Future<TokenModel> getCachedToken();
 }
-
-// ignore: constant_identifier_names
-const CACHED_USER = 'CACHED_USER';
-const ACCESS_TOKEN = 'ACCESS_TOKEN';
-const REFRESH_TOKEN = 'REFRESH_TOKEN';
-
 class UserLocalDataSourceImpl implements UserLocalDataSource {
   final FlutterSecureStorage secureStorage;
+  final TokenManager tokenManager;
 
-  UserLocalDataSourceImpl({required this.secureStorage});
+  UserLocalDataSourceImpl({required this.secureStorage, required this.tokenManager});
 
   @override
   Future<UserModel> getCachedUser() async {
-    final user = await secureStorage.read(key: CACHED_USER);
+    final user = await secureStorage.read(key: SecureStorageKeys.user);
     if (user == null) {
       throw CacheException();
     }
@@ -39,7 +36,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   Future<void> cacheUser(UserModel userToCache) async {
     try {
       await secureStorage.write(
-          key: CACHED_USER, value: jsonEncode(userToCache.toJson()));    
+          key: SecureStorageKeys.user, value: jsonEncode(userToCache.toJson()));    
     } on Exception {
       throw CacheException();
     }
@@ -48,10 +45,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<void> cacheToken(TokenModel tokensToCache) async {
     try {
-      await secureStorage.write(
-          key: ACCESS_TOKEN, value: tokensToCache.accessToken);
-      await secureStorage.write(
-          key: REFRESH_TOKEN, value: tokensToCache.refreshToken);
+      await tokenManager.setTokens(tokensToCache.accessToken, tokensToCache.refreshToken);
     } on Exception {
       throw CacheException();
     }
@@ -60,7 +54,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<void> deleteCachedUser() async {
     try {
-      await secureStorage.delete(key: CACHED_USER);
+      await secureStorage.delete(key: SecureStorageKeys.user);
     } on Exception {
       throw CacheException();
     }
@@ -69,8 +63,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<void> deleteToken() async {
     try {
-      await secureStorage.delete(key: ACCESS_TOKEN);
-      await secureStorage.delete(key: REFRESH_TOKEN);
+      await tokenManager.clearTokens();
     } on Exception {
       throw CacheException();
     }
@@ -78,8 +71,8 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
 
   @override
   Future<TokenModel> getCachedToken() async {
-    String? refreshToken = await secureStorage.read(key: REFRESH_TOKEN);
-    String? accessToken = await secureStorage.read(key: ACCESS_TOKEN);
+    String? refreshToken = await tokenManager.refreshToken;
+    String? accessToken = await tokenManager.accessToken;
 
     if (refreshToken == null || accessToken == null) {
       throw CacheException();

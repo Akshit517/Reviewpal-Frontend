@@ -5,10 +5,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/resources/routes/routes.dart';
-import '../../../../core/widgets/divider/middle_text_divider.dart';
-import '../../../../core/widgets/text_button/social_text_button.dart';
-import '../../../../core/widgets/text_field/text_form_field.dart';
-import '../../../../core/widgets/text_field/text_field_header.dart';
+import '../../../../core/presentation/widgets/divider/middle_text_divider.dart';
+import '../../../../core/presentation/widgets/buttons/social_text_button.dart';
+import '../../../../core/presentation/widgets/text_field/text_form_field.dart';
+import '../../../../core/presentation/widgets/text_field/text_field_header.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -74,9 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               );
             } else if (state is AuthSuccess) {
-              print(state.message);
-              print(state.accessToken);
-              print(state.email);
               context.go(CustomNavigationHelper.homePath);
             }
           },
@@ -151,9 +148,19 @@ class _LoginScreenState extends State<LoginScreen> {
         title,
         style: Theme.of(context).textTheme.titleLarge,
       ),
+      bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Divider(
+            height: 1.0,
+            thickness: 3.0,
+            color: Colors.grey,
+          ),
+        ),
       centerTitle: true,
       leading: IconButton(
-        onPressed: () {},
+        onPressed: () {
+          context.pop();
+        },
         icon: const Icon(
           Icons.arrow_back,
           color: Colors.white,
