@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+
 class DarkThemePalette {
   // Primary Colors
   static const Color primaryDark = Color(0xFF1E1E1E); 

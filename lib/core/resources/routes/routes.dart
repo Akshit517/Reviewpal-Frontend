@@ -31,6 +31,7 @@ class CustomNavigationHelper {
   static const String callbackPath = '/callback';
   static const String errorPath = '/error';
   static const String homePath = '/home';
+
   static const String notificationPath = '/notification';
   static const String profilePath = '/profile';
   static const String addAssignmentScreenPath = '/addAssignmentScreen';

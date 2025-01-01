@@ -120,6 +120,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         },
         body: jsonEncode({'token': token}),
       );
+      
       return response.statusCode == 200 ? true : false;
     } on Exception {
       throw ServerException();

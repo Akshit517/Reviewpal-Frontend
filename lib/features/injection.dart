@@ -124,7 +124,6 @@ Future<void> init() async {
   sl.registerLazySingleton(() => TokenRefresher(tokenManager: sl(), client: sl()));
   sl.registerLazySingleton(() => TokenHttpClient(tokenManager: sl(), client: sl(), tokenRefresher: sl()));
   sl.registerLazySingleton(() => MediaUploader(tokenManager: sl(), tokenRefresher: sl()));
-
   sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(() => InternetConnectionChecker());
 }

@@ -29,7 +29,7 @@ class UserRepositoriesImpl implements UserRepositories {
     }
     return await action();
   }
-
+  
  Future<Either<Failure, User>> _getUser(
     Future<UserModel> Function() getUser,
   ) async {
