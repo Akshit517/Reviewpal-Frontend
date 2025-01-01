@@ -504,7 +504,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
   ) async {
     final response = await client.post(
       '${AppConstants.baseUrl}api/workspaces/$workspaceId/categories/$categoryId/channels/$channelId/submissions/$submissionId/reviewer-iterations/',
-      jsonEncode({
+      {
         'remarks': remarks,
         'assignment_status': assignmentStatus != null
             ? {
@@ -512,7 +512,7 @@ class WorkspaceRemoteDataSourceImpl implements WorkspaceRemoteDataSource {
                 'earned_points': assignmentStatus.earnedPoints,
               }
             : null,
-      }),
+      },
     );
     _handleResponse(response.statusCode);
     return ReviewIterationModel.fromJson(json.decode(response.body));

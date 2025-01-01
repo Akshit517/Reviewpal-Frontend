@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../../core/resources/pallete/dark_theme_palette.dart';
+import '../../../domain/entities/assignment/assignment_status.dart';
 import '../../../domain/entities/category/category_entity.dart';
 import '../../../domain/entities/channel/channel_entity.dart';
 import '../../../domain/entities/workspace/workspace_entity.dart';
@@ -21,10 +23,10 @@ class YourSubmissionsScreen extends StatefulWidget {
   });
 
   @override
-  _YourSubmissionsScreenState createState() => _YourSubmissionsScreenState();
+  YourSubmissionsScreenState createState() => YourSubmissionsScreenState();
 }
 
-class _YourSubmissionsScreenState extends State<YourSubmissionsScreen> {
+class YourSubmissionsScreenState extends State<YourSubmissionsScreen> {
   late SubmissionBloc _submissionBloc;
   late IterationBloc _iterationBloc;
 
@@ -53,8 +55,7 @@ class _YourSubmissionsScreenState extends State<YourSubmissionsScreen> {
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true,
-      builder: (_) => _IterationsSheet(),
+      builder: (_) => _IterationsSheet(submissionId: submissionId),
     );
   }
 
@@ -133,6 +134,16 @@ class _YourSubmissionsScreenState extends State<YourSubmissionsScreen> {
 }
 
 class _IterationsSheet extends StatelessWidget {
+  final int submissionId;
+  final _dateFormat = DateFormat('MMM d, y • hh:mm a');
+
+  _IterationsSheet({required this.submissionId});
+
+  String _getStatusText(AssignmentStatus? status) {
+    if (status == null) return 'Pending';
+    return status.status[0].toUpperCase() + status.status.substring(1).toLowerCase();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -153,22 +164,46 @@ class _IterationsSheet extends StatelessWidget {
               }
 
               if (state is IterationError) {
-                return Center(
-                  child: Text(
-                    "Error: ${state.message}",
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                );
+                return Center(child: Text("Error: ${state.message}", 
+                  style: Theme.of(context).textTheme.bodyMedium));
               }
 
-              if (state is IterationSuccess) {
-                final iterations = state.revieweeIterations!.iterations;
+              if (state is IterationSuccess && 
+                  state.submissionIterations != null &&
+                  state.submissionIterations!.containsKey(submissionId)) {
+                final iterationData = state.submissionIterations![submissionId]!;
+                final iterations = iterationData.iterations;
+                final latestIteration = iterations.isNotEmpty ? iterations.first : null;
+                print(iterations);
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Iterations (${state.revieweeIterations!.totalIterations})',
-                      style: Theme.of(context).textTheme.titleLarge,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Iterations (${iterationData.totalIterations})',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: DarkThemePalette.primaryDark,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            _getStatusText(iterationData.currentStatus),
+                            style: const TextStyle(
+                              color: DarkThemePalette.primaryAccent
+                            ),
+                          ),
+                        ),
+                        if (latestIteration?.assignmentStatus != null)
+                          Text(
+                            'Points: ${latestIteration!.assignmentStatus?.earnedPoints}',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     Expanded(
@@ -179,14 +214,11 @@ class _IterationsSheet extends StatelessWidget {
                           final iteration = iterations[index];
                           return Card(
                             child: ListTile(
-                              title: Text(
-                                'Iteration ${index + 1}',
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              subtitle: Text(
-                                iteration.assignmentStatus!.status.toString(),
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
+                              title: Text(iteration.remarks),
+                              subtitle: Text(_dateFormat.format(iteration.createdAt.toLocal()),
+                                style: TextStyle(
+                                  color: Theme.of(context).textTheme.bodySmall?.color
+                                ),),
                             ),
                           );
                         },
@@ -195,8 +227,7 @@ class _IterationsSheet extends StatelessWidget {
                   ],
                 );
               }
-
-              return const SizedBox.shrink();
+              return const Center(child: CircularProgressIndicator());
             },
           ),
         );

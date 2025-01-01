@@ -13,9 +13,9 @@ final class IterationLoading extends IterationState {}
 
 final class IterationSuccess extends IterationState {
   final ReviewIteration? iterations;
-  final RevieweeIterationsResponse? revieweeIterations;
+  final Map<int,RevieweeIterationsResponse>? submissionIterations;
   final String? message;
-  const IterationSuccess({this.iterations, this.revieweeIterations, this.message});
+  const IterationSuccess({this.iterations, this.submissionIterations, this.message});
   @override
   List<Object?> get props => [iterations];
 }

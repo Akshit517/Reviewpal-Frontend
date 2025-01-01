@@ -16,6 +16,8 @@ class IterationBloc extends Bloc<IterationEvent, IterationState> {
   final GetReviewerIteration getReviewerIterations;
   final CreateReviewIteration createReviewerIteration;
 
+  final Map<int, RevieweeIterationsResponse> _submissionIterations = {};
+
   IterationBloc({
     required this.getRevieweeIterations,
     required this.getReviewerIterations,
@@ -40,9 +42,10 @@ class IterationBloc extends Bloc<IterationEvent, IterationState> {
     );
     result.fold(
       (failure) => emit(IterationError(message: failure.message)),
-      (revieweeIterations) => emit(
-        IterationSuccess(revieweeIterations: revieweeIterations),
-      ),
+      (revieweeIterations) {
+        _submissionIterations[event.submissionId] = revieweeIterations;
+        emit(IterationSuccess(submissionIterations: _submissionIterations));
+      }
     );
   }
 

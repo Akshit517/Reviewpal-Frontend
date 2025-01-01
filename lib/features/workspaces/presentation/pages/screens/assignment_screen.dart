@@ -1,13 +1,15 @@
-import 'package:ReviewPal/core/resources/pallete/dark_theme_palette.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/resources/pallete/dark_theme_palette.dart';
 import '../../../../../core/resources/routes/routes.dart';
 import '../../../domain/entities/category/category_entity.dart';
 import '../../../domain/entities/channel/channel_entity.dart';
 import '../../../domain/entities/assignment/task_entity.dart';
 import '../../../domain/entities/workspace/workspace_entity.dart';
+import '../../blocs/channel/single_member/single_channel_member_cubit.dart';
 import '../components/create_submission_dialog.dart';
 import '../components/home_screen_main.dart';
 import 'package:intl/intl.dart';
@@ -16,13 +18,12 @@ class AssignmentScreen extends StatefulWidget {
   final Workspace workspace;
   final Category category;
   final Channel channel;
-  
-  const AssignmentScreen({
-    super.key, 
-    required this.workspace, 
-    required this.category, 
-    required this.channel
-  });
+
+  const AssignmentScreen(
+      {super.key,
+      required this.workspace,
+      required this.category,
+      required this.channel});
 
   @override
   State<AssignmentScreen> createState() => _AssignmentScreenState();
@@ -39,7 +40,11 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= HomeScreenMain.desktopBreakpoint;
-    
+    final roleState = context.watch<SingleChannelMemberCubit>().state;
+    final key =
+        '${widget.workspace.id}-${widget.category.id}-${widget.channel.id}';
+    final role = roleState.members[key]?.role;
+
     return Scaffold(
       appBar: _buildAppBar(widget.category.name, widget.channel.name),
       body: SafeArea(
@@ -48,7 +53,8 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
             padding: EdgeInsets.all(isDesktop ? 32.0 : 16.0),
             child: Center(
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: isDesktop ? 1200 : double.infinity),
+                constraints: BoxConstraints(
+                    maxWidth: isDesktop ? 1200 : double.infinity),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -79,55 +85,52 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
           'Menu Options',
           style: TextStyle(fontSize: 16.0, color: Colors.white),
         ),
-        children: [
-          SpeedDialChild(
-            child: const Icon(Icons.add_rounded),
-            label: 'Create Submissions',
-            labelStyle: const TextStyle(fontSize: 14.0),
-            backgroundColor: DarkThemePalette.primaryDark,
-            onTap: () {
-              showDialog(
-                context: context, 
-                builder: (context) => CreateSubmissionDialog(
-                  workspace: widget.workspace, 
-                  category: widget.category, 
-                  channel: widget.channel
-                ));
-            },
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.assignment_outlined),
-            label: 'Your Submissions',
-            labelStyle: const TextStyle(fontSize: 14.0),
-            backgroundColor: DarkThemePalette.primaryDark,
-            onTap: () {
-              context.push(
-                CustomNavigationHelper.submissionsPath,
-                extra: {
-                  "workspace": widget.workspace,
-                  "category": widget.category,
-                  "channel": widget.channel
-                }
-              );
-            },
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.repeat),
-            label: 'Iterate',
-            labelStyle: const TextStyle(fontSize: 14.0),
-            backgroundColor: DarkThemePalette.primaryDark,
-            onTap: () {
-              context.push(
-                CustomNavigationHelper.submissionsByUsersPath,
-                extra: {
-                  "workspace": widget.workspace,
-                  "category": widget.category,
-                  "channel": widget.channel
-                }
-              );
-            },
-          ),
-        ],
+        children: role == 'reviewer'
+            ? [
+                SpeedDialChild(
+                  child: const Icon(Icons.repeat),
+                  label: 'Iterate',
+                  labelStyle: const TextStyle(fontSize: 14.0),
+                  backgroundColor: DarkThemePalette.primaryDark,
+                  onTap: () => context.push(
+                      CustomNavigationHelper.submissionsByUsersPath,
+                      extra: {
+                        "workspace": widget.workspace,
+                        "category": widget.category,
+                        "channel": widget.channel
+                      }),
+                ),
+              ]
+            : [
+                SpeedDialChild(
+                  child: const Icon(Icons.add_rounded),
+                  label: 'Create Submissions',
+                  labelStyle: const TextStyle(fontSize: 14.0),
+                  backgroundColor: DarkThemePalette.primaryDark,
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) => CreateSubmissionDialog(
+                            workspace: widget.workspace,
+                            category: widget.category,
+                            channel: widget.channel));
+                  },
+                ),
+                SpeedDialChild(
+                  child: const Icon(Icons.assignment_outlined),
+                  label: 'Your Submissions',
+                  labelStyle: const TextStyle(fontSize: 14.0),
+                  backgroundColor: DarkThemePalette.primaryDark,
+                  onTap: () {
+                    context
+                        .push(CustomNavigationHelper.submissionsPath, extra: {
+                      "workspace": widget.workspace,
+                      "category": widget.category,
+                      "channel": widget.channel
+                    });
+                  },
+                ),
+              ],
       ),
     );
   }
@@ -257,8 +260,8 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
                 child: Text(
                   task.title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -286,8 +289,8 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
               Text(
                 DateFormat('MMM dd, yyyy').format(task.dueDate),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
               ),
             ],
           ),

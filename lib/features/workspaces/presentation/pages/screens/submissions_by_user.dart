@@ -199,7 +199,7 @@ class _UserSubmissionsScreenState extends State<UserSubmissionsScreen> {
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     value: selectedStatus,
-                    items: ['ongoing', 'complete', 'incomplete']
+                    items: ['ongoing', 'completed', 'incomplete']
                         .map((status) => DropdownMenuItem(
                               value: status,
                               child: Text(status.toUpperCase()),
@@ -209,7 +209,7 @@ class _UserSubmissionsScreenState extends State<UserSubmissionsScreen> {
                       setState(() => selectedStatus = value!);
                     },
                   ),
-                  if (selectedStatus == 'complete')
+                  if (selectedStatus == 'completed')
                     Padding(
                       padding: const EdgeInsets.only(top: 16),
                       child: TextFormField(
