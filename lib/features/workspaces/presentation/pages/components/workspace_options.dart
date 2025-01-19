@@ -13,7 +13,8 @@ class WorkspaceOptions extends StatefulWidget {
   final Workspace workspace;
   final User user;
 
-  const WorkspaceOptions({super.key, required this.workspace, required this.user});
+  const WorkspaceOptions(
+      {super.key, required this.workspace, required this.user});
 
   @override
   State<WorkspaceOptions> createState() => _WorkspaceOptionsState();
@@ -22,25 +23,27 @@ class WorkspaceOptions extends StatefulWidget {
 class _WorkspaceOptionsState extends State<WorkspaceOptions> {
   @override
   void initState() {
-    context.read<SingleWorkspaceMemberCubit>().getWorkspaceMember(
-      widget.workspace.id, 
-      widget.user.email);
+    context
+        .read<SingleWorkspaceMemberCubit>()
+        .getWorkspaceMember(widget.workspace.id, widget.user.email);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final singleWorkspaceMemberState = context.watch<SingleWorkspaceMemberCubit>().state;
+    final singleWorkspaceMemberState =
+        context.watch<SingleWorkspaceMemberCubit>().state;
     return Wrap(
       children: [
         const BottomSheetDivider(),
-        if (singleWorkspaceMemberState.isSuccess == true && 
-          singleWorkspaceMemberState.isLoading == false && singleWorkspaceMemberState.member!.role == "workspace_admin")
-        _buildOptionTile(
-          icon: Icons.delete,
-          title: 'Delete Workspace: ${widget.workspace.name}',
-          onTap: () => _handleDelete(context),
-        ),
+        if (singleWorkspaceMemberState.isSuccess == true &&
+            singleWorkspaceMemberState.isLoading == false &&
+            singleWorkspaceMemberState.member!.role == "workspace_admin")
+          _buildOptionTile(
+            icon: Icons.delete,
+            title: 'Delete Workspace: ${widget.workspace.name}',
+            onTap: () => _handleDelete(context),
+          ),
         // _buildOptionTile(
         //   icon: Icons.exit_to_app,
         //   title: 'Leave Workspace: ${widget.workspace.name}',
@@ -76,53 +79,28 @@ class _WorkspaceOptionsState extends State<WorkspaceOptions> {
           ),
           TextButton(
             onPressed: () async {
-                     final workspaceBloc = context.read<WorkspaceBloc>();
-                     final completer = Completer<void>();
-                     late StreamSubscription subscription;
-                      subscription = workspaceBloc.stream.listen((state) {
-                        if (state is WorkspaceDeleted) {
-                          workspaceBloc.add(const GetJoinedWorkspacesEvent());
-                          completer.complete();
-                          subscription.cancel();
-                        } else if (state is WorkspaceError) {
-                          completer.completeError(state.message);
-                          subscription.cancel();
-                        }
-                      });
-                     workspaceBloc.add(DeleteWorkspaceEvent(workspaceId: widget.workspace.id));
-                     await completer.future;
-                     if(context.mounted) Navigator.pop(context);
-                   },
+              final workspaceBloc = context.read<WorkspaceBloc>();
+              final completer = Completer<void>();
+              late StreamSubscription subscription;
+              subscription = workspaceBloc.stream.listen((state) {
+                if (state is WorkspaceDeleted) {
+                  workspaceBloc.add(const GetJoinedWorkspacesEvent());
+                  completer.complete();
+                  subscription.cancel();
+                } else if (state is WorkspaceError) {
+                  completer.completeError(state.message);
+                  subscription.cancel();
+                }
+              });
+              workspaceBloc
+                  .add(DeleteWorkspaceEvent(workspaceId: widget.workspace.id));
+              await completer.future;
+              if (context.mounted) Navigator.pop(context);
+            },
             child: const Text('Delete'),
           ),
         ],
       ),
     );
   }
-
-  // void _handleLeave(BuildContext context) {
-  //   Navigator.pop(context);
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: const Text('Leave Workspace'),
-  //       content: const Text('Are you sure you want to leave this workspace?'),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text('Cancel'),
-  //         ),
-  //         TextButton(
-  //           onPressed: () {
-  //             Navigator.pop(context);
-  //             ScaffoldMessenger.of(context).showSnackBar(
-  //               const SnackBar(content: Text("You have left the workspace")),
-  //             );
-  //           },
-  //           child: const Text('Leave'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }

@@ -34,15 +34,6 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
             ),
           ),
           NavigationDestination(
-            label: 'Notifications',
-            icon: SvgPicture.asset(
-              'assets/icons/notifications.svg',
-              colorFilter: selectedIndex == 1
-                  ? null
-                  : const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-            ),
-          ),
-          NavigationDestination(
             label: 'Profile',
             icon: Icon(
               Icons.person_2_rounded,

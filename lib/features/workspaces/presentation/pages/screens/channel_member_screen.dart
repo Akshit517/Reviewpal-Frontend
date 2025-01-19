@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/presentation/widgets/buttons/custom_expansion_tile.dart';
 import '../../../../../core/presentation/widgets/effects/shimmer_loading_effect.dart';
 import '../../../../../core/presentation/widgets/layouts/responsive_layout.dart';
 import '../../../../../core/presentation/widgets/pillbox/pillbox.dart';
+import '../../../../../core/presentation/widgets/text_field/text_field_header.dart';
+import '../../../../../core/presentation/widgets/text_field/text_form_field.dart';
 import '../../../domain/entities/category/category_entity.dart';
 import '../../../domain/entities/channel/channel_entity.dart';
 import '../../../domain/entities/channel/channel_member.dart';
@@ -30,20 +33,8 @@ class ChannelMemberWidget extends StatefulWidget {
 }
 
 class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
+  final TextEditingController _teamController = TextEditingController();
   String? _selectedRole;
-
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      if (mounted) {
-        context.read<ChannelMemberBloc>().add(GetChannelMembersEvent(
-            workspaceId: widget.workspace.id,
-            categoryId: widget.category.id,
-            channelId: widget.channel.id));
-      }
-    });
-  }
 
   void _showAddMemberDialog() {
     context
@@ -62,53 +53,68 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
                 return _buildLoadingShimmer();
               } else if (state is WorkspaceMemberSuccess &&
                   state.members != null) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: state.members!.length,
-                  itemBuilder: (context, index) {
-                    final member = state.members![index];
-                    return ListTile(
-                      title: Text(member.user.username),
-                      subtitle: Text(member.user.email),
-                      onTap: () async {
-                        if (!context.mounted) return;
-                        final channelMemberBloc =
-                            context.read<ChannelMemberBloc>();
-                        final completer = Completer<void>();
-                        late StreamSubscription subscription;
-                        subscription = channelMemberBloc.stream.listen((state) {
-                          if (state is ChannelMemberSuccess ||
-                              state is ChannelMemberError) {
-                            if (state is ChannelMemberError) {
-                              // ignore: use_build_context_synchronously
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(state.message)),
-                              );
-                            } else if (state is ChannelMemberSuccess) {
-                              channelMemberBloc.add(GetChannelMembersEvent(
-                                  workspaceId: widget.workspace.id,
-                                  categoryId: widget.category.id,
-                                  channelId: widget.channel.id));
-                              // ignore: use_build_context_synchronously
-                              Navigator.pop(context);
-                            }
-                            subscription.cancel();
-                            completer.complete();
-                          }
-                        });
-                        context.read<ChannelMemberBloc>().add(
-                              AddChannelMemberEvent(
-                                workspaceId: widget.workspace.id,
-                                categoryId: widget.category.id,
-                                channelId: widget.channel.id,
-                                userEmail: member.user.email,
-                                role: 'reviewee',
-                              ),
-                            );
-                        await completer.future;
+                return Column(
+                  children: [
+                    const TextFieldHeader(text: 'Team'),
+                    TextFormFieldWidget(
+                      controller: _teamController,
+                      hintText: 'Enter team...',
+                      haveObscureText: false,
+                      haveSuffixIconObscure: false,
+                    ),
+                    const SizedBox(height: 8.0),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: state.members!.length,
+                      itemBuilder: (context, index) {
+                        final member = state.members![index];
+                        return ListTile(
+                          title: Text(member.user.username),
+                          subtitle: Text(member.user.email),
+                          onTap: () async {
+                            if (!context.mounted) return;
+                            final channelMemberBloc =
+                                context.read<ChannelMemberBloc>();
+                            final completer = Completer<void>();
+                            late StreamSubscription subscription;
+                            subscription =
+                                channelMemberBloc.stream.listen((state) {
+                              if (state is ChannelMemberSuccess ||
+                                  state is ChannelMemberError) {
+                                if (state is ChannelMemberError) {
+                                  // ignore: use_build_context_synchronously
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(state.message)),
+                                  );
+                                } else if (state is ChannelMemberSuccess) {
+                                  channelMemberBloc.add(GetChannelMembersEvent(
+                                      workspaceId: widget.workspace.id,
+                                      categoryId: widget.category.id,
+                                      channelId: widget.channel.id));
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.pop(context);
+                                }
+                                subscription.cancel();
+                                completer.complete();
+                              }
+                            });
+                            context.read<ChannelMemberBloc>().add(
+                                  AddChannelMemberEvent(
+                                    workspaceId: widget.workspace.id,
+                                    categoryId: widget.category.id,
+                                    channelId: widget.channel.id,
+                                    userEmail: member.user.email,
+                                    team: _teamController.text,
+                                    role: 'reviewee',
+                                  ),
+                                );
+                            await completer.future;
+                            _teamController.clear();
+                          },
+                        );
                       },
-                    );
-                  },
+                    ),
+                  ],
                 );
               }
               return const Text('No workspace members found');
@@ -132,39 +138,42 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
     final String key =
         '${widget.workspace.id}-${widget.category.id}-${widget.channel.id}';
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Channel Members",
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Divider(
-            height: 1.0,
-            thickness: 3.0,
-            color: Colors.grey,
+        appBar: AppBar(
+          title: Text(
+            "Channel Members",
+            style: Theme.of(context).textTheme.titleLarge,
           ),
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(1.0),
+            child: Divider(
+              height: 1.0,
+              thickness: 3.0,
+              color: Colors.grey,
+            ),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            onPressed: () {
+              context.pop();
+            },
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          actions: [
+            if (singleChannelMemberState.members[key]!.role == 'reviewer' &&
+                singleChannelMemberState.loadingStates[key] == false &&
+                singleChannelMemberState.successStates[key] == true)
+              IconButton(
+                onPressed: _showAddMemberDialog,
+                icon: const Icon(Icons.add_rounded),
+              )
+          ],
         ),
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-        ),
-        actions: [
-          if (singleChannelMemberState.members[key]!.role == 'reviewer' &&
-              singleChannelMemberState.loadingStates[key] == false &&
-              singleChannelMemberState.successStates[key] == true)
-            IconButton(
-              onPressed: _showAddMemberDialog,
-              icon: const Icon(Icons.add_rounded),
-            )
-        ],
-      ),
-      body: ResponsiveLayout(child: _buildPageContent(singleChannelMemberState, key))
-    );
+        body: ResponsiveLayout(
+            child: _buildPageContent(singleChannelMemberState, key)));
   }
 
-  Widget _buildPageContent(SingleChannelMemberState singleChannelMemberState, String key) {
+  Widget _buildPageContent(
+      SingleChannelMemberState singleChannelMemberState, String key) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: BlocConsumer<ChannelMemberBloc, ChannelMemberState>(
@@ -176,50 +185,53 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
           }
         },
         builder: (context, state) {
-          if (state is ChannelMemberSuccess && state.members != null) {
+          if (state is ChannelMemberSuccess && state.membersByTeam != null) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: state.members!.map((member) {
-                final role =
-                    member.role == "reviewer" ? "REVIEWER" : "REVIEWEE";
-                return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.grey[800],
-                      child: Text(
-                        member.user.username[0].toUpperCase(),
+              children: state.membersByTeam!.entries.map((entry) {
+                final team = entry.key;
+                final members = entry.value;
+                return CustomExpansionTile(
+                  title: team!.name,
+                  children: members.map((member) {
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.grey[800],
+                        child: Text(
+                          member.user.username[0].toUpperCase(),
+                        ),
                       ),
-                    ),
-                    title: Text(member.user.username),
-                    subtitle: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 150),
-                      child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 300),
-                          child: PillBox(
-                            text: role,
-                            backgroundColor: (member.role == "reviewer")
-                                ? const Color.fromARGB(255, 105, 67, 67)
-                                : const Color.fromARGB(255, 52, 74, 44),
-                            textColor: (member.role == "reviewer")
-                                ? const Color.fromARGB(255, 255, 184, 184)
-                                : const Color.fromARGB(255, 217, 253, 173),
-                          )),
-                    ),
-                    onLongPress: () => {
-                          if (singleChannelMemberState.members[key]!.role ==
-                                  "reviewer"  &&
-                              singleChannelMemberState.loadingStates[key] ==
-                                  false &&
-                              singleChannelMemberState.successStates[key] ==
-                                  true)
-                            {
-                              _handleLongPress(
-                                context,
-                                singleChannelMemberState,
-                                member,
-                              )
-                            }
-                        });
+                      title: Text(member.user.username),
+                      subtitle: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 150),
+                        child: PillBox(
+                          text: member.role.toUpperCase(),
+                          backgroundColor: (member.role == "reviewer")
+                              ? const Color.fromARGB(255, 105, 67, 67)
+                              : const Color.fromARGB(255, 52, 74, 44),
+                          textColor: (member.role == "reviewer")
+                              ? const Color.fromARGB(255, 255, 184, 184)
+                              : const Color.fromARGB(255, 217, 253, 173),
+                        ),
+                      ),
+                      onLongPress: () => {
+                        if (singleChannelMemberState.members[key]?.role ==
+                                "reviewee" &&
+                            singleChannelMemberState.loadingStates[key] ==
+                                false &&
+                            singleChannelMemberState.successStates[key] == true)
+                          {
+                            _handleLongPress(
+                              context,
+                              singleChannelMemberState,
+                              member,
+                            )
+                          }
+                      },
+                    );
+                  }).toList(),
+                );
               }).toList(),
             );
           } else if (state is ChannelMemberLoading) {
@@ -254,7 +266,7 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
   Widget _buildLoadingShimmer() {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: 5,
+      itemCount: 3,
       itemBuilder: (context, index) => ShimmerLoading(
         isLoading: true,
         child: Container(
@@ -280,7 +292,7 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
         late StreamSubscription subscription;
         subscription = channelMemberBloc.stream.listen((state) {
           if (state is ChannelMemberSuccess || state is ChannelMemberError) {
-             if (!context.mounted) return;
+            if (!context.mounted) return;
             if (state is ChannelMemberError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
@@ -290,7 +302,7 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
                   workspaceId: widget.workspace.id,
                   categoryId: widget.category.id,
                   channelId: widget.channel.id));
-              Navigator.pop(context); 
+              Navigator.pop(context);
             }
             subscription.cancel();
             completer.complete();
@@ -316,24 +328,36 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
           builder: (context) => StatefulBuilder(
             builder: (context, setState) => AlertDialog(
               title: const Text('Update Role'),
-              content: DropdownButton<String>(
-                value: _selectedRole,
-                items: const [
-                  DropdownMenuItem(
-                    value: 'reviewer',
-                    child: Text('Reviewer'),
+              content: Column(
+                children: [
+                  const TextFieldHeader(text: 'Team'),
+                  TextFormFieldWidget(
+                    controller: _teamController,
+                    hintText: 'Enter team...',
+                    haveObscureText: false,
+                    haveSuffixIconObscure: false,
                   ),
-                  DropdownMenuItem(
-                    value: 'reviewee',
-                    child: Text('Reviewee'),
+                  const SizedBox(height: 8.0),
+                  DropdownButton<String>(
+                    value: _selectedRole,
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'reviewer',
+                        child: Text('Reviewer'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'reviewee',
+                        child: Text('Reviewee'),
+                      ),
+                    ],
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedRole = newValue;
+                      });
+                    },
+                    isExpanded: true,
                   ),
                 ],
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedRole = newValue;
-                  });
-                },
-                isExpanded: true,
               ),
               actions: [
                 TextButton(
@@ -373,11 +397,13 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
                               categoryId: widget.category.id,
                               channelId: widget.channel.id,
                               userEmail: member.user.email,
+                              team: _teamController.text,
                               role: _selectedRole!));
                     }
                     await completer.future;
-                     if (!context.mounted) return;
+                    if (!context.mounted) return;
                     Navigator.pop(context);
+                    _teamController.clear();
                   },
                   child: const Text('Update'),
                 ),

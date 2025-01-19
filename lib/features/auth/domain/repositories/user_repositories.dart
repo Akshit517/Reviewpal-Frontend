@@ -14,10 +14,13 @@ abstract class UserRepositories {
   Future<Either<Failure, User>> registerWithEmailPassword(
       String email, String password, String username);
 
+  Future<Either<Failure, User>> fetchProfile();
+  Future<Either<Failure, User>> updateProfile(
+      String? profilePic, String? username);
   Future<Either<Failure, void>> logout();
 
   Future<Either<Failure, Token>> getToken();
   Future<Either<Failure, bool>> checkTokenValidation(String token);
   Future<Either<Failure, Token>> getNewToken();
-  Future<Either<Failure, bool>> checkLoginStatus(); 
+  Future<Either<Failure, bool>> checkLoginStatus();
 }

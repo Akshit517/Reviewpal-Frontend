@@ -5,25 +5,31 @@ import '../../../../../core/usecases/usecases.dart';
 import '../../entities/submissions/submission.dart';
 import '../../repositories/workspace_repositories.dart';
 
-class GetSubmissionByUserIdUseCase implements UseCase<List<Submission>, SubmissionParams> {
+class GetSubmissionByTeamIdUseCase
+    implements UseCase<List<Submission>, SubmissionParams> {
   final WorkspaceRepositories repository;
 
-  GetSubmissionByUserIdUseCase({required this.repository});
+  GetSubmissionByTeamIdUseCase({required this.repository});
 
   @override
-  Future<Either<Failure, List<Submission>>> call(SubmissionParams params) async {
-    return await repository.getSubmissionByUserId(params.workspaceId, params.categoryId, params.channelId, params.userId!);
+  Future<Either<Failure, List<Submission>>> call(
+      SubmissionParams params) async {
+    return await repository.getSubmissionByTeamId(params.workspaceId,
+        params.categoryId, params.channelId, params.teamId!);
   }
 }
 
-class GetSubmissionUseCase implements UseCase<List<Submission>, SubmissionParams> {
+class GetSubmissionUseCase
+    implements UseCase<List<Submission>, SubmissionParams> {
   final WorkspaceRepositories repository;
 
   GetSubmissionUseCase({required this.repository});
-   
+
   @override
-  Future<Either<Failure, List<Submission>>> call(SubmissionParams params) async {
-    return await repository.getSubmissionReviewees(params.workspaceId, params.categoryId, params.channelId);
+  Future<Either<Failure, List<Submission>>> call(
+      SubmissionParams params) async {
+    return await repository.getSubmissionReviewees(
+        params.workspaceId, params.categoryId, params.channelId);
   }
 }
 
@@ -32,6 +38,12 @@ class SubmissionParams {
   final int categoryId;
   final String channelId;
   final int? userId;
+  final String? teamId;
 
-  SubmissionParams({required this.workspaceId, required this.categoryId, required this.channelId, this.userId});
+  SubmissionParams(
+      {required this.workspaceId,
+      required this.categoryId,
+      required this.channelId,
+      this.userId,
+      this.teamId});
 }

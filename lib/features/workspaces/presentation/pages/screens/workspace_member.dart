@@ -35,8 +35,8 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
     final singleWorkspaceMemberState =
         context.watch<SingleWorkspaceMemberCubit>().state;
     return ResponsiveScaffold(
-      title: "Workspace Members", 
-      content: _buildPageContent(singleWorkspaceMemberState));
+        title: "Workspace Members",
+        content: _buildPageContent(singleWorkspaceMemberState));
   }
 
   Widget _buildPageContent(
@@ -147,7 +147,7 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
           if (state is WorkspaceMemberSuccess ||
               state is WorkspaceMemberError) {
             if (state is WorkspaceMemberError) {
-               if (!context.mounted) return;
+              if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
@@ -157,7 +157,7 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
             }
             completer.complete();
             subscription.cancel();
-             if (!context.mounted) return;
+            if (!context.mounted) return;
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             }
@@ -222,7 +222,7 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
                       if (state is WorkspaceMemberSuccess ||
                           state is WorkspaceMemberError) {
                         if (state is WorkspaceMemberError) {
-                           if (!context.mounted) return;
+                          if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(state.message)),
                           );
@@ -232,7 +232,7 @@ class _WorkspaceMemberWidgetState extends State<WorkspaceMemberWidget> {
                         }
                         completer.complete();
                         subscription.cancel();
-                         if (!context.mounted) return;
+                        if (!context.mounted) return;
                         if (Navigator.canPop(context)) {
                           Navigator.pop(context);
                         }

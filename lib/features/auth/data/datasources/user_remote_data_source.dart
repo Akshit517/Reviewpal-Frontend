@@ -9,6 +9,11 @@ import '../models/user_model.dart';
 abstract class UserRemoteDataSource {
   Future<UserModel> loginWithEmailPassword(String email, String password);
 
+  Future<UserModel> fetchProfile(String token);
+
+  Future<UserModel> updateProfile(
+      String token, String? username, String? profilePic);
+
   Future<UserModel> loginWithOAuth(
       String provider, String code, String redirectUri);
 
@@ -45,10 +50,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   Future<UserModel> loginWithOAuth(
       String provider, String code, String redirectUri) async {
     final uri = Uri.parse('${AppConstants.baseUrl}signin/$provider/');
-    print(uri.replace(queryParameters: {
-        'code': code,
-        'redirect_uri': redirectUri,
-      }));
     final response = await client.get(
       uri.replace(queryParameters: {
         'code': code,
@@ -120,27 +121,52 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         },
         body: jsonEncode({'token': token}),
       );
-      
+
       return response.statusCode == 200 ? true : false;
     } on Exception {
       throw ServerException();
     }
   }
 
-  Future<List<UserModel>> fetchUsers(String token) async {
+  @override
+  Future<UserModel> fetchProfile(String token) async {
     final response = await client.get(
-      Uri.parse('${AppConstants.baseUrl}users/'),
+      Uri.parse('${AppConstants.baseUrl}profile/'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body) as Map<String, dynamic>;
-      final users = (data['users'] as List)
-          .map((userJson) => UserModel.fromJson(userJson))
-          .toList();
-      return users;
+      return UserModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to fetch users');
+      throw Exception('Failed to fetch profile');
+    }
+  }
+
+  @override
+  Future<UserModel> updateProfile(
+      String token, String? username, String? profilePic) async {
+    // Construct the request body
+    final Map<String, dynamic> body = {};
+    if (username != null) {
+      body['username'] = username;
+    }
+    if (profilePic != null) {
+      body['profile_pic'] = profilePic;
+    }
+
+    final response = await client.put(
+      Uri.parse('${AppConstants.baseUrl}profile/'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      return UserModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to update profile');
     }
   }
 }

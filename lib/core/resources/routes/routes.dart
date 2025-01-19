@@ -1,22 +1,28 @@
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../features/auth/domain/usecases/profile.dart';
+import '../../../features/auth/presentation/bloc/profile_bloc/profile_bloc.dart';
 import '../../../features/auth/presentation/pages/auth_choice_screen.dart';
 import '../../../features/auth/presentation/pages/callback_screen.dart';
 import '../../../features/auth/presentation/pages/login_screen.dart';
+import '../../../features/auth/presentation/pages/profile_screen.dart';
 import '../../../features/auth/presentation/pages/signup_screen.dart';
+import '../../../features/injection.dart';
 import '../../../features/workspaces/domain/entities/category/category_entity.dart';
 import '../../../features/workspaces/domain/entities/channel/channel_entity.dart';
 import '../../../features/workspaces/domain/entities/workspace/workspace_entity.dart';
 import '../../../features/workspaces/presentation/pages/screens/add_update_assignment.dart';
 import '../../../features/workspaces/presentation/pages/screens/assignment_screen.dart';
+import '../../../features/workspaces/presentation/pages/screens/category_member_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/channel_member_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/doubt_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/home_screen.dart';
 import '../../../features/workspaces/presentation/pages/screens/submissions_by_user.dart';
 import '../../../features/workspaces/presentation/pages/screens/workspace_member.dart';
-import '../../../features/workspaces/presentation/pages/screens/your_submissions_screen.dart';
+import '../../../features/workspaces/presentation/pages/screens/team_submissions_screen.dart';
 import '../../presentation/widgets/bottom_navigation_bar/scaffold_with_nested_navigation.dart';
 
 class CustomNavigationHelper {
@@ -32,16 +38,16 @@ class CustomNavigationHelper {
   static const String errorPath = '/error';
   static const String homePath = '/home';
 
-  static const String notificationPath = '/notification';
   static const String profilePath = '/profile';
   static const String addAssignmentScreenPath = '/addAssignmentScreen';
   static const String workspaceMembersPath = '/workspaceMembers';
+  static const String categoryMembersPath = '/categoryMembers';
   static const String channelMembersPath = '/channelMembers';
-  static const String assignmentPath ='/assignment';
-  static const String doubtPath ='/doubt';
-  static const String submissionsPath ='/submissions';
-  static const String submissionsByUsersPath ='/submissionsByUser';
-  
+  static const String assignmentPath = '/assignment';
+  static const String doubtPath = '/doubt';
+  static const String submissionsPath = '/submissions';
+  static const String submissionsByUsersPath = '/submissionsByUser';
+
   static final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
 
@@ -118,7 +124,8 @@ class CustomNavigationHelper {
               channel: extra['channel'] as Channel?,
               forUpdateAssignment: extra['forUpdateAssignment'] as bool,
             ),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
                 child: child,
@@ -136,7 +143,8 @@ class CustomNavigationHelper {
             child: WorkspaceMemberWidget(
               workspace: extra['workspace'] as Workspace,
             ),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
                 child: child,
@@ -156,7 +164,8 @@ class CustomNavigationHelper {
               category: extra['category'] as Category,
               channel: extra['channel'] as Channel,
             ),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
                 child: child,
@@ -165,7 +174,27 @@ class CustomNavigationHelper {
           );
         },
       ),
-       GoRoute(
+      GoRoute(
+        path: categoryMembersPath,
+        pageBuilder: (context, state) {
+          Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: CategoryMemberWidget(
+              workspace: extra['workspace'] as Workspace,
+              category: extra['category'] as Category,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          );
+        },
+      ),
+      GoRoute(
         path: channelMembersPath,
         pageBuilder: (context, state) {
           Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
@@ -176,7 +205,8 @@ class CustomNavigationHelper {
               category: extra['category'] as Category,
               channel: extra['channel'] as Channel,
             ),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
                 child: child,
@@ -191,12 +221,13 @@ class CustomNavigationHelper {
           Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
           return CustomTransitionPage(
             key: state.pageKey,
-            child: YourSubmissionsScreen(
+            child: TeamSubmissionsScreen(
               workspace: extra['workspace'] as Workspace,
               category: extra['category'] as Category,
               channel: extra['channel'] as Channel,
             ),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
                 child: child,
@@ -205,7 +236,7 @@ class CustomNavigationHelper {
           );
         },
       ),
-       GoRoute(
+      GoRoute(
         path: submissionsByUsersPath,
         pageBuilder: (context, state) {
           Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
@@ -216,7 +247,8 @@ class CustomNavigationHelper {
               category: extra['category'] as Category,
               channel: extra['channel'] as Channel,
             ),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
                 child: child,
@@ -236,7 +268,8 @@ class CustomNavigationHelper {
               category: extra['category'] as Category,
               channel: extra['channel'] as Channel,
             ),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
                 child: child,
@@ -246,48 +279,43 @@ class CustomNavigationHelper {
         },
       ),
       StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-          return ScaffoldWithNestedNavigation(
-            navigationShell: navigationShell,
-          );
-        },
-        branches: [
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: homePath,
-                pageBuilder: (context, state) => MaterialPage(
-                  key: state.pageKey,
-                  child: const HomeScreen()
+          builder: (context, state, navigationShell) {
+            return ScaffoldWithNestedNavigation(
+              navigationShell: navigationShell,
+            );
+          },
+          branches: [
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: homePath,
+                  pageBuilder: (context, state) => MaterialPage(
+                      key: state.pageKey, child: const HomeScreen()),
                 ),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: notificationPath,
-                pageBuilder: (context, state) => MaterialPage(
-                  key: state.pageKey,
-                  child: const Scaffold(
-                    body: Center(child: Text('Notifications'),),),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: profilePath,
+                  pageBuilder: (context, state) => CustomTransitionPage(
+                    key: state.pageKey,
+                    child: BlocProvider(
+                      create: (context) => ProfileBloc(
+                        getProfileUseCase: sl<FetchProfileUseCase>(),
+                        updateProfileUseCase: sl<UpdateProfileUseCase>(),
+                      ),
+                      child: const ProfileScreen(),
+                    ),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: profilePath,
-                pageBuilder: (context, state) => MaterialPage(
-                  key: state.pageKey,
-                  child: const Scaffold(
-                    body: Center(child: Text('Profile'),),),
-                ),
-              ),
-            ],
-          ),
-        ])
+              ],
+            ),
+          ])
     ];
   }
 

@@ -7,7 +7,7 @@ import '../../../../core/presentation/widgets/layouts/responsive_scaffold.dart';
 import '../../../../core/presentation/widgets/text_field/text_form_field.dart';
 import '../../../../core/presentation/widgets/text_field/text_field_header.dart';
 import '../../../../core/resources/routes/routes.dart';
-import '../bloc/auth_bloc.dart';
+import '../bloc/auth_bloc/auth_bloc.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -32,8 +32,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
-      title: "Sign Up", 
-      content: _buildSignUpContent(),);
+      title: "Sign Up",
+      content: _buildSignUpContent(),
+    );
   }
 
   Widget _buildSignUpContent() {
@@ -42,17 +43,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error),
-              )
-            );
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(state.error),
+            ));
           } else if (state is AuthSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Successfully Signed Up!!!"),
-              )
-            );
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Successfully Signed Up!!!"),
+            ));
             context.go(CustomNavigationHelper.homePath);
           }
         },

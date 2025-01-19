@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/usecases/usecases.dart';
-import '../../domain/usecases/login.dart';
-import '../../domain/usecases/get_token.dart';
-import '../../domain/usecases/register.dart';
+import '../../../../../core/usecases/usecases.dart';
+import '../../../domain/usecases/login.dart';
+import '../../../domain/usecases/get_token.dart';
+import '../../../domain/usecases/register.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -33,8 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     ));
     result.fold(
       (failure) => emit(AuthFailure(failure.message)),
-      (user) =>
-          emit(AuthSuccess("Sign-up successful", email: user.email)),
+      (user) => emit(AuthSuccess("Sign-up successful", email: user.email)),
     );
   }
 
@@ -50,7 +49,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  Future<void> _onLoginOAuth(AuthLoginOAuth event, Emitter<AuthState> emit) async {
+  Future<void> _onLoginOAuth(
+      AuthLoginOAuth event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     final result = await loginUseCase(LoginParams.oauth(
       code: event.code,
@@ -72,5 +72,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           accessToken: token.accessToken, refreshToken: token.refreshToken)),
     );
   }
-
 }

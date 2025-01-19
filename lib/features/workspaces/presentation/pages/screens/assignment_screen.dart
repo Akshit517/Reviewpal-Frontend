@@ -14,7 +14,7 @@ import '../components/create_submission_dialog.dart';
 import '../components/home_screen_main.dart';
 import 'package:intl/intl.dart';
 
-class AssignmentScreen extends StatefulWidget {
+class AssignmentScreen extends StatelessWidget {
   final Workspace workspace;
   final Category category;
   final Channel channel;
@@ -26,27 +26,15 @@ class AssignmentScreen extends StatefulWidget {
       required this.channel});
 
   @override
-  State<AssignmentScreen> createState() => _AssignmentScreenState();
-}
-
-class _AssignmentScreenState extends State<AssignmentScreen> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= HomeScreenMain.desktopBreakpoint;
     final roleState = context.watch<SingleChannelMemberCubit>().state;
-    final key =
-        '${widget.workspace.id}-${widget.category.id}-${widget.channel.id}';
+    final key = '${workspace.id}-${category.id}-${channel.id}';
     final role = roleState.members[key]?.role;
 
     return Scaffold(
-      appBar: _buildAppBar(widget.category.name, widget.channel.name),
+      appBar: _buildAppBar(category.name, channel.name, context),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -60,9 +48,9 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
                   children: [
                     _buildHeader(isDesktop),
                     const SizedBox(height: 24),
-                    _buildDescription(),
+                    _buildDescription(context),
                     const SizedBox(height: 32),
-                    _buildTasksList(isDesktop),
+                    _buildTasksList(isDesktop, context),
                   ],
                 ),
               ),
@@ -95,9 +83,9 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
                   onTap: () => context.push(
                       CustomNavigationHelper.submissionsByUsersPath,
                       extra: {
-                        "workspace": widget.workspace,
-                        "category": widget.category,
-                        "channel": widget.channel
+                        "workspace": workspace,
+                        "category": category,
+                        "channel": channel
                       }),
                 ),
               ]
@@ -111,23 +99,23 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
                     showDialog(
                         context: context,
                         builder: (context) => CreateSubmissionDialog(
-                            workspace: widget.workspace,
-                            category: widget.category,
-                            channel: widget.channel));
+                            workspace: workspace,
+                            category: category,
+                            channel: channel));
                   },
                 ),
                 SpeedDialChild(
                   child: const Icon(Icons.assignment_outlined),
-                  label: 'Your Submissions',
+                  label: 'Team Submissions',
                   labelStyle: const TextStyle(fontSize: 14.0),
                   backgroundColor: DarkThemePalette.primaryDark,
                   onTap: () {
-                    context
-                        .push(CustomNavigationHelper.submissionsPath, extra: {
-                      "workspace": widget.workspace,
-                      "category": widget.category,
-                      "channel": widget.channel
-                    });
+                    context.push(CustomNavigationHelper.submissionsPath,
+                        extra: {
+                          "workspace": workspace,
+                          "category": category,
+                          "channel": channel
+                        });
                   },
                 ),
               ],
@@ -155,7 +143,7 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
             child: Center(
               child: _buildChip(
                 icon: Icons.star_outline,
-                label: '${widget.channel.assignment!.totalPoints} Points',
+                label: '${channel.assignment!.totalPoints} Points',
               ),
             ),
           ),
@@ -164,7 +152,7 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescription(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -187,7 +175,7 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            widget.channel.assignment!.description,
+            channel.assignment!.description,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
         ],
@@ -195,7 +183,7 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
     );
   }
 
-  Widget _buildTasksList(bool isDesktop) {
+  Widget _buildTasksList(bool isDesktop, BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -215,17 +203,17 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
             mainAxisSpacing: 16,
             mainAxisExtent: 200,
           ),
-          itemCount: widget.channel.assignment!.tasks.length,
+          itemCount: channel.assignment!.tasks.length,
           itemBuilder: (context, index) {
-            final task = widget.channel.assignment!.tasks[index];
-            return _buildTaskCard(task);
+            final task = channel.assignment!.tasks[index];
+            return _buildTaskCard(task, context);
           },
         ),
       ],
     );
   }
 
-  Widget _buildTaskCard(Task task) {
+  Widget _buildTaskCard(Task task, BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -320,7 +308,8 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
     );
   }
 
-  AppBar _buildAppBar(String categoryTitle, String channelTitle) {
+  AppBar _buildAppBar(
+      String categoryTitle, String channelTitle, BuildContext context) {
     final size = MediaQuery.of(context).size;
     return AppBar(
       title: Row(

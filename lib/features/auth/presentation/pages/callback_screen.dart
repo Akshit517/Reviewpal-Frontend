@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/resources/routes/routes.dart';
-import '../bloc/auth_bloc.dart';
+import '../bloc/auth_bloc/auth_bloc.dart';
 
 class CallbackScreen extends StatefulWidget {
   final String code;

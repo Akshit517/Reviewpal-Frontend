@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/error/failures.dart';
-import '../../../domain/entities/category/category_entity.dart';
-import '../../../domain/usecases/category/create_category.dart';
-import '../../../domain/usecases/category/delete_category.dart';
-import '../../../domain/usecases/category/get_categories.dart';
-import '../../../domain/usecases/category/update_category.dart';
+import '../../../../../../core/error/failures.dart';
+import '../../../../domain/entities/category/category_entity.dart';
+import '../../../../domain/usecases/category/create_category.dart';
+import '../../../../domain/usecases/category/delete_category.dart';
+import '../../../../domain/usecases/category/get_categories.dart';
+import '../../../../domain/usecases/category/update_category.dart';
 
 part 'category_event.dart';
 part 'category_state.dart';
@@ -63,8 +63,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       )),
       (updatedCategory) => emit(state.copyWith(
         categories: state.categories
-            .map((category) =>
-                (category.id == updatedCategory.id) ? updatedCategory : category).toList(),
+            .map((category) => (category.id == updatedCategory.id)
+                ? updatedCategory
+                : category)
+            .toList(),
         isLoading: false,
         isSuccess: true,
         message: 'Category Updated',
@@ -75,7 +77,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   Future<void> _onDeleteCategory(
       DeleteCategoryEvent event, Emitter<CategoryState> emit) async {
     emit(state.copyWith(isLoading: true, isSuccess: false));
-    final result = await deleteCategoryUseCase(event.workspaceId, event.categoryId);
+    final result =
+        await deleteCategoryUseCase(event.workspaceId, event.categoryId);
     result.fold(
       (failure) => emit(state.copyWith(
         isLoading: false,

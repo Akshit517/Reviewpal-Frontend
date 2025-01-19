@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/resources/routes/routes.dart';
 import 'core/resources/app_themes/themes.dart';
-import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/bloc/auth_bloc/auth_bloc.dart';
 import 'features/injection.dart';
-import 'features/workspaces/presentation/blocs/category/category_bloc.dart';
+import 'features/workspaces/presentation/blocs/category/category_bloc/category_bloc.dart';
+import 'features/workspaces/presentation/blocs/category/member/category_member_bloc.dart';
 import 'features/workspaces/presentation/blocs/channel/channel_bloc/channel_bloc.dart';
 import 'features/workspaces/presentation/blocs/channel/member/channel_member_bloc.dart';
 import 'features/workspaces/presentation/blocs/channel/single_member/single_channel_member_cubit.dart';
@@ -26,7 +27,6 @@ class _AsgRevAppState extends State<AsgRevApp> {
   @override
   void initState() {
     super.initState();
-        
   }
 
   @override
@@ -35,15 +35,21 @@ class _AsgRevAppState extends State<AsgRevApp> {
       providers: [
         BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
         BlocProvider<WorkspaceBloc>(create: (context) => sl<WorkspaceBloc>()),
-        BlocProvider<SingleWorkspaceMemberCubit>(create: (context) => sl<SingleWorkspaceMemberCubit>()),
-        BlocProvider<WorkspaceMemberBloc>(create: (context) => sl<WorkspaceMemberBloc>()),
+        BlocProvider<SingleWorkspaceMemberCubit>(
+            create: (context) => sl<SingleWorkspaceMemberCubit>()),
+        BlocProvider<WorkspaceMemberBloc>(
+            create: (context) => sl<WorkspaceMemberBloc>()),
         BlocProvider<CategoryBloc>(create: (context) => sl<CategoryBloc>()),
+        BlocProvider<CategoryMemberBloc>(
+            create: (context) => sl<CategoryMemberBloc>()),
         BlocProvider<ChannelBloc>(create: (context) => sl<ChannelBloc>()),
-        BlocProvider<SingleChannelMemberCubit>(create: (context) => sl<SingleChannelMemberCubit>()),
-        BlocProvider<ChannelMemberBloc>(create: (context) => sl<ChannelMemberBloc>()),
+        BlocProvider<SingleChannelMemberCubit>(
+            create: (context) => sl<SingleChannelMemberCubit>()),
+        BlocProvider<ChannelMemberBloc>(
+            create: (context) => sl<ChannelMemberBloc>()),
         BlocProvider<SubmissionBloc>(create: (context) => sl<SubmissionBloc>()),
         BlocProvider<IterationBloc>(create: (context) => sl<IterationBloc>()),
-        ],
+      ],
       child: MaterialApp.router(
         theme: appThemeData.values.toList()[1],
         routerConfig: CustomNavigationHelper.router,

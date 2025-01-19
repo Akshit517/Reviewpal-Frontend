@@ -8,7 +8,7 @@ import '../../../../../core/presentation/widgets/effects/shimmer_loading_effect.
 import '../../../../../core/presentation/widgets/image/universal_image.dart';
 import '../../../../injection.dart';
 import '../../../domain/entities/workspace/workspace_entity.dart';
-import '../../blocs/category/category_bloc.dart';
+import '../../blocs/category/category_bloc/category_bloc.dart';
 import '../../blocs/workspace/single_member/single_workspace_member_cubit.dart';
 import '../../blocs/workspace/workspace_bloc/workspace_bloc.dart';
 import 'add_workspace_dialog.dart';

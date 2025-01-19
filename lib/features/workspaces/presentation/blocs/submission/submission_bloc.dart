@@ -9,18 +9,18 @@ part 'submission_event.dart';
 part 'submission_state.dart';
 
 class SubmissionBloc extends Bloc<SubmissionEvent, SubmissionState> {
-  final GetSubmissionByUserIdUseCase getSubmissionByUserId;
+  final GetSubmissionByTeamIdUseCase getSubmissionByTeamId;
   final GetSubmissionUseCase getSubmission;
   final CreateSubmissionUseCase createSubmission;
 
   SubmissionBloc(
-      {required this.getSubmissionByUserId,
+      {required this.getSubmissionByTeamId,
       required this.getSubmission,
       required this.createSubmission})
       : super(SubmissionInitial()) {
     on<CreateSubmissionEvent>(_createSubmissionEvent);
     on<GetSubmissionEvent>(_getSubmissionEvent);
-    on<GetSubmissionByUserIdEvent>(_getSubmissionByUserIdEvent);
+    on<GetSubmissionByTeamIdEvent>(_getSubmissionByUserIdEvent);
   }
 
   Future<void> _createSubmissionEvent(
@@ -54,13 +54,13 @@ class SubmissionBloc extends Bloc<SubmissionEvent, SubmissionState> {
   }
 
   Future<void> _getSubmissionByUserIdEvent(
-      GetSubmissionByUserIdEvent event, Emitter<SubmissionState> emit) async {
+      GetSubmissionByTeamIdEvent event, Emitter<SubmissionState> emit) async {
     emit(SubmissionLoading());
-    final result = await getSubmissionByUserId(SubmissionParams(
+    final result = await getSubmissionByTeamId(SubmissionParams(
         workspaceId: event.workspaceId,
         categoryId: event.categoryId,
         channelId: event.channelId,
-        userId: event.userId));
+        teamId: event.teamId));
     result.fold(
       (failure) => emit(SubmissionError(message: failure.message)),
       (submissions) => emit(SubmissionSuccess(submissions: submissions)),
