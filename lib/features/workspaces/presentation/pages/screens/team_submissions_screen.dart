@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../core/presentation/widgets/pillbox/pillbox.dart';
 import '../../../../../core/resources/pallete/dark_theme_palette.dart';
 import '../../../domain/entities/assignment/assignment_status.dart';
 import '../../../domain/entities/category/category_entity.dart';
@@ -10,12 +12,12 @@ import '../../../domain/entities/workspace/workspace_entity.dart';
 import '../../blocs/iteration/iteration_bloc.dart';
 import '../../blocs/submission/submission_bloc.dart';
 
-class YourSubmissionsScreen extends StatefulWidget {
+class TeamSubmissionsScreen extends StatefulWidget {
   final Workspace workspace;
   final Category category;
   final Channel channel;
 
-  const YourSubmissionsScreen({
+  const TeamSubmissionsScreen({
     super.key,
     required this.workspace,
     required this.category,
@@ -23,12 +25,16 @@ class YourSubmissionsScreen extends StatefulWidget {
   });
 
   @override
-  YourSubmissionsScreenState createState() => YourSubmissionsScreenState();
+  TeamSubmissionsScreenState createState() => TeamSubmissionsScreenState();
 }
 
-class YourSubmissionsScreenState extends State<YourSubmissionsScreen> {
+class TeamSubmissionsScreenState extends State<TeamSubmissionsScreen> {
   late SubmissionBloc _submissionBloc;
   late IterationBloc _iterationBloc;
+
+  String formatDateTime(DateTime dateTime) {
+    return DateFormat('MMMM d, y \'at\' h:mm a').format(dateTime.toLocal());
+  }
 
   @override
   void initState() {
@@ -70,7 +76,7 @@ class YourSubmissionsScreenState extends State<YourSubmissionsScreen> {
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       title: Text(
-        "Your Submissions",
+        "Your Team's Submissions",
         style: Theme.of(context).textTheme.titleLarge,
       ),
       centerTitle: true,
@@ -115,11 +121,39 @@ class YourSubmissionsScreenState extends State<YourSubmissionsScreen> {
                     submission.content ?? "No content",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  subtitle: Text(
-                    submission.submittedAt.toLocal().toString(),
-                    style: Theme.of(context).textTheme.bodySmall,
+                  subtitle: Row(
+                    children: [
+                      Flexible(
+                        child: Tooltip(
+                          message: formatDateTime(submission.submittedAt),
+                          child: Text(
+                            formatDateTime(submission.submittedAt),
+                            style: Theme.of(context).textTheme.bodySmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      PillBox(
+                        text: submission.sender!.username,
+                        width: 160,
+                        backgroundColor: DarkThemePalette.primaryDark,
+                        textColor: DarkThemePalette.primaryAccent,
+                      ),
+                    ],
                   ),
-                  trailing: const Icon(Icons.chevron_right_rounded),
+                  trailing: submission.file != null
+                      ? IconButton(
+                          icon: const Icon(
+                            Icons.open_in_new_rounded,
+                            color: DarkThemePalette.primaryAccent,
+                          ),
+                          onPressed: () {
+                            _launchUrl(submission.file!);
+                          },
+                        )
+                      : null,
+                  tileColor: DarkThemePalette.fillColor,
                   onTap: () => _showIterations(submission.id),
                 ),
               );
@@ -131,6 +165,13 @@ class YourSubmissionsScreenState extends State<YourSubmissionsScreen> {
       },
     );
   }
+
+  void _launchUrl(String uri) async {
+    Uri url = Uri.parse(uri);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
 }
 
 class _IterationsSheet extends StatelessWidget {
@@ -141,7 +182,8 @@ class _IterationsSheet extends StatelessWidget {
 
   String _getStatusText(AssignmentStatus? status) {
     if (status == null) return 'Pending';
-    return status.status[0].toUpperCase() + status.status.substring(1).toLowerCase();
+    return status.status[0].toUpperCase() +
+        status.status.substring(1).toLowerCase();
   }
 
   @override
@@ -162,19 +204,18 @@ class _IterationsSheet extends StatelessWidget {
               if (state is IterationLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
-
               if (state is IterationError) {
-                return Center(child: Text("Error: ${state.message}", 
-                  style: Theme.of(context).textTheme.bodyMedium));
+                return Center(
+                    child: Text("Error: ${state.message}",
+                        style: Theme.of(context).textTheme.bodyMedium));
               }
-
-              if (state is IterationSuccess && 
-                  state.submissionIterations != null &&
+              if (state is IterationSuccess &&
                   state.submissionIterations!.containsKey(submissionId)) {
-                final iterationData = state.submissionIterations![submissionId]!;
+                final iterationData =
+                    state.submissionIterations![submissionId]!;
                 final iterations = iterationData.iterations;
-                final latestIteration = iterations.isNotEmpty ? iterations.first : null;
-                print(iterations);
+                final latestIteration =
+                    iterations.isNotEmpty ? iterations.first : null;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -186,7 +227,8 @@ class _IterationsSheet extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
                             color: DarkThemePalette.primaryDark,
                             borderRadius: BorderRadius.circular(12),
@@ -194,8 +236,7 @@ class _IterationsSheet extends StatelessWidget {
                           child: Text(
                             _getStatusText(iterationData.currentStatus),
                             style: const TextStyle(
-                              color: DarkThemePalette.primaryAccent
-                            ),
+                                color: DarkThemePalette.primaryAccent),
                           ),
                         ),
                         if (latestIteration?.assignmentStatus != null)
@@ -215,10 +256,15 @@ class _IterationsSheet extends StatelessWidget {
                           return Card(
                             child: ListTile(
                               title: Text(iteration.remarks),
-                              subtitle: Text(_dateFormat.format(iteration.createdAt.toLocal()),
+                              subtitle: Text(
+                                _dateFormat
+                                    .format(iteration.createdAt.toLocal()),
                                 style: TextStyle(
-                                  color: Theme.of(context).textTheme.bodySmall?.color
-                                ),),
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.color),
+                              ),
                             ),
                           );
                         },
@@ -227,7 +273,7 @@ class _IterationsSheet extends StatelessWidget {
                   ],
                 );
               }
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: Text('No iterations found.'));
             },
           ),
         );

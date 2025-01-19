@@ -17,40 +17,35 @@ class ChatRepositoryImpl implements ChatRepository {
   final NetworkInfo networkInfo;
   final UserLocalDataSource userLocalDataSource;
 
-  ChatRepositoryImpl({
-    required this.channel,
-    required this.remoteDataSource,
-    required this.networkInfo,
-    required this.userLocalDataSource
-  });
+  ChatRepositoryImpl(
+      {required this.channel,
+      required this.remoteDataSource,
+      required this.networkInfo,
+      required this.userLocalDataSource});
 
   @override
-  Future<Either<Failure, List<Message>>> getChannelMessages(String workspaceId, int categoryId, String channelId) async {
+  Future<Either<Failure, List<Message>>> getChannelMessages(
+      String workspaceId, int categoryId, String channelId) async {
     if (await networkInfo.isConnected) {
       try {
-        final messages = await remoteDataSource.getChannelMessages(workspaceId, categoryId, channelId);
+        final messages = await remoteDataSource.getChannelMessages(
+            workspaceId, categoryId, channelId);
         return Right(messages);
       } on ServerException {
-        return const Left(const ServerFailure());
+        return const Left(ServerFailure());
       }
     } else {
       return const Left(NetworkFailure());
     }
   }
 
-   @override
+  @override
   Stream<Either<Failure, Message>> connectToChat(
-    String workspaceId,
-    int categoryId,
-    String channelId
-  ) async* {
+      String workspaceId, int categoryId, String channelId) async* {
     if (await networkInfo.isConnected) {
       try {
         await for (final message in remoteDataSource.connectToChat(
-          workspaceId,
-          categoryId,
-          channelId
-        )) {
+            workspaceId, categoryId, channelId)) {
           yield Right(message);
         }
       } on ServerException {
@@ -76,7 +71,8 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<Either<Failure, void>> sendFile(String filePath, String fileName) async {
+  Future<Either<Failure, void>> sendFile(
+      String filePath, String fileName) async {
     if (await networkInfo.isConnected) {
       try {
         await remoteDataSource.sendFile(filePath, fileName);

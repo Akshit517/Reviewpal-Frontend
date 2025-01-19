@@ -29,8 +29,8 @@ class UserRepositoriesImpl implements UserRepositories {
     }
     return await action();
   }
-  
- Future<Either<Failure, User>> _getUser(
+
+  Future<Either<Failure, User>> _getUser(
     Future<UserModel> Function() getUser,
   ) async {
     return await _checkNetwork(() async {
@@ -70,8 +70,7 @@ class UserRepositoriesImpl implements UserRepositories {
       String provider, String code, String redirectUri) async {
     return await _checkNetwork(() async {
       return await _getUser(
-        () =>
-            remoteDataSource.loginWithOAuth(provider, code, redirectUri),
+        () => remoteDataSource.loginWithOAuth(provider, code, redirectUri),
       );
     });
   }
@@ -153,7 +152,41 @@ class UserRepositoriesImpl implements UserRepositories {
     return await _checkNetwork(() async {
       try {
         final TokenModel token = await localDataSource.getCachedToken();
-        return Right(await remoteDataSource.checkTokenValidation(token.refreshToken));
+        return Right(
+            await remoteDataSource.checkTokenValidation(token.refreshToken));
+      } on ServerException {
+        return const Left(ServerFailure());
+      } on CacheException {
+        return const Left(CacheFailure());
+      }
+    });
+  }
+
+  @override
+  Future<Either<Failure, User>> fetchProfile() async {
+    return await _checkNetwork(() async {
+      try {
+        final token = await localDataSource.getCachedToken();
+        final user = await remoteDataSource.fetchProfile(token.accessToken);
+        return Right(user);
+      } on ServerException {
+        return const Left(ServerFailure());
+      } on CacheException {
+        return const Left(CacheFailure());
+      }
+    });
+  }
+
+  @override
+  Future<Either<Failure, User>> updateProfile(
+      String? profilePic, String? username) async {
+    return await _checkNetwork(() async {
+      try {
+        final token = await localDataSource.getCachedToken();
+        final user = await remoteDataSource.updateProfile(
+            token.accessToken, username, profilePic);
+        await localDataSource.cacheUser(user);
+        return Right(user);
       } on ServerException {
         return const Left(ServerFailure());
       } on CacheException {

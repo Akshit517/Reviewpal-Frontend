@@ -45,7 +45,7 @@ class UserModel extends User {
         'profile_pic': profilePic,
         'auth_type': authType,
       },
-      ...tokenModel!.toJson()
+      if (tokenModel != null) ...tokenModel!.toJson(),
     };
   }
 }

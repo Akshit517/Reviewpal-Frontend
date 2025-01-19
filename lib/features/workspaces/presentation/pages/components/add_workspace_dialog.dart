@@ -24,12 +24,6 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
   final _workspaceIconTextController = TextEditingController();
   File? _selectedImage;
 
-  @override
-  void dispose() {
-    _clearControllers();
-    super.dispose();
-  }
-
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -100,10 +94,13 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
                       },
                     ),
                     TextButton(
-                      child: const Text('Add'),
-                      onPressed: () async =>
-                          _uploadImageAndCreateWorkspace(context),
-                    ),
+                        child: const Text('Add'),
+                        onPressed: () async {
+                          await _uploadImageAndCreateWorkspace(context);
+                          _clearControllers();
+                          if (!context.mounted) return;
+                          Navigator.pop(context);
+                        }),
                   ],
                 ),
               ],
@@ -123,7 +120,7 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
     }
     try {
       final uploadedUrl = await sl<MediaUploader>().uploadMedia(
-        image: _selectedImage!,
+        file: _selectedImage!,
       );
       if (!context.mounted) return;
       final workspaceBloc = context.read<WorkspaceBloc>();
@@ -138,9 +135,6 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
             );
           } else if (state is WorkspaceCreated) {
             workspaceBloc.add(const GetJoinedWorkspacesEvent());
-            _clearControllers();
-            // ignore: use_build_context_synchronously
-            Navigator.pop(context);
           }
           subscription.cancel();
           completer.complete();
@@ -164,8 +158,12 @@ class _AddWorkspaceDialogState extends State<AddWorkspaceDialog> {
   void _clearControllers() {
     _workspaceNameTextController.clear();
     _workspaceIconTextController.clear();
-    setState(() {
+    if (mounted) {
+      setState(() {
+        _selectedImage = null;
+      });
+    } else {
       _selectedImage = null;
-    });
+    }
   }
 }

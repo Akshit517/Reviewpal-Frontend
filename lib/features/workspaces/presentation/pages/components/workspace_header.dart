@@ -29,14 +29,19 @@ class WorkspaceHeader extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                Text(
-                  (workspace.name.length > 18)? "${workspace.name.substring(0, 18)}..." : workspace.name,
-                  style: TextStyle(
-                    fontSize: isDesktop ? 16 : 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade400,
+                Flexible(
+                  child: Tooltip(
+                    message: workspace.name,
+                    child: Text(
+                      workspace.name,
+                      style: TextStyle(
+                        fontSize: isDesktop ? 16 : 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade400,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 4),

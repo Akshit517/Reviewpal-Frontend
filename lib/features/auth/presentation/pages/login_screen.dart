@@ -1,4 +1,4 @@
-import 'package:ReviewPal/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ReviewPal/features/auth/presentation/bloc/auth_bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose(); 
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -68,11 +68,9 @@ class _LoginScreenState extends State<LoginScreen> {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error),
-                )
-              );
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(state.error),
+              ));
             } else if (state is AuthSuccess) {
               context.go(CustomNavigationHelper.homePath);
             }
@@ -104,11 +102,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: TextButton(
                     onPressed: () {
                       context.read<AuthBloc>().add(
-                        AuthLogin(
-                          email: _emailController.text,
-                          password: _passwordController.text,
-                        ),
-                      );
+                            AuthLogin(
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                            ),
+                          );
                     },
                     child: const Text(
                       'Login',
@@ -149,13 +147,13 @@ class _LoginScreenState extends State<LoginScreen> {
         style: Theme.of(context).textTheme.titleLarge,
       ),
       bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Divider(
-            height: 1.0,
-            thickness: 3.0,
-            color: Colors.grey,
-          ),
+        preferredSize: Size.fromHeight(1.0),
+        child: Divider(
+          height: 1.0,
+          thickness: 3.0,
+          color: Colors.grey,
         ),
+      ),
       centerTitle: true,
       leading: IconButton(
         onPressed: () {

@@ -11,9 +11,9 @@ class CategoryState extends Equatable {
     this.categories = const [],
     this.isLoading = true,
     this.isSuccess = false,
-    this.message = '', 
+    this.message = '',
   });
-  
+
   @override
   List<Object> get props => [categories, isLoading, isSuccess, message];
 

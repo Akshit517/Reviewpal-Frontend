@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'asgrev_app.dart';
 import 'core/resources/routes/routes.dart';
 import 'features/injection.dart' as di;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -13,11 +14,11 @@ void main() async {
 
   final LoginStatusCubit loginStatusCubit = sl<LoginStatusCubit>();
 
-  final loginStatusFuture = loginStatusCubit.stream.firstWhere((state) =>
-      state is SuccessfulLogin || state is FailedLogin);
+  final loginStatusFuture = loginStatusCubit.stream
+      .firstWhere((state) => state is SuccessfulLogin || state is FailedLogin);
 
   await loginStatusCubit.checkLoginStatus();
-  
+
   final loginStatus = await loginStatusFuture;
 
   final isLoggedIn = loginStatus is SuccessfulLogin;
@@ -26,7 +27,8 @@ void main() async {
 
   runApp(
     DevicePreview(
-      enabled: true, 
+      enabled: true,
       builder: (context) => const AsgRevApp(),
-    ),);
+    ),
+  );
 }

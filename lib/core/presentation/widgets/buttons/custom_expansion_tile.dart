@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../resources/pallete/dark_theme_palette.dart';
 
-
 class CustomExpansionTile extends StatefulWidget {
   final String title;
   final List<Widget> children;
@@ -93,8 +92,8 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
                 Padding(
                   padding: const EdgeInsets.only(left: 28.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: widget.children),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: widget.children),
                 ),
             ],
           ),

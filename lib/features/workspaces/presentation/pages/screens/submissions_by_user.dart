@@ -1,8 +1,11 @@
+import 'package:ReviewPal/core/resources/pallete/dark_theme_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../core/presentation/widgets/pillbox/pillbox.dart';
 import '../../../data/models/iteration/review_iteration_model.dart';
 import '../../../domain/entities/assignment/assignment_status.dart';
 import '../../../domain/entities/category/category_entity.dart';
@@ -18,13 +21,12 @@ class SubmissionsByUserPage extends StatefulWidget {
   final Workspace workspace;
   final Category category;
   final Channel channel;
-  
-  const SubmissionsByUserPage({
-    super.key, 
-    required this.workspace, 
-    required this.category, 
-    required this.channel
-  });
+
+  const SubmissionsByUserPage(
+      {super.key,
+      required this.workspace,
+      required this.category,
+      required this.channel});
 
   @override
   State<SubmissionsByUserPage> createState() => _SubmissionsByUserPageState();
@@ -37,9 +39,9 @@ class _SubmissionsByUserPageState extends State<SubmissionsByUserPage> {
     Future.microtask(() {
       if (mounted) {
         context.read<ChannelMemberBloc>().add(GetChannelMembersEvent(
-          workspaceId: widget.workspace.id,
-          categoryId: widget.category.id,
-          channelId: widget.channel.id));
+            workspaceId: widget.workspace.id,
+            categoryId: widget.category.id,
+            channelId: widget.channel.id));
       }
     });
   }
@@ -50,31 +52,54 @@ class _SubmissionsByUserPageState extends State<SubmissionsByUserPage> {
         if (state is ChannelMemberLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         if (state is ChannelMemberError) {
           return Center(child: Text(state.message));
         }
-        
+
         if (state is ChannelMemberSuccess) {
-          final nonReviewers = state.members!.where((m) => !(m.role == 'reviewee')).toList();
+          // Extract teams without reviewers
+          final nonReviewerTeams = state.membersByTeam?.entries
+                  .where((entry) =>
+                      entry.value.every((member) => member.role != 'reviewer'))
+                  .map((entry) => entry.key)
+                  .where((team) => team != null)
+                  .toList() ??
+              [];
+
+          if (nonReviewerTeams.isEmpty) {
+            return const Center(
+                child: Text("No teams without reviewers found"));
+          }
+
           return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: nonReviewers.length,
+            itemCount: nonReviewerTeams.length,
             itemBuilder: (context, index) {
-              final member = nonReviewers[index];
+              final team = nonReviewerTeams[index];
+              final channelMember = state.membersByTeam?[team];
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
-                  title: Text(member.user.username),
-                  subtitle: Text(member.user.email),
-                  onTap: () => _showUserSubmissions(member),
+                  title: Text(team!.name,
+                      style: Theme.of(context).textTheme.titleMedium),
+                  tileColor: DarkThemePalette.fillColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  subtitle: Text("${channelMember!.length} members"),
+                  trailing: IconButton(
+                      onPressed: () => {},
+                      icon: const Icon(
+                        Icons.person_2_rounded,
+                        color: Colors.white,
+                      )),
+                  onTap: () => _showUserSubmissions(channelMember[0]),
                 ),
               );
             },
           );
         }
-        
+
         return const SizedBox.shrink();
       },
     );
@@ -88,7 +113,7 @@ class _SubmissionsByUserPageState extends State<SubmissionsByUserPage> {
           workspace: widget.workspace,
           category: widget.category,
           channel: widget.channel,
-          userId: member.user.id,
+          teamId: member.team!.id,
           userName: member.user.username,
         ),
       ),
@@ -116,20 +141,19 @@ class _SubmissionsByUserPageState extends State<SubmissionsByUserPage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isTablet = constraints.maxWidth >= 640;
-          final contentWidth = isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth;
-          return SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (isTablet) const Spacer(flex: 1),
-                Container(
-                  width: contentWidth,
-                  padding: const EdgeInsets.all(15.0),
-                  child: _buildPageContent(),
-                ),
-                if (isTablet) const Spacer(flex: 1),
-              ],
-            ),
+          final contentWidth =
+              isTablet ? constraints.maxWidth * 0.5 : constraints.maxWidth;
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isTablet) const Spacer(flex: 1),
+              Container(
+                width: contentWidth,
+                padding: const EdgeInsets.all(15.0),
+                child: _buildPageContent(),
+              ),
+              if (isTablet) const Spacer(flex: 1),
+            ],
           );
         },
       ),
@@ -141,7 +165,7 @@ class UserSubmissionsScreen extends StatefulWidget {
   final Workspace workspace;
   final Category category;
   final Channel channel;
-  final int userId;
+  final String teamId;
   final String userName;
 
   const UserSubmissionsScreen({
@@ -149,7 +173,7 @@ class UserSubmissionsScreen extends StatefulWidget {
     required this.workspace,
     required this.category,
     required this.channel,
-    required this.userId,
+    required this.teamId,
     required this.userName,
   });
 
@@ -166,19 +190,31 @@ class _UserSubmissionsScreenState extends State<UserSubmissionsScreen> {
     _fetchSubmissions();
   }
 
-  void _fetchSubmissions() {
-    context.read<SubmissionBloc>().add(GetSubmissionByUserIdEvent(
-      widget.workspace.id,
-      widget.category.id,
-      widget.channel.id,
-      widget.userId
-    ));
+  String formatDateTime(DateTime dateTime) {
+    return DateFormat('MMMM d, y \'at\' h:mm a').format(dateTime.toLocal());
   }
 
-  Future<void> _showCreateIterationDialog(int submissionId) async {
+  void _launchUrl(String uri) async {
+    Uri url = Uri.parse(uri);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
+  void _fetchSubmissions() {
+    context.read<SubmissionBloc>().add(GetSubmissionByTeamIdEvent(
+        widget.workspace.id,
+        widget.category.id,
+        widget.channel.id,
+        widget.teamId));
+  }
+
+  Future<void> _showCreateIterationDialog(
+      int submissionId, int totalPoints) async {
     final TextEditingController remarksController = TextEditingController();
     String selectedStatus = 'ongoing';
     int earnedPoints = 0;
+    String? pointsError;
 
     return showDialog(
       context: context,
@@ -213,9 +249,20 @@ class _UserSubmissionsScreenState extends State<UserSubmissionsScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top: 16),
                       child: TextFormField(
-                        decoration: const InputDecoration(labelText: 'Earned Points'),
+                        decoration: InputDecoration(
+                          labelText: 'Earned Points',
+                          errorText: pointsError,
+                        ),
                         keyboardType: TextInputType.number,
-                        onChanged: (value) => earnedPoints = int.tryParse(value) ?? 0,
+                        onChanged: (value) {
+                          final points = int.tryParse(value) ?? 0;
+                          setState(() {
+                            earnedPoints = points;
+                            pointsError = (points > totalPoints)
+                                ? 'Points must not exceed $totalPoints'
+                                : null;
+                          });
+                        },
                       ),
                     ),
                 ],
@@ -228,19 +275,28 @@ class _UserSubmissionsScreenState extends State<UserSubmissionsScreen> {
               ),
               TextButton(
                 onPressed: () {
+                  if (selectedStatus == 'completed' &&
+                      earnedPoints > totalPoints) {
+                    setState(() {
+                      pointsError = 'Points must not exceed $totalPoints';
+                    });
+                    return;
+                  }
                   context.read<IterationBloc>().add(
-                    CreateReviewerIterationEvent(
-                      workspaceId: widget.workspace.id,
-                      categoryId: widget.category.id,
-                      channelId: widget.channel.id,
-                      submissionId: submissionId,
-                      remarks: remarksController.text,
-                      assignmentStatus: AssignmentStatus(
-                        status: selectedStatus,
-                        earnedPoints: selectedStatus == 'completed' ? earnedPoints : 0,
-                      ),
-                    ),
-                  );
+                        CreateReviewerIterationEvent(
+                          workspaceId: widget.workspace.id,
+                          categoryId: widget.category.id,
+                          channelId: widget.channel.id,
+                          submissionId: submissionId,
+                          remarks: remarksController.text,
+                          assignmentStatus: AssignmentStatus(
+                            status: selectedStatus,
+                            earnedPoints: selectedStatus == 'completed'
+                                ? earnedPoints
+                                : 0,
+                          ),
+                        ),
+                      );
                   Navigator.pop(context);
                   _fetchSubmissions();
                 },
@@ -253,36 +309,73 @@ class _UserSubmissionsScreenState extends State<UserSubmissionsScreen> {
     );
   }
 
-  Widget _buildSubmissionCard(Submission submission, List<ReviewIterationModel> iterations) {
+  Widget _buildSubmissionCard(
+    Submission submission,
+    List<ReviewIterationModel> iterations,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
-            title: Text('Submission ${submission.id}'),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            title: Text(
+              submission.content ?? "No content",
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            subtitle: Row(
               children: [
-                if (submission.content != null)
-                  Text(submission.content!),
-                if (submission.file != null)
-                  Text('File: ${submission.file}'),
-                Text(
-                  'Submitted: ${DateFormat('MMM d, y HH:mm').format(submission.submittedAt)}',
-                  style: Theme.of(context).textTheme.bodySmall,
+                Flexible(
+                  child: Tooltip(
+                    message: formatDateTime(submission.submittedAt),
+                    child: Text(
+                      formatDateTime(submission.submittedAt),
+                      style: Theme.of(context).textTheme.bodySmall,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                PillBox(
+                  text: submission.sender?.username ?? "Unknown",
+                  width: 160,
+                  backgroundColor: DarkThemePalette.primaryDark,
+                  textColor: DarkThemePalette.primaryAccent,
                 ),
               ],
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.add_comment),
-              onPressed: () => _showCreateIterationDialog(submission.id),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (submission.file != null)
+                  IconButton(
+                    icon: const Icon(
+                      Icons.open_in_new_rounded,
+                      color: DarkThemePalette.primaryAccent,
+                    ),
+                    onPressed: () {
+                      _launchUrl(submission.file!);
+                    },
+                  ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.create_rounded,
+                    color: DarkThemePalette.primaryAccent,
+                  ),
+                  onPressed: () => _showCreateIterationDialog(
+                      submission.id, widget.channel.assignment!.totalPoints),
+                ),
+              ],
             ),
+            tileColor: DarkThemePalette.fillColor,
           ),
           if (iterations.isNotEmpty) ...[
             const Padding(
               padding: EdgeInsets.only(left: 16, top: 8),
-              child: Text('Reviews:', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(
+                'Reviews:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
             ListView.builder(
               shrinkWrap: true,
@@ -301,13 +394,15 @@ class _UserSubmissionsScreenState extends State<UserSubmissionsScreen> {
                         Text(
                           'Status: ${iteration.assignmentStatus!.status.toUpperCase()}',
                           style: TextStyle(
-                            color: iteration.assignmentStatus!.status == 'complete' 
-                              ? Colors.green 
-                              : Colors.orange,
+                            color:
+                                iteration.assignmentStatus!.status == 'complete'
+                                    ? Colors.green
+                                    : Colors.orange,
                           ),
                         ),
-                        if (iteration.assignmentStatus!.earnedPoints != null)
-                          Text('Points: ${iteration.assignmentStatus!.earnedPoints}'),
+                        Text(
+                          'Points: ${iteration.assignmentStatus!.earnedPoints}',
+                        ),
                       ],
                       Text(
                         'Created: ${DateFormat('MMM d, y HH:mm').format(iteration.createdAt)}',
@@ -329,7 +424,7 @@ class _UserSubmissionsScreenState extends State<UserSubmissionsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "${widget.userName}'s Submissions",
+          "Team's Submissions",
           style: Theme.of(context).textTheme.titleLarge,
         ),
         leading: IconButton(
@@ -342,11 +437,11 @@ class _UserSubmissionsScreenState extends State<UserSubmissionsScreen> {
           if (state is SubmissionLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          
+
           if (state is SubmissionError) {
             return Center(child: Text("Error: ${state.message}"));
           }
-          
+
           if (state is SubmissionSuccess) {
             return ListView.builder(
               padding: const EdgeInsets.all(16),
@@ -358,7 +453,7 @@ class _UserSubmissionsScreenState extends State<UserSubmissionsScreen> {
               },
             );
           }
-          
+
           return const SizedBox.shrink();
         },
       ),

@@ -34,15 +34,6 @@ class ScaffoldWithNavigationRail extends StatelessWidget {
                         : const ColorFilter.mode(Colors.grey, BlendMode.srcIn)),
               ),
               NavigationRailDestination(
-                label: const Text('Notifications'),
-                icon: SvgPicture.asset(
-                  'assets/icons/notifications.svg',
-                  colorFilter: selectedIndex == 1
-                      ? null
-                      : const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-                ),
-              ),
-              NavigationRailDestination(
                 label: const Text('Profile'),
                 icon: Icon(
                   Icons.person_2_rounded,
@@ -51,7 +42,11 @@ class ScaffoldWithNavigationRail extends StatelessWidget {
               ),
             ],
           ),
-          const VerticalDivider(thickness: 1, width: 1, color: Colors.grey,),
+          const VerticalDivider(
+            thickness: 1,
+            width: 1,
+            color: Colors.grey,
+          ),
           Expanded(
             child: body,
           ),

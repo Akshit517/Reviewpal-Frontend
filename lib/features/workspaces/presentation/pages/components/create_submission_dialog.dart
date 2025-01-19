@@ -53,7 +53,7 @@ class _CreateSubmissionDialogState extends State<CreateSubmissionDialog> {
       String? fileUrl;
       if (_selectedFile != null) {
         final mediaUploader = sl<MediaUploader>();
-        fileUrl = await mediaUploader.uploadMedia(image: _selectedFile!);
+        fileUrl = await mediaUploader.uploadMedia(file: _selectedFile!);
       }
 
       context.read<SubmissionBloc>().add(

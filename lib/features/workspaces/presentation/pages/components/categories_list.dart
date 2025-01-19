@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/entities/workspace/workspace_entity.dart';
-import '../../blocs/category/category_bloc.dart';
+import '../../blocs/category/category_bloc/category_bloc.dart';
 import 'category_expansion_tile.dart';
 
 class CategoriesList extends StatelessWidget {
@@ -10,7 +10,7 @@ class CategoriesList extends StatelessWidget {
   final VoidCallback? onCategorySelected;
 
   const CategoriesList({
-    super.key, 
+    super.key,
     required this.workspace,
     this.onCategorySelected,
   });
@@ -26,9 +26,9 @@ class CategoriesList extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             children: state.categories
                 .map((category) => CategoryExpansionTile(
-                  category: category,
-                  workspace: workspace,
-                ))
+                      category: category,
+                      workspace: workspace,
+                    ))
                 .toList(),
           );
         } else if (state.isLoading == false && state.isSuccess == false) {
