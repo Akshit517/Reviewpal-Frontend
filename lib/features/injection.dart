@@ -16,6 +16,7 @@ import 'auth/domain/repositories/user_repositories.dart';
 import 'auth/domain/usecases/get_token.dart';
 import 'auth/domain/usecases/login.dart';
 import 'auth/domain/usecases/login_status_usecase.dart';
+import 'auth/domain/usecases/logout.dart';
 import 'auth/domain/usecases/profile.dart';
 import 'auth/domain/usecases/register.dart';
 import 'auth/presentation/bloc/auth_bloc/auth_bloc.dart';
@@ -61,7 +62,10 @@ Future<void> init() async {
   await dotenv.load(fileName: ".env");
   //bloc
   sl.registerFactory(() => AuthBloc(
-      registerUseCase: sl(), loginUseCase: sl(), getTokenUseCase: sl()));
+      registerUseCase: sl(),
+      loginUseCase: sl(),
+      getTokenUseCase: sl(),
+      logoutUseCase: sl()));
   sl.registerFactory(() => LoginStatusCubit(
         loginStatusUseCase: sl(),
       ));
@@ -152,6 +156,9 @@ void initAuth() {
   );
   sl.registerLazySingleton<UpdateProfileUseCase>(
     () => UpdateProfileUseCase(userRepositories: sl()),
+  );
+  sl.registerLazySingleton<LogoutUseCase>(
+    () => LogoutUseCase(userRepositories: sl()),
   );
 
   //Repositories

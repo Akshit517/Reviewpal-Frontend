@@ -18,6 +18,8 @@ class AuthSuccess extends AuthState {
       {this.email, this.accessToken, this.refreshToken});
 }
 
+final class UnAuthenticated extends AuthState {}
+
 class AuthFailure extends AuthState {
   final String error;
 

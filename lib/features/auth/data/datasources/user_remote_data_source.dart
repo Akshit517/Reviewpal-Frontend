@@ -85,7 +85,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   Future<void> logout(TokenModel tokensToLogout) async {
     final response = await client.post(
       Uri.parse('${AppConstants.baseUrl}logout/'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${tokensToLogout.accessToken}'
+      },
       body: jsonEncode({'refresh_token': tokensToLogout.refreshToken}),
     );
 
