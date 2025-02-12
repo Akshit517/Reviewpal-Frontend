@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
@@ -12,14 +11,12 @@ import '../../domain/repositories/chat_repository.dart';
 import '../datasources/group_chat_remote_data_source.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
-  final WebSocketChannel channel;
   final GroupChatRemoteDataSource remoteDataSource;
   final NetworkInfo networkInfo;
   final UserLocalDataSource userLocalDataSource;
 
   ChatRepositoryImpl(
-      {required this.channel,
-      required this.remoteDataSource,
+      {required this.remoteDataSource,
       required this.networkInfo,
       required this.userLocalDataSource});
 
@@ -44,8 +41,9 @@ class ChatRepositoryImpl implements ChatRepository {
       String workspaceId, int categoryId, String channelId) async* {
     if (await networkInfo.isConnected) {
       try {
+        final token = await userLocalDataSource.getCachedToken();
         await for (final message in remoteDataSource.connectToChat(
-            workspaceId, categoryId, channelId)) {
+            workspaceId, categoryId, channelId, token.accessToken)) {
           yield Right(message);
         }
       } on ServerException {

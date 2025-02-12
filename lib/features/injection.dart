@@ -1,3 +1,4 @@
+import 'package:ReviewPal/features/workspaces/data/datasources/group_chat_remote_data_source.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -22,7 +23,9 @@ import 'auth/domain/usecases/register.dart';
 import 'auth/presentation/bloc/auth_bloc/auth_bloc.dart';
 import 'auth/presentation/cubit/login_status_cubit.dart';
 import 'workspaces/data/datasources/remote_data_source.dart';
+import 'workspaces/data/repositories/chat_repository.dart';
 import 'workspaces/data/repositories/repositories_impl.dart';
+import 'workspaces/domain/repositories/chat_repository.dart';
 import 'workspaces/domain/repositories/workspace_repositories.dart';
 import 'workspaces/domain/usecases/category/category_member.dart';
 import 'workspaces/domain/usecases/category/create_category.dart';
@@ -34,6 +37,7 @@ import 'workspaces/domain/usecases/channels/create_channel.dart';
 import 'workspaces/domain/usecases/channels/delete_channel.dart';
 import 'workspaces/domain/usecases/channels/get_channels.dart';
 import 'workspaces/domain/usecases/channels/update_channel.dart';
+import 'workspaces/domain/usecases/chat/chat_usecase.dart';
 import 'workspaces/domain/usecases/iteration/create_review_iteration.dart';
 import 'workspaces/domain/usecases/iteration/get_reviewee_iteration.dart';
 import 'workspaces/domain/usecases/iteration/get_reviewer_iteration.dart';
@@ -50,6 +54,7 @@ import 'workspaces/presentation/blocs/category/member/category_member_bloc.dart'
 import 'workspaces/presentation/blocs/channel/channel_bloc/channel_bloc.dart';
 import 'workspaces/presentation/blocs/channel/member/channel_member_bloc.dart';
 import 'workspaces/presentation/blocs/channel/single_member/single_channel_member_cubit.dart';
+import 'workspaces/presentation/blocs/chat/chat_bloc.dart';
 import 'workspaces/presentation/blocs/iteration/iteration_bloc.dart';
 import 'workspaces/presentation/blocs/submission/submission_bloc.dart';
 import 'workspaces/presentation/blocs/workspace/member/workspace_member_bloc.dart';
@@ -121,6 +126,8 @@ Future<void> init() async {
 
   //feature [workspaces]
   initWorkspaces();
+
+  initChat();
 
   //core
   sl.registerLazySingleton<NetworkInfo>(
@@ -225,4 +232,22 @@ void initWorkspaces() {
   // DataSources
   sl.registerLazySingleton<WorkspaceRemoteDataSource>(
       () => WorkspaceRemoteDataSourceImpl(client: sl()));
+}
+
+void initChat() {
+  sl.registerLazySingleton<GroupChatRemoteDataSource>(
+    () => GroupChatRemoteDataSourceImpl(client: sl()),
+  );
+  sl.registerLazySingleton<ChatRepository>(
+    () => ChatRepositoryImpl(
+        remoteDataSource: sl(), networkInfo: sl(), userLocalDataSource: sl()),
+  );
+  sl.registerLazySingleton<ChatUsecase>(
+    () => ChatUsecase(repository: sl()),
+  );
+  sl.registerFactory(
+    () => ChatBloc(
+      chatUsecase: sl(),
+    ),
+  );
 }
