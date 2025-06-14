@@ -56,7 +56,6 @@ class CustomNavigationHelper {
   CustomNavigationHelper._internal();
 
   static Future<void> initialize({required bool isLoggedIn}) async {
-    final AppLinks applinks = AppLinks();
     final routes = _getRoutes();
     //main router
     router = GoRouter(
@@ -64,8 +63,6 @@ class CustomNavigationHelper {
       initialLocation: isLoggedIn ? homePath : rootAuthPath,
       routes: routes,
     );
-    _handleDeepLinks(applinks);
-    await _handleInitialLinks(applinks);
   }
 
   static List<RouteBase> _getRoutes() {
@@ -94,7 +91,7 @@ class CustomNavigationHelper {
       GoRoute(
         path: callbackPath,
         pageBuilder: (context, state) {
-          final uri = state.extra as Uri?;
+          final uri = state.uri as Uri?;
           if (uri != null) {
             final String? code = uri.queryParameters['code'];
             final String? stateParam = uri.queryParameters['state'];
@@ -319,7 +316,8 @@ class CustomNavigationHelper {
     ];
   }
 
-  static Future<void> _handleInitialLinks(AppLinks applinks) async {
+  static Future<void> handleInitialLinks() async {
+    final AppLinks applinks = AppLinks();
     final initialUri = await applinks.getInitialLink();
     if (initialUri != null) {
       final path = initialUri.path;
@@ -329,11 +327,11 @@ class CustomNavigationHelper {
     }
   }
 
-  static void _handleDeepLinks(AppLinks applinks) {
+  static void handleDeepLinks() {
+    final AppLinks applinks = AppLinks();
     applinks.uriLinkStream.listen((Uri? uri) {
       if (uri != null) {
-        final path = uri.path;
-        if (path == callbackPath) {
+        if (uri.path == callbackPath) {
           router.go(callbackPath, extra: uri);
         }
       }
