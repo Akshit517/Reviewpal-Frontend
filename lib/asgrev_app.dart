@@ -10,6 +10,7 @@ import 'features/workspaces/presentation/blocs/category/member/category_member_b
 import 'features/workspaces/presentation/blocs/channel/channel_bloc/channel_bloc.dart';
 import 'features/workspaces/presentation/blocs/channel/member/channel_member_bloc.dart';
 import 'features/workspaces/presentation/blocs/channel/single_member/single_channel_member_cubit.dart';
+import 'features/workspaces/presentation/blocs/chat/chat_bloc.dart';
 import 'features/workspaces/presentation/blocs/iteration/iteration_bloc.dart';
 import 'features/workspaces/presentation/blocs/submission/submission_bloc.dart';
 import 'features/workspaces/presentation/blocs/workspace/single_member/single_workspace_member_cubit.dart';
@@ -26,6 +27,8 @@ class AsgRevApp extends StatefulWidget {
 class _AsgRevAppState extends State<AsgRevApp> {
   @override
   void initState() {
+    CustomNavigationHelper.handleInitialLinks();
+    CustomNavigationHelper.handleDeepLinks();
     super.initState();
   }
 
@@ -47,6 +50,7 @@ class _AsgRevAppState extends State<AsgRevApp> {
             create: (context) => sl<SingleChannelMemberCubit>()),
         BlocProvider<ChannelMemberBloc>(
             create: (context) => sl<ChannelMemberBloc>()),
+        // BlocProvider<ChatBloc>(create: (context) => sl<ChatBloc>()),
         BlocProvider<SubmissionBloc>(create: (context) => sl<SubmissionBloc>()),
         BlocProvider<IterationBloc>(create: (context) => sl<IterationBloc>()),
       ],
