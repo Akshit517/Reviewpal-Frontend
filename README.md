@@ -35,7 +35,15 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-ReviewPal is a comprehensive assignment management and review platform built with Flutter. It features real-time collaboration, structured workspaces, and streamlined review processes to enhance productivity in educational and professional environments.
+<div align="center">
+  <img src="images/screenshots/screenshots.png" alt="ReviewPal Mobile Experience Screenshots" style="max-width: 100%; height: auto;">
+</div>
+
+<div align="center">
+  <p><i>(Screenshots)</i></p>
+</div>
+
+ReviewPal is a comprehensive assignment management and review platform built with Flutter and Django ([backend](https://github.com/Akshit517/Reviewpal-Backend)). It features real-time collaboration, structured workspaces, and streamlined review processes to enhance productivity in educational and professional environments.
 
 Design Mockups: [Figma](https://www.figma.com/design/zbPritvMOzOXBHpDJXJGmm/ReviewPal?node-id=0-1&p=f&t=8YKPRRDBjcA3jHKT-0)
 
@@ -56,7 +64,7 @@ ReviewPal offers a set of features designed to streamline your workflow and enha
 
 Here's a visual representation of the ReviewPal architecture:
 
-![](/images/reviewpal_architecture.jpg)
+![](/images/architecture/reviewpal_architecture.png)
 
 <!-- GETTING STARTED -->
 ## Getting Started
