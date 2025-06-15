@@ -1,5 +1,4 @@
 import 'package:ReviewPal/features/workspaces/data/datasources/chat_remote_data_source.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -64,7 +63,6 @@ import 'workspaces/presentation/blocs/workspace/workspace_bloc/workspace_bloc.da
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  await dotenv.load(fileName: ".env");
   //bloc
   sl.registerFactory(() => AuthBloc(
       registerUseCase: sl(),

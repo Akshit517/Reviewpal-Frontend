@@ -1,14 +1,14 @@
-import 'package:ReviewPal/features/auth/presentation/bloc/auth_bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/constants.dart';
 import '../../../../core/resources/routes/routes.dart';
 import '../../../../core/presentation/widgets/divider/middle_text_divider.dart';
 import '../../../../core/presentation/widgets/buttons/social_text_button.dart';
 import '../../../../core/presentation/widgets/text_field/text_form_field.dart';
 import '../../../../core/presentation/widgets/text_field/text_field_header.dart';
+import '../bloc/auth_bloc/auth_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   constraints: constraints,
                   text: 'Continue with Google',
                   iconPath: 'assets/icons/g_logo.svg',
-                  redirectTo: dotenv.env['GOOGLE_REDIRECT_URI']!,
+                  redirectTo: AppConstants.googleRedirectUri,
                 ),
                 const SizedBox(height: 20.0),
                 const MiddleTextDivider(text: 'OR'),
@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   constraints: constraints,
                   text: 'Continue with Channel-I',
                   iconPath: 'assets/icons/chi_logo.svg',
-                  redirectTo: dotenv.env['CHANNELI_REDIRECT_URI']!,
+                  redirectTo: AppConstants.channeliRedirectUri,
                 ),
               ],
             );

@@ -32,7 +32,6 @@ dependencies:
   app_links: ^6.3.2
   flutter_svg: ^2.0.16
   url_launcher: ^6.3.1
-  flutter_dotenv: ^5.2.1
   get_it: ^8.0.2
   image_picker: ^1.1.2
   web_socket_channel: ^3.0.1
@@ -63,7 +62,6 @@ flutter:
   assets:
     - assets/icons/
     - assets/ic_launcher/
-    - .env
   # fonts:
   #   - family: Schyler
   #     fonts:
