@@ -56,7 +56,7 @@ class TokenHttpClient {
   }
 
   Future<http.Response> delete(
-    String url, 
+    String url,
     dynamic body, {
     Map<String, String>? headers,
   }) async {
@@ -70,13 +70,13 @@ class TokenHttpClient {
     );
   }
 
-  Future<Map<String, String>> _prepareHeaders(Map<String, String>? additionalHeaders) async {
+  Future<Map<String, String>> _prepareHeaders(
+      Map<String, String>? additionalHeaders) async {
     String? token = await tokenManager.accessToken;
-    
+
     if (token == null || await tokenManager.isTokenExpired()) {
       token = await _refreshTokenIfNeeded();
     }
-
     final Map<String, String> headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ class TokenHttpClient {
     Future<http.Response> Function() request,
   ) async {
     try {
-      final response = await request(); 
+      final response = await request();
       if (response.statusCode == 401) {
         final token = await _refreshTokenIfNeeded();
         if (token != null) {

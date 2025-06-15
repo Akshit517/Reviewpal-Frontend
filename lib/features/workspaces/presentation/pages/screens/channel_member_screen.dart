@@ -217,7 +217,7 @@ class _ChannelMemberWidgetState extends State<ChannelMemberWidget> {
                       ),
                       onLongPress: () => {
                         if (singleChannelMemberState.members[key]?.role ==
-                                "reviewee" &&
+                                "reviewer" &&
                             singleChannelMemberState.loadingStates[key] ==
                                 false &&
                             singleChannelMemberState.successStates[key] == true)

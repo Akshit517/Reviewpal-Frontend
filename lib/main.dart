@@ -1,11 +1,12 @@
-import 'package:ReviewPal/features/auth/presentation/cubit/login_status_cubit.dart';
-import 'package:ReviewPal/features/injection.dart';
-import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'asgrev_app.dart';
-import 'core/resources/routes/routes.dart';
+import 'features/injection.dart';
+import 'features/bloc_observer.dart';
 import 'features/injection.dart' as di;
+import 'core/resources/routes/routes.dart';
+import 'features/auth/presentation/cubit/login_status_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,10 +26,9 @@ void main() async {
 
   await CustomNavigationHelper.initialize(isLoggedIn: isLoggedIn);
 
+  Bloc.observer = AppBlocObserver();
+
   runApp(
-    DevicePreview(
-      enabled: true,
-      builder: (context) => const AsgRevApp(),
-    ),
+    const AsgRevApp(),
   );
 }

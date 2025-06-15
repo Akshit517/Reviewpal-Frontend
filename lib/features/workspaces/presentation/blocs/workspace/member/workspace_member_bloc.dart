@@ -7,7 +7,8 @@ import '../../../../domain/usecases/workspaces/workspace_member.dart';
 part 'workspace_member_event.dart';
 part 'workspace_member_state.dart';
 
-class WorkspaceMemberBloc extends Bloc<WorkspaceMemberEvent, WorkspaceMemberState> {
+class WorkspaceMemberBloc
+    extends Bloc<WorkspaceMemberEvent, WorkspaceMemberState> {
   final GetWorkspaceMembersUseCase getWorkspaceMembersUseCase;
   final AddWorkspaceMemberUseCase addWorkspaceMemberUseCase;
   final DeleteWorkspaceMemberUseCase deleteWorkspaceMemberUseCase;
@@ -25,7 +26,8 @@ class WorkspaceMemberBloc extends Bloc<WorkspaceMemberEvent, WorkspaceMemberStat
     on<UpdateWorkspaceMemberEvent>(_updateWorkspaceMember);
   }
 
-  Future<void> _getWorkspaceMembers(GetWorkspaceMembersEvent event, Emitter<WorkspaceMemberState> emit) async {
+  Future<void> _getWorkspaceMembers(GetWorkspaceMembersEvent event,
+      Emitter<WorkspaceMemberState> emit) async {
     emit(WorkspaceMemberLoading());
     final result = await getWorkspaceMembersUseCase(event.workspaceId);
     result.fold(
@@ -34,27 +36,37 @@ class WorkspaceMemberBloc extends Bloc<WorkspaceMemberEvent, WorkspaceMemberStat
     );
   }
 
-  Future<void> _addWorkspaceMember(AddWorkspaceMemberEvent event, Emitter<WorkspaceMemberState> emit) async {
+  Future<void> _addWorkspaceMember(
+      AddWorkspaceMemberEvent event, Emitter<WorkspaceMemberState> emit) async {
     emit(WorkspaceMemberLoading());
-    final result = await addWorkspaceMemberUseCase(WorkspaceMemberParams(workspaceId: event.workspaceId, userEmail: event.email, role: event.role));
+    final result = await addWorkspaceMemberUseCase(WorkspaceMemberParams(
+        workspaceId: event.workspaceId,
+        userEmail: event.email,
+        role: event.role));
     result.fold(
       (failure) => emit(WorkspaceMemberError(message: failure.message)),
       (data) => emit(const WorkspaceMemberSuccess()),
     );
   }
 
-  Future<void> _deleteWorkspaceMember(RemoveWorkspaceMemberEvent event, Emitter<WorkspaceMemberState> emit) async {
+  Future<void> _deleteWorkspaceMember(RemoveWorkspaceMemberEvent event,
+      Emitter<WorkspaceMemberState> emit) async {
     emit(WorkspaceMemberLoading());
-    final result = await deleteWorkspaceMemberUseCase(WorkspaceMemberParams(workspaceId: event.workspaceId, userEmail: event.email));
+    final result = await deleteWorkspaceMemberUseCase(WorkspaceMemberParams(
+        workspaceId: event.workspaceId, userEmail: event.email));
     result.fold(
       (failure) => emit(WorkspaceMemberError(message: failure.message)),
       (_) => emit(const WorkspaceMemberSuccess()),
     );
   }
 
-  Future<void> _updateWorkspaceMember(UpdateWorkspaceMemberEvent event, Emitter<WorkspaceMemberState> emit) async {
+  Future<void> _updateWorkspaceMember(UpdateWorkspaceMemberEvent event,
+      Emitter<WorkspaceMemberState> emit) async {
     emit(WorkspaceMemberLoading());
-    final result = await updateWorkspaceMemberUseCase(WorkspaceMemberParams(workspaceId: event.workspaceId, userEmail: event.email, role: event.role));
+    final result = await updateWorkspaceMemberUseCase(WorkspaceMemberParams(
+        workspaceId: event.workspaceId,
+        userEmail: event.email,
+        role: event.role));
     result.fold(
       (failure) => emit(WorkspaceMemberError(message: failure.message)),
       (_) => emit(const WorkspaceMemberSuccess()),
