@@ -141,17 +141,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   Future<void> _safeDisconnect() async {
     try {
+      await chatUsecase.disconnectChat();
       await _chatSubscription?.cancel();
       _chatSubscription = null;
-      await chatUsecase.disconnectChat();
     } catch (e) {
-      debugPrint('Error during chat disconnect: $e');
+      debugPrint('Error during chat disconnect teardown: $e');
     }
   }
 
   @override
-  Future<void> close() {
-    _safeDisconnect();
-    return super.close();
+  Future<void> close() async {
+    await _safeDisconnect();
+    await super.close();
   }
 }
