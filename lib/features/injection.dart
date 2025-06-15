@@ -1,4 +1,4 @@
-import 'package:ReviewPal/features/workspaces/data/datasources/group_chat_remote_data_source.dart';
+import 'package:ReviewPal/features/workspaces/data/datasources/chat_remote_data_source.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -245,7 +245,7 @@ void initChat() {
   sl.registerLazySingleton<ChatUsecase>(
     () => ChatUsecase(repository: sl()),
   );
-  sl.registerFactory(
+  sl.registerLazySingleton(
     () => ChatBloc(
       chatUsecase: sl(),
     ),

@@ -17,8 +17,6 @@ class MessageModel extends Message {
       senderEmail: json['sender_email'] as String,
       senderName: json['sender_name'] as String,
       content: json['content'] as String,
-      // file: json['file'] as String?,
-      // createdAt: DateTime.parse(json['created_at'] as String),
       channelId: json['channel'] as String,
     );
   }
@@ -26,7 +24,6 @@ class MessageModel extends Message {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      // 'sender': senderId,
       'sender_name': senderName,
       'sender_email': senderEmail,
       'content': content,

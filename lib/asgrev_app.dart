@@ -50,7 +50,7 @@ class _AsgRevAppState extends State<AsgRevApp> {
             create: (context) => sl<SingleChannelMemberCubit>()),
         BlocProvider<ChannelMemberBloc>(
             create: (context) => sl<ChannelMemberBloc>()),
-        // BlocProvider<ChatBloc>(create: (context) => sl<ChatBloc>()),
+        BlocProvider<ChatBloc>(create: (context) => sl<ChatBloc>()),
         BlocProvider<SubmissionBloc>(create: (context) => sl<SubmissionBloc>()),
         BlocProvider<IterationBloc>(create: (context) => sl<IterationBloc>()),
       ],
